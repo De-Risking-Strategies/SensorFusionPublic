@@ -10,10 +10,11 @@
 **/Demo90-env/
 **/checkid-env/
 **/__Pycache__/
+**requirements.txt
 Bookshelf/
 Desktop/
 Downloads/
-**/Flash-api/
+Flash-api/
 labelImg-master
 Music/
 Pictures/
