@@ -1,0 +1,147 @@
+
+
+Skip to content
+Using Gmail with screen readers
+Meet
+New meeting
+Join a meeting
+11 of 40,792
+Git
+Inbox
+
+Drew Anderson <drewanderson@gmail.com>
+3:32 PM (3 hours ago)
+to me
+
+SEPTEMBER 16, 2017  - Updated Sept 2 , 2020
+
+http://api.cmwrx.tv/explorer/
+Username: {api}
+Pwd: m0nk3yb!z
+
+------------- STAGING SETUP ------------------
+Here’s the details on the new PLS staging servers:
+ 
+Azure DNS name:  cmw-pls-staging.westus.cloudapp.azure.com
+
+STAGING
+=====================================
+DNS CNAME:  www-s.cmwrx.tv
+ 
+Shelling into it:
+ssh cmwstage@www-s.cmwrx.tv
+password: Stag1ng.server
+
+
+BRIO
+=======================================
+DNS CNAME:  brio.cmwrx.tv
+
+Shelling into it:
+ssh brioadmin@brio.cmwrx.tv - DEPR
+
+password adm1n-PW.bri0
+
+KAI
+=======================================
+DNS CNAME:  inside.kostabrowne.com
+
+Shelling into it:
+ ssh kostaadmin@inside.kostabrowne.com
+
+password  adm1n-PW.k0sTa
+sudo su
+cd /srv/cmw/pls
+git pull
+../sslrestart.sh
+
+ 
+Updating the code:
+=======================================
+sudo su
+cd /srv/cmw/pls
+
+    git checkout Drew_new
+
+    git pull
+
+User Name
+DrewAnderson
+PAT (Password)
+b5628e35ec2f7454ebb57d0ff356a2e533c0e4a7
+
+b5628e35ec2f7454ebb57d0ff356a2e533c0e4a7
+
+bash
+
+../restart.sh
+ 
+Regarding Git, it will prompt you for your Git username, which has to have access to the CMW repo, and then the password.
+
+You will need to create a “Personal access token” PAT in GitHub.
+
+--------
+
+$ ssh cmwstage@www-s.cmwrx.tv
+cmwstage@www-s.cmwrx.tv's password:
+Welcome to Ubuntu 16.04.3 LTS (GNU/Linux 4.4.0-92-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  Get cloud support with Ubuntu Advantage Cloud Guest:
+    http://www.ubuntu.com/business/services/cloud
+
+13 packages can be updated.
+0 updates are security updates.
+
+
+*** System restart required ***
+
+
+
+
+Last login: Thu Sep 21 22:04:05 2017 from 73.162.227.139
+cmwstage@cmw-pls-staging:~$ sudo su
+root@cmw-pls-staging:/home/cmwstage# cd /srv/cmw/pls
+root@cmw-pls-staging:/srv/cmw/pls# git pull
+Username for 'https://github.com': DrewAnderson
+Password for 'https://DrewAnderson@github.com':
+remote: Counting objects: 24, done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 24 (delta 22), reused 24 (delta 22), pack-reused 0
+Unpacking objects: 100% (24/24), done.
+From https://github.com/cmwrx/pls
+   8db53276..de0d9788  Drew_new   -> origin/Drew_new
+Updating 8db53276..de0d9788
+Fast-forward
+ CHANGELOG.md                               |  11 +++++++--
+ public/css/app.css                         |  10 ++++++---
+ public/css/guide-mobi.css                  | 117 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++---------
+ public/js/controllers.js                   |   1 +
+ public/js/controllers/guideCtrl.js         |   9 +++++---
+ public/js/controllers/menuboardCtrl.js     |   3 +++
+ public/js/controllers/mobileChannelCtrl.js |  21 +++++++++++++++++-
+ public/js/controllers/mobileGuideCtrl.js   |  34 +++++++++++++++++++++++-----
+ public/js/controllers/mobileSearchCtrl.js  |   5 ++++-
+ public/js/controllers/mobileVideoCtrl.js   |  29 +++++++++++++++++++-----
+ public/js/main.js                          |   2 ++
+ public/js/videoPlayer.js                   |  20 ++++++++++++-----
+ public/views/partials/channel-mobi.jade    |  22 ++++++++----------
+ public/views/partials/guide-mobi.jade      |  32 +++++++++-----------------
+ public/views/partials/hamburger.jade       |  23 +++++++++++++++++++
+ public/views/partials/video-mobi.jade      |  69 ++++++++++++++++++++++++++++++---------------------------
+ 16 files changed, 304 insertions(+), 104 deletions(-)
+ create mode 100644 public/views/partials/hamburger.jade
+root@cmw-pls-staging:/srv/cmw/pls#
+
+
+Anotehr copy of Git PWD:
+
+b5628e35ec2f7454ebb57d0ff356a2e533c0e4a7
+
+
+
+
+

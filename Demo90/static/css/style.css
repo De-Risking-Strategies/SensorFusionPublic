@@ -1,0 +1,149 @@
+/* (C) 2020-  DE-Risking Strategies, LLC - All Rights Reserved
+Theme Name: SensorFusion
+Author: ATA
+Description: CMS Theme WordPress
+Version: 0.0.1
+Author URI: http://www.xxxyyyzzz.com
+Tags: streaming with TFLite and Coral
+*/
+body{
+   height:100%;
+}
+body {
+   margin: 0;
+   padding: 0;
+   background: #000;
+   font-family: 'Roboto', sans-serif;
+   font-size: 48px;
+   height:100%;
+   color:gray;
+   min-height: 100%;
+   margin: 0; 
+   overflow: hidden;
+}
+
+.grid{
+  
+   display:grid;
+   position:absolute;
+   grid-template-columns: repeat(3,1fr);
+   grid-template-rows: 8% 83% 8%;
+   background:lightgray;
+   width: 100vw;
+   height:100vh;
+   left:0px;
+   top:0px;
+
+}
+.header{
+   border-radius:5px;
+   grid-column:1/4;
+   grid-row-start:1;
+   grid-row-end:2;
+   padding: 2px 2px;
+   border-color: #e7e7e7;
+   
+   height:100%;
+   background-image:url("../assets/top_nav_bar_001.png");
+   
+}
+.main{
+
+  border-radius:5px;
+   grid-column:1/4;
+   grid-row-start:2;
+   grid-row-end:3;
+   padding: 2px 2px;
+   border-color: #e7e7e7;
+   
+   height:100%;
+   background-image:url("../assets/the-boys.png");
+   background-repeat: no-repeat;
+   background-size: cover;
+}
+.footer{
+
+   border-radius:5px;
+   grid-column:1/4;
+   grid-row-start:3;
+   grid-row-end:4;
+   padding: 2px 2px;
+   border-color: #e7e7e7;
+   
+   height:100%;
+   background-image:url("../assets/bottom_nav_bar_001.png");
+}
+.title{
+   font-size: .7em;
+   position:fixed;
+   margin-top:0px;
+   margin-left:25%;
+   color:white;
+   width:100%
+}
+
+.background{
+   
+}
+
+.topnav{
+   width:100%; 
+}
+.botnav{
+    width: 100%;
+    border: 1px solid black;
+    display: flex;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+}
+.standard_button{
+   width:50px;
+   height:50px;
+   margin:8px;
+   margin-top:8px;
+}
+.large_button{
+   width:90px;
+   height:50px;
+}
+#top-right{
+   margin-right: 30%;
+   top: 0%;
+   position: absolute;
+   right: -29%;
+}
+
+#bottom-controls{
+    margin-left:20%;
+    height: 50px;
+    margin: 8px;
+    position: absolute;
+    bottom: 2%;
+    width: 100%
+}
+.login-reg-background{
+   position:absolute;
+   left:0%;
+   top:0%;
+   width:100%;
+   z-index:-1;
+}
+.login-reg-top{
+   position:absolute;
+   left:0%;
+   top:0%;
+   width:100%;
+   z-index:1;
+}
+.login-reg-foot{
+   position:fixed;
+   bottom:0;
+   height:auto;
+   margin-top:40px;
+   width:100%;
+   text-align:center
+
+}
+.login-reg-foot-text{
+   font-size:.2em
+}

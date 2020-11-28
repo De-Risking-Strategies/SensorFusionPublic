@@ -1,0 +1,95 @@
+
+
+DRS Client Setup 			11/24/20
+==========================================
+
+Setup WiFi
+===================
+$ sudo iwlist wlan0 scan
+$ sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+  network={
+  ssid="wifiName"
+  psk="wifiPassword"
+ }
+$ sudo reboot
+ 
+Check inet: 
+$ ifconfig wlan0
+ inet addr:192.168.1.50
+
+? Change Root user password?
+
+Update Packages
+===================
+System:
+$ sudo apt-get update
+Installed:
+$ sudo apt-get dist-upgrade
+
+Install Node
+============
+https://thisdavej.com/create-a-web-server-in-node-without-any-code/
+
+In a separate terminal window:
+
+cd ./Pi/Public (target for client)
+
+
+Install it:
+$ sudo npm install -g http-server
+
+$ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+Run it:
+$ http-server
+
+Check it:
+Starting up http-server, serving ./
+Available on:
+  http://127.0.0.1:8080
+  http://10.0.0.196:8080
+Hit CTRL-C to stop the server
+
+
+SQL
+============
+https://iot4beginners.com/sqlite-database-on-raspberry-pi/
+
+$ sudo apt-get install sqlite3
+
+FLASK
+============
+In a separate terminal window:
+
+$ cd ./checkid
+
+Make Virtual Environment:
+$ python3.7 -m venv sf-env
+
+Activate environment:
+$ source sf-env/bin/activate
+
+Install Flask
+=============
+https://mherman.org/blog/flask-for-node-developers/
+
+$ pip install Flask==0.12.1
+$ pip freeze > requirements.txt
+
+Add Flask to Demo-90 env
+
+Go to the Demo90 Directory,
+Type
+$ pip
+
+$(demo-90)$ pip install -m flask
+
+$ deactivate
+$
+
+Start Flask Server
+=====================
+$ python app.py
+
+NOTE - Exit terminal window to kill procs!
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

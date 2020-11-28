@@ -1,0 +1,1 @@
+/usr/bin/cc   -rdynamic CMakeFiles/seekware-server.dir/src/seekware-server.o  -o seekware-server -lseekware -lm 

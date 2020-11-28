@@ -1,0 +1,7 @@
+/home/pi/seek_to_csv/seekware-server/build/CMakeFiles/edit_cache.dir
+/home/pi/seek_to_csv/seekware-server/build/CMakeFiles/install/strip.dir
+/home/pi/seek_to_csv/seekware-server/build/CMakeFiles/seekware-server.dir
+/home/pi/seek_to_csv/seekware-server/build/CMakeFiles/rebuild_cache.dir
+/home/pi/seek_to_csv/seekware-server/build/CMakeFiles/list_install_components.dir
+/home/pi/seek_to_csv/seekware-server/build/CMakeFiles/install.dir
+/home/pi/seek_to_csv/seekware-server/build/CMakeFiles/install/local.dir
