@@ -1,7 +1,10 @@
 
 
-DRS Client Setup 				11/24/20
-==========================================
+DRS Client Setup 							11/27/20
+====================================================
+GitHub:
+https://github.com/De-Risking-Strategies/SensorFusion.git
+
 
 Setup WiFi
 ===================
@@ -58,8 +61,50 @@ $ pip
 
 $(demo-90)$ pip install -m flask
 
+Check it:
+---------
+Type: 'pip list'.  You should see the below:
+(Demo90-env) pi@raspberrypi:~/Demo90 $ pip list
+Package              Version    
+-------------------- -----------
+absl-py              0.11.0     
+astor                0.8.1      
+cached-property      1.5.2      
+click                7.1.2      
+Flask                1.1.2      
+gast                 0.4.0      
+google-pasta         0.2.0      
+grpcio               1.33.2     
+h5py                 3.1.0      
+importlib-metadata   2.0.0      
+itsdangerous         1.1.0      
+Jinja2               2.11.2     
+Keras-Applications   1.0.8      
+Keras-Preprocessing  1.1.2      
+Markdown             3.3.3      
+MarkupSafe           1.1.1      
+numpy                1.19.4     
+opencv-python        3.4.6.27   
+pip                  18.1       
+pkg-resources        0.0.0      
+protobuf             3.14.0     
+setuptools           40.8.0     
+six                  1.15.0     
+tensorboard          1.13.1     
+tensorflow           1.13.1     
+tensorflow-estimator 1.14.0     
+termcolor            1.1.0      
+tflite-runtime       2.1.0.post1
+Werkzeug             1.0.1      
+wheel                0.35.1     
+wrapt                1.12.1     
+zipp                 3.4.0      
+
+-------------------------------------
+
+Exit the Demo90-env:
 $ deactivate
-$
+
 
 Start Sensor Fusion
 =====================
