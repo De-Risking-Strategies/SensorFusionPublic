@@ -1,0 +1,115 @@
+
+
+label {
+   color: #bb86fc;
+   display: block;
+   font-size: 13px;
+}
+
+input {
+   background-color: transparent;
+   border: none;
+   color: white;
+   font-size: 16px;
+   margin-top: 5px;
+   padding: 0;
+}
+
+input:focus {
+   outline: none;
+}
+
+h2 {
+   color: white;
+   font-size: 30px;
+   padding: 10px 0;
+}
+
+.btn {
+   background-color: transparent;
+   border: none;
+   color: #bb86fc;
+   padding: 5px 10px;
+}
+
+.chkbox-group {
+   padding-bottom: 25px;
+}
+
+.form-section {
+   background-color: #444444;
+   border-bottom: 2px #bb86fc solid;
+   box-sizing: border-box;
+   align-items: center;
+   margin-bottom: 15px;
+   padding: 5px 10px;
+   width: 250px;
+}
+
+.with-eye {
+   display: flex;
+}
+
+.login-reg-main {
+   margin-left: 20%;
+}
+
+.term {
+   display: flex;
+   align-items: center;
+   margin: 10px 0;
+}
+
+.term input {
+   margin-right: 20px;
+}
+
+.terms {
+   border: #444444 1px solid;
+   background-color: #111111;
+   box-sizing: border-box;
+   color: white;
+   font-size: 16px;
+   padding: 5px 20px;
+   width: 250px;
+}
+
+.visibility-icon input[type='checkbox'] {
+   display: none;
+}
+
+.visibility-icon input + label {
+   display: block;
+   height: 20px;
+   width: 30px;
+   cursor: pointer;
+   background: url(../assets/sensor_eye_icon_001.png) no-repeat center center;
+   background-size: contain;
+}
+
+.visibility-icon input[type='checkbox']:checked + label {
+   background: none;
+   background-color: black;
+   border-color: white;
+   height: 20px;
+   width: 30px;
+}
+
+.term input[type='checkbox'] {
+   display: none;
+}
+
+.term input[type='checkbox'] + label:before {
+   content: '\00a0';
+   height: 10px;
+   width: 10px;
+   background-color: white;
+}
+/*
+.term input[type='checkbox']:checked + label[] {
+   background: none;
+   height: 10px;
+   width: 10px;
+   background-color: #bb86fc;
+}
+*/

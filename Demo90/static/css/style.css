@@ -40,12 +40,11 @@ body {
    grid-column:1/4;
    grid-row-start:1;
    grid-row-end:2;
-   padding: 2px 2px;
+   padding: 15px 20px;
    border-color: #e7e7e7;
    
    height:100%;
-   background-image:url("../assets/top_nav_bar_001.png");
-   
+   background-color: #444444dd;
 }
 .main{
 

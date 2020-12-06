@@ -7,6 +7,7 @@
     <meta name="HandheldFriendly" content="true">
     <meta http-equiv="content-type" content="text/html;charset=utf-8" >
     <link rel='stylesheet', href='/static/css/style.css'>
+    <link rel='stylesheet', href='/static/css/register.css'>
     <script src='/static/js/utilities.js'></script>
 </head>
 <body>
@@ -15,18 +16,75 @@
   </noscript>
   <div class='login-reg-top' id='login'>
 
-  <section class ="">
+  <section class ="header">
       <div id=''>
       <img class='logo' src='/static/assets/sensor_fusion_logo_001.png'/>
-        <span class='title'>REGISTER</span>
         
           <img class='login-reg-background' src='/static/assets/onboarding_background_001.png'/>
            
       </div>
   </section>
   <section class ="login-reg-main">
-    <br><br>
-      <strong>REGISTER FIELDS GO HERE</strong>
+    <h2>Create New Account</h2>
+    <form>
+      <div class='form-section'>
+        <label>First</label>
+        <input placeholder='First'></input>
+      </div>
+      <div class='form-section'>
+        <label>Last</label>
+        <input placeholder='Last'></input>
+      </div>
+      <div class='form-section'>
+        <label>Email</label>
+        <input placeholder='Email'></input>
+      </div>
+      <div class='form-section with-eye'>
+	<div>
+          <label>Password</label>
+          <input placeholder='Password' type='password'></input>
+	</div>
+	<div class='visibility-icon'>
+	  <input id='pswd-vis' type='checkbox'></input>
+	  <label for='pswd-vis'></label>
+	</div>
+      </div>
+      <div class='form-section with-eye'>
+	<div>
+          <label>Re-Enter Password</label>
+          <input placeholder='Re-Enter Password' type='password'></input>
+	</div>
+	<div class='visibility-icon'>
+	  <input id='confirm-pswd-vis' type='checkbox'></input>
+	  <label for='confirm-pswd-vis'></label>
+	</div>
+      </div>
+      <div class='terms'>
+        <div class='chkbox-group'>
+	  <h3>I agree</h3>
+	  <div class='term'>
+	    <input id='agree-term' type='checkbox'></input>
+	    <label for='agree-term'>Terms</label>
+	  </div>
+	  <div class='term'>
+	    <input id='privacy-term' type='checkbox'></input>
+	    <label for='privacy-term'>Privacy Policy</label>
+	  </div>
+	  <div class='term'>
+	    <input id='age-term'type='checkbox'></input>
+	    <label for='age-term'>16+ years old</label>
+	  </div>
+	</div>
+	<div class='term-btns'>
+	  <button class='btn'>
+	    <strong>Cancel</strong>
+	  </button>
+	  <button class='btn' type='submit'>
+	    <strong>Create Account</strong>
+	  </button>
+        </div>
+      </div>
+    </form>
   </section>
   <section class ="login-reg-foot">
     <div class='login-reg-foot-text'>
