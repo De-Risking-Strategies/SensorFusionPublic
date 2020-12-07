@@ -1,0 +1,31 @@
+<!doctype html>
+<title>Reset Camera</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='/css/style.css') }}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<body onload='reLoad()'>
+<nav>
+  <h1>Quit/Restart</h1>
+<hr/>
+<a onclick="window.open('http://localhost:5000'); window.open('http://localhost:5000', '_self', '').close(); return false;"> ReLoad</a>
+<script>
+  function reLoad(){
+$.ajax({
+  type: "POST",
+  url: "~/bash main.sh",
+  data: { param: text}
+}).done(function( o ) {
+   // do something
+}); 
+}
+</script>
+</nav>
+<section class="content">
+  <header>
+    {% block header %}{% endblock %}
+  </header>
+  {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</section>
+</body>

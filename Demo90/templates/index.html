@@ -7,43 +7,95 @@
     <meta name="HandheldFriendly" content="true">
     <meta http-equiv="content-type" content="text/html;charset=utf-8" >
     <link rel='stylesheet', href='/static/css/style.css'>
+    <link rel='stylesheet', href='/static/css/sidenav.css'>
     <script src='/static/js/utilities.js'></script>
+    <script src='/static/js/sidenav.js'></script>
+    <script src='/static/js/data.js'></script>
+    <meta http-equiv="Cache-d" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="-1"/>
 </head>
-<body>
+<body onload=init()>
   <h4>Welcome to Sensor Fusion!</h4>
   <noscript>
     You need to enable JavaScript to run Sensor Fusion!
   </noscript>
-  <div class='grid' id='container'>
-
+  <div class='grid' id='cd-main-content'>
   <section class ="header">
       <div id='topnav'>
       <img class='logo' src='/static/assets/sensor_fusion_logo_001.png'/>
-        <span class='title'>SENSOR 1:  ON</span>
+        <a onclick="alert('turnoff camera')"><span class='title'>SENSOR 1:  ON</span></a>
         <div id='top-right'>
           <a onclick='alert("Not Implemented Yet");'><img class='standard_button' src='/static/assets/settings_gear_icon_001.png'/></a>
            <a onclick='alert("Not Implemented Yet");'><img class='standard_button' src='/static/assets/profile_icon_001.png'/></a>
-           <a onclick='alert("Not Implemented Yet");'><img class='standard_button' src='/static/assets/arrow_right_icon_001.png'/></a>
+           <a id='exit_app' onclick="openSettings()"><img class='standard_button' src='/static/assets/arrow_right_icon_001.png'/></a>
+           <!-- Link below is for test -->
+           <!--<a id='exit_app' href="http://localhost:5000/quit_camera"><img class='standard_button' src='/static/assets/arrow_right_icon_001.png'/></a>-->
+        
         </div>
+        <div id='refresh-data'></div><!--Important - this route gets vars from Flask via polling in data.js-->
       </div>
   </section>
-  <section class ="main">
-      <img src="{{ url_for('video_feed') }}" width="100%">-
+  <section class ="main" id='main'>
+   <div id='video-canvas'> 
+        <!--{{(rangeBar)}} FUTURE-->
+    <input type="range"/ style='display:none'><img class='' id='cameraStream' src="{{ url_for('video_feed') }}" width="100%">
+   </div>
   </section>
+  
   <section class ="footer">
+
     <div id='botnav'>
       <div id='bottom-controls'>
           <table><tr>
-              <td style='position:absolute;bottom:-23%;left:7%'> <a onclick='alert("Not Implemented Yet");'><img class='large_button'src='/static/assets/toggle_switch_off_001.png'/></a></td>
-              <td style='position:absolute;bottom:-38%;left:25%'> <a onclick='alert("Not Implemented Yet");'><img class='standard_button'  src='/static/assets/models_icon_001.png'/></a></td>
-              <td style='position:absolute;bottom:-26%;left:38%'> <a onclick='alert("Not Implemented Yet");'><img class='checkid_button' src='/static/assets/checkid_button_001.png'/></a></td>
-              <td style='position:absolute;bottom:-38%;left:73%'> <a onclick='alert("Not Implemented Yet");'><img class='standard_button' src='/static/assets/switch_sensor_screen_icon_001.png'/></a></td>
-              <td style='position:absolute;bottom:-23%;left:88%'> <a onclick='alert("Not Implemented Yet");'><img class='large_button' src='/static/assets/toggle_switch_off_001.png'/></a></td>
+              <td style='position:absolute;bottom:-46%;left:3%;text-align: center'> <a class="bars_btn" onclick="btn1_click();"><img class='large_button'src='/static/assets/toggle_switch_off_001.png'/><br>%</a></td>
+              <td style='position:absolute;bottom:-46%;left:14%;text-align: center'> <a class="labels_btn" onclick="btn1_click();"><img class='large_button'src='/static/assets/toggle_switch_off_001.png'/><br>Labels</a></td>
+              <td style='position:absolute;bottom:-52%;left:25%;text-align: center'> <a class="model_btn" class=""><img class='standard_button'  src='/static/assets/models_icon_001.png'/><br>Demo.90</a></td>
+              
+              <td style='position:absolute;bottom:-26%;left:35%'> 
+              <a id="check_id_btn" onclick="openNav()"><img class='checkid_button' src='/static/assets/checkid_button_001.png'/></a></td>
+             
+              <td style='position:absolute;bottom:-52%;left:66%;text-align: center'> <a class="trained_btn" class=""><img class='standard_button'  src='/static/assets/models_icon_001.png'/><br>Train</a></td>
+              <td style='position:absolute;bottom:-52%;left:77%;text-align: center'> <a id="sensor_btn" class=""><img class='standard_button' src='/static/assets/switch_sensor_screen_icon_001.png'/><br>Switch Sensors</a></td>
+              <td style='position:absolute;bottom:-46%;left:89%;text-align: center'> <a id="toggle_2_btn" class=""><img class='large_button' src='/static/assets/toggle_switch_off_001.png'/><br>Thermal</a></td>
           </tr></table>
         </div>
       </div>
   </section>
   </div>
+  <!-- The Modal -->
+  <div id="sfModal" class="modal">
+      <div class="modal-content">
+          <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2 id="modal_header">Modal Header</h2>
+          </div>
+          <div class="modal-body">
+            <p id="modal_body1">Some text in the Modal Body</p>
+            <p id="modal_body2">Some other text...</p>
+          </div>
+          <div class="modal-footer">
+            <h3 id="modal_footer">Modal Footer</h3>
+          </div>
+        </div>
+    </div>
+</div>
+<!-- The sideNav-->
+<div id="sfSidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <a href="#">Capture</a>
+  <a href="#">Preview</a>
+  <a href="#">Retry</a>
+  <a href="#">Train</a>
+</div>
+<!-- The settings-->
+<div id="sfSettings" class="settings">
+  <a href="javascript:void(0)" class="sclosebtn" onclick="closeSettings()">&times;</a>
+  <a href="#">Camera</a>
+  <a href="#">Logout</a>
+  <a href="#">Password</a>
+  <a href="#">Contact</a>
+</div>
 </body>
 </html>
 
