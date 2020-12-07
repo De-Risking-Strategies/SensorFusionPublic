@@ -27,10 +27,10 @@
   </section>
   <section class ="login-reg-main">
     <h2>Create New Account</h2>
-    <form onSubmit='return checkPassword(this)' action='/register' method='post'>
+    <form action='/register' method='post'>
       <div class='form-section'>
         <label for='firstName'>First</label>
-        <input id='firstName' placeholder='First' maxlength='128' required autofocus></input>
+        <input id='firstName' placeholder='First' maxlength='128' autofocus></input>
       </div>
       <div class='form-section'>
         <label for='lastName'>Last</label>
@@ -43,7 +43,7 @@
       <div class='form-section with-eye'>
 	<div>
           <label for='password'>Password</label>
-          <input id='password' placeholder='Password' type='password' maxlength="10" pattern="^(?=.{6,})(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9 ]).*$" required></input>
+          <input id='password' placeholder='Password' type='password' maxlength="10" pattern="^(?=.{6,})(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9 ]).*$" onChange='return verifyPswd()' required></input>
 	</div>
 	<div class='visibility-icon'>
 	  <input id='pswd-vis' type='checkbox' onclick='showPassword1()'></input>
@@ -53,7 +53,7 @@
       <div class='form-section with-eye'>
 	<div>
           <label for='re-enterPassword'>Re-Enter Password</label>
-          <input id='re-enterPassword' placeholder='Re-Enter Password' type='password' required></input>
+          <input id='re-enterPassword' placeholder='Re-Enter Password' type='password' onChange='return verifyPswd()' required></input>
 	</div>
 	<div class='visibility-icon'>
 	  <input id='confirm-pswd-vis' type='checkbox' onclick='showPassword2()'></input>
@@ -80,12 +80,13 @@
 	  <button class='btn'>
 	    <strong>Cancel</strong>
 	  </button>
-	  <button class='btn' type='submit'>
+	  <button id='submit-btn' class='btn' type='submit' onClick='checkPwMatch()'>
 	    <strong>Create Account</strong>
 	  </button>
         </div>
       </div>
     </form>
+
   </section>
   <section class ="login-reg-foot">
     <div class='login-reg-foot-text'>

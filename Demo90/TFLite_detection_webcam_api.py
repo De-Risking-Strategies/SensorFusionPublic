@@ -27,6 +27,12 @@ def register():
    embedVar='Register'
    return render_template('register.html',embed=embedVar )
   
+@app.route('/register', methods=['POST']) 
+def test():
+   embedVar='Test'
+   if(not request.form[firstName]):
+       flash('Please enter first name field','error')
+
   
 
 @app.route('/video_feed')
