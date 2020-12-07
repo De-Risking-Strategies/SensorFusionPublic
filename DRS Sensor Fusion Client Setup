@@ -83,7 +83,7 @@ Keras-Applications   1.0.8
 Keras-Preprocessing  1.1.2      
 Markdown             3.3.3      
 MarkupSafe           1.1.1      
-numpy                1.19.4     
+numpy                1.19.4     git 
 opencv-python        3.4.6.27   
 pip                  18.1       
 pkg-resources        0.0.0      

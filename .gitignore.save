@@ -10,11 +10,10 @@
 **/Demo90-env/
 **/checkid-env/
 **/__Pycache__/
-**requirements.txt
 Bookshelf/
 Desktop/
 Downloads/
-Flash-api/
+**/Flash-api/
 labelImg-master
 Music/
 Pictures/
@@ -24,15 +23,17 @@ Seekware_SDK_3.6.0.0
 Thumbnails/
 Videos/
 scratch.txt
+ .anydesk
+-rw--w--w-  1 pi   pi    6597 Nov 27 14:38  .bash_history
+-rw-rw-rw-  1 pi   pi     220 Aug 20 06:31  .bash_logout
+-rw-rw-rw-  1 pi   pi    3523 Aug 20 06:31  .bashrc
+
+
 .python_history
 .labelImgSettings.pkl
 .anydesk
 .bash_history
 .bash_logout
 .bashrc
-project-posenet-master/models/
-webcam.log
-drew.txt
-Demo90/TFLite_detection_webcam_api.pyc
-Demo90/__pycache__/TFLite_detection_webcam_api.cpython-37.pyc
+
 
