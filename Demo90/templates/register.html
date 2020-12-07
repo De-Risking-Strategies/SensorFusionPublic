@@ -9,6 +9,7 @@
     <link rel='stylesheet', href='/static/css/style.css'>
     <link rel='stylesheet', href='/static/css/register.css'>
     <script src='/static/js/utilities.js'></script>
+    <script src='/static/js/register.js'></script>
 </head>
 <body>
   <noscript>
@@ -26,36 +27,36 @@
   </section>
   <section class ="login-reg-main">
     <h2>Create New Account</h2>
-    <form>
+    <form onSubmit='return checkPassword(this)' action='/register' method='post'>
       <div class='form-section'>
-        <label>First</label>
-        <input placeholder='First'></input>
+        <label for='firstName'>First</label>
+        <input id='firstName' placeholder='First' maxlength='128' required autofocus></input>
       </div>
       <div class='form-section'>
-        <label>Last</label>
-        <input placeholder='Last'></input>
+        <label for='lastName'>Last</label>
+        <input id='lastName' placeholder='Last' maxlength='128' required></input>
       </div>
       <div class='form-section'>
-        <label>Email</label>
-        <input placeholder='Email'></input>
+        <label for='email'>Email</label>
+        <input id='email' placeholder='Email' required></input>
       </div>
       <div class='form-section with-eye'>
 	<div>
-          <label>Password</label>
-          <input placeholder='Password' type='password'></input>
+          <label for='password'>Password</label>
+          <input id='password' placeholder='Password' type='password' maxlength="10" pattern="^(?=.{6,})(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9 ]).*$" required></input>
 	</div>
 	<div class='visibility-icon'>
-	  <input id='pswd-vis' type='checkbox'></input>
+	  <input id='pswd-vis' type='checkbox' onclick='showPassword1()'></input>
 	  <label for='pswd-vis'></label>
 	</div>
       </div>
       <div class='form-section with-eye'>
 	<div>
-          <label>Re-Enter Password</label>
-          <input placeholder='Re-Enter Password' type='password'></input>
+          <label for='re-enterPassword'>Re-Enter Password</label>
+          <input id='re-enterPassword' placeholder='Re-Enter Password' type='password' required></input>
 	</div>
 	<div class='visibility-icon'>
-	  <input id='confirm-pswd-vis' type='checkbox'></input>
+	  <input id='confirm-pswd-vis' type='checkbox' onclick='showPassword2()'></input>
 	  <label for='confirm-pswd-vis'></label>
 	</div>
       </div>
@@ -63,15 +64,15 @@
         <div class='chkbox-group'>
 	  <h3>I agree</h3>
 	  <div class='term'>
-	    <input id='agree-term' type='checkbox'></input>
+	    <input id='agree-term' type='checkbox' required></input>
 	    <label for='agree-term'>Terms</label>
 	  </div>
 	  <div class='term'>
-	    <input id='privacy-term' type='checkbox'></input>
+	    <input id='privacy-term' type='checkbox' required></input>
 	    <label for='privacy-term'>Privacy Policy</label>
 	  </div>
 	  <div class='term'>
-	    <input id='age-term'type='checkbox'></input>
+	    <input id='age-term'type='checkbox' required></input>
 	    <label for='age-term'>16+ years old</label>
 	  </div>
 	</div>
