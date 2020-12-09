@@ -27,7 +27,7 @@
   </section>
   <section class ="login-reg-main">
     <h2>Create New Account</h2>
-    <form action='/register' method='post'>
+    <form onSubmit='return checkPwMatch()'action='/register' method='post'>
       <div class='form-section'>
         <label for='firstName'>First</label>
         <input id='firstName' placeholder='First' maxlength='128' autofocus></input>
@@ -80,9 +80,16 @@
 	  <button class='btn'>
 	    <strong>Cancel</strong>
 	  </button>
-	  <button id='submit-btn' class='btn' type='submit' onClick='checkPwMatch()'>
+	  <button id='submit-btn' class='btn' type='submit'>
 	    <strong>Create Account</strong>
 	  </button>
+	  {% with messages = get_flashed_messages() %}
+	    {% if messages %}
+	      {% for message in messages %}
+	        <h3>{{ messages }}</h3>
+	      {% endfor %}
+	    {% endif %}
+	  {%endwith%}
         </div>
       </div>
     </form>
