@@ -1,4 +1,4 @@
-#/bashfile
+#!/usr/bin/python3
 
 cd /home/pi/Demo90
 
