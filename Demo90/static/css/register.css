@@ -1,4 +1,15 @@
+@font-face {
+   src: url(../fonts/Roboto/Roboto-Light.ttf);
+   font-family: Roboto;
+}
 
+@font-face {
+   src: url(../fonts/HelveticaNeue/);
+}
+
+body {
+   font-weight: bold;
+}
 
 label {
    color: #bb86fc;
