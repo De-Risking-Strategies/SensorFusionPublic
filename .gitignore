@@ -30,6 +30,10 @@ scratch.txt
 .bash_history
 .bash_logout
 .bashrc
+.profile
+.vim/*
+.vimrc
+.viminfo
 project-posenet-master/models/
 webcam.log
 drew.txt
