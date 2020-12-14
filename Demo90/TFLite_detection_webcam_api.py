@@ -56,6 +56,11 @@ def api():
         
         print(sfCommand)  # parse as JSON
         
+        first_char = sfCommand[0] 
+        
+        if first_char == 'a':
+            sfCommand = 'annotate'
+  
         if sfCommand == 'annotate':
             os.environ['cap_flag'] = 'True'
             print('Capture Flag Command =', os.environ['cap_flag'])

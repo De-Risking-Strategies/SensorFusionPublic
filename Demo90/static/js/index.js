@@ -71,13 +71,13 @@ function postAPI(command) {
   console.log('Posting: '+ command);
              
   if(command == 'annotate'){
-    var annotateName = $('#aName').val();
-        console.log(annotateData);
-    var annotateImages = $('#aImages').val();
+    var annotateName = document.getElementById('aName').value;
+        console.log(annotateName);
+    var annotateImages = document.getElementById('aImages').value;
         console.log(annotateImages);    
-    var annotateDescription = $('#aDescription').val();
+    var annotateDescription = document.getElementById('aDescription').value;
         console.log(annotateDescription);
-    command = command+','+annotateData+','+annotateImages+','+ annotateData;
+    command = command+','+annotateName+','+annotateImages+','+ annotateDescription
   }             
   if(command == 'labels'){
     if(toggleLabels == true){
@@ -86,6 +86,7 @@ function postAPI(command) {
       toggleLabelsBtn.src = "/static/assets/toggle_switch_off_001.png";
     
     }else{
+      toggleLabels = true;
       toggleLabels = true;
       command = command + '_on';
       toggleLabelsBtn.src = "/static/assets/toggle_switch_on_001.png";

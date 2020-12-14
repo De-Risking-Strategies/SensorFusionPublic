@@ -12,7 +12,10 @@
 This is a basic readme for developers with experience in Linux, Python and Git.
       
 It also assumes you have a current Sensor Fusion image installed on your Raspberry Pi. (December 4, 2020 or later)      
-      
+     
+>NOTE: Its convienent to setup your github environment beforehand, at a termina, type:
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"      
       
 ## Basic Git Hub Instructions to Pul Latest Code
 ````
@@ -78,17 +81,117 @@ Add any changed, deleted or added files to your branch.  First check the files a
 type:
 git status
 
-You should see something like the below (depending on your changes, whcih will be different)
+You should see something like the below (your changes will be different)
+On branch drew
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
 
+	modified:   .gitignore
+	modified:   Demo90/TFLite_detection_webcam_api.py
+	modified:   Demo90/static/css/sidenav.css
+	modified:   Demo90/static/css/style.css
+	modified:   Demo90/static/js/data.js
+	modified:   Demo90/static/js/globals.js
+	modified:   Demo90/static/js/sidenav.js
+	modified:   Demo90/static/js/utilities.js
+	modified:   Demo90/templates/index.html
+	modified:   main.sh
 
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	CHANGELOG.md
+	Demo90/static/assets/favicon.ico
+	Demo90/static/assets/favicon.png
+	Demo90/static/js/index.js
+	Demo90/templates/favicon.ico
+	LICENSE.md
+	README.md
+	killall.sh
+	labelImg-master_Setup.md
+	launch.sh
+	menu.sh
+
+To add All these changes, type:
+
+git add -A
+
+(Or you can add them one by one, see online Git info for more).
+
+If you type 'Git status' once more, you'll see a list of the changed and new files now staged for commit.
 
 
 #### Third - Commit updated/added/deleted files
 
+Next, its a best practice to commit your staged files with the -m flag, and write a brief comment as to the contents of the chan ge set.
+
+git commit -m "added a new feature some files changed"
+
+You should see something like this if successful:
+
+pi@raspberrypi:~ $ git commit -m 'Major updates for JS controls, dialogs, and a Main Menu script'
+
+[drew 17cb076] Major updates for JS controls, dialogs, and a Main Menu script
+ 21 files changed, 866 insertions(+), 191 deletions(-)
+ create mode 100644 CHANGELOG.md
+ create mode 100644 Demo90/static/assets/favicon.ico
+ create mode 100644 Demo90/static/assets/favicon.png
+ rewrite Demo90/static/js/data.js (100%)
+ rewrite Demo90/static/js/globals.js (99%)
+ create mode 100644 Demo90/static/js/index.js
+ create mode 100644 Demo90/templates/favicon.ico
+ create mode 100644 LICENSE.md
+ create mode 100644 README.md
+ create mode 100644 killall.sh
+ create mode 100644 labelImg-master_Setup.md
+ create mode 100644 launch.sh
+ create mode 100644 menu.sh
+
+#### Fourth - Git Push to you branch
+
+To sync your changes to the repo, perform a Git Push command:
+
+EX: git push origin <branch>
+
+Type:
+git push SensorFusion 'your branch name'
+
+If you prompt you for you Git UserName and (long) password.
+
+Your output if successful, will look like this:
+
+Username for 'https://github.com': DrewAnderson 
+Password for 'https://DrewAnderson@github.com': 
+Enumerating objects: 44, done.
+Counting objects: 100% (44/44), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (27/27), done.
+Writing objects: 100% (27/27), 14.57 KiB | 678.00 KiB/s, done.
+Total 27 (delta 11), reused 0 (delta 0)
+remote: Resolving deltas: 100% (11/11), completed with 11 local objects.
+remote: 
+remote: GitHub found 12 vulnerabilities on De-Risking-Strategies/SensorFusion's default branch (2 high, 9 moderate, 1 low). To find out more, visit:
+remote:      https://github.com/De-Risking-Strategies/SensorFusion/network/alerts
+remote: 
+To https://github.com/De-Risking-Strategies/SensorFusion.git
+   b0a15b0..17cb076  drew -> drew
 
 
+#### FINALLY - MAKE A Pull Request
 
+After successfully checking in your changes, go to the Git Hub web site and create a Pull Request to have a reviewers look at and approve your changes for merging into the master branch.
 
+Open your browser to:
+
+https://github.com/De-Risking-Strategies/SensorFusion
+
+You should see similar to this:
+ drew had recent pushes 2 minutes ago
+
+To the right is a big green button marked "Compare and Pull Request"
+
+Click that guy, add comments and description from CHANGELOG.md.
 
 
 
