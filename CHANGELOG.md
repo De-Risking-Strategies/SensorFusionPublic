@@ -12,8 +12,9 @@
 - Created command structure for Capture Images, Labels toggle (and Score%)
 - Created baseline Image Capture routine on Annotate spacebar function
 - Enable toggle logic and graphics for scores and labels switches
-- Worked on deleting Camera insstant for restart (not finished yet)
+- Worked on deleting Camera insstance for restart (not finished yet)
 - Added Selection Dialog to Annotate workflow: Title, Description and Number of images to capture
+- Added Main Menu - menu.sh and associated files
 
 ## December 4, 2020 - First Repo Update - DAnderson
 - Expanded Javascript Templates and Static file archtecture and implemented running stack on Locahost
