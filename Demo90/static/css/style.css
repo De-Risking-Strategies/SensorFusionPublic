@@ -56,7 +56,8 @@ body {
    border-color: #e7e7e7;
    
    height:100%;
-   background-image:url("../assets/the-boys.png");
+   background-color:#3E505C;
+   /*background-image:url("../assets/the-boys.png");*/
    background-repeat: no-repeat;
    background-size: cover;
 }
@@ -72,21 +73,28 @@ body {
    height:100%;
    background-image:url("../assets/bottom_nav_bar_001.png");
 }
-.title{
-   font-size: .7em;
-   position:fixed;
-   margin-top:0px;
-   margin-left:25%;
-   color:white;
-   width:100%
+#sensor_toggle_title{
+    font-size: 1.7em;
+    position: absolute;
+    margin-top: 0px;
+    color: white;
+    width: 100%;
+    top: 20%;
+    left: 153px;
 }
 
 input[type="range"] {
    position: absolute;
    top: 40%;
+   
    transform: rotate(270deg);
 }
-
+.logo{
+   height:46px;
+}
+.range-Bar1{
+   position:absolute;
+}
 .topnav{
    width:100%; 
 }
@@ -99,7 +107,7 @@ input[type="range"] {
 }
 .standard_button{
    width:50px;
-   height:50px;
+   height:46lpx;
    margin:1px;
    margin-top:0px;
 }
@@ -152,14 +160,15 @@ input[type="range"] {
 
 /* The Modal (background) */
 .modal {
-  display: none; /* Hidden by default */
+  display: none; 
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
+  left: 33%;
+  top: 17%;
+  width: 33%; 
+  height: 20%; 
+  overflow: none; 
+  font-size: 0.4em;
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
@@ -170,7 +179,7 @@ input[type="range"] {
   margin: 15% auto; /* 15% from the top and centered */
   padding: 20px;
   border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
+  width: 100%; /* Could be more or less, depending on screen size */
 }
 
 
@@ -195,7 +204,7 @@ input[type="range"] {
 /* Modal Header */
 .modal-header {
   padding: 2px 16px;
-  background-color: #5cb85c;
+  background-color: #212121;
   color: white;
 }
 
@@ -205,18 +214,18 @@ input[type="range"] {
 /* Modal Footer */
 .modal-footer {
   padding: 2px 16px;
-  background-color: #5cb85c;
+  background-color: #212121;
   color: white;
 }
 
 /* Modal Content */
 .modal-content {
   position: relative;
-  background-color: #fefefe;
+  background-color: #212121;
   margin: auto;
   padding: 0;
   border: 1px solid #888;
-  width: 80%;
+  width: 100%;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
   animation-name: animatetop;
   animation-duration: 0.4s
