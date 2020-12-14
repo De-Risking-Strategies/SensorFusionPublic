@@ -6,6 +6,7 @@
 .Xauthority
 .xsession-errors
 .xsession-errors.old
+**/dev
 **/logs
 **/Demo90-env/
 **/checkid-env/

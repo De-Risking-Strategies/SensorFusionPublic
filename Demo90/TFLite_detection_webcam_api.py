@@ -3,11 +3,11 @@
 # (C) 2020 - De-Risking Strategies, LLC #
 # DRS ML/AI Flask API                   #
 # Authors: Pushkar K / Drew A           #
-# Sunday 12-6-2020                      #
+# Sunday 12-132020                      #
 #########################################
 import os
 import argparse
-import cv2 as cv2
+import cv2 
 import numpy as np
 import sys
 import time
@@ -17,38 +17,106 @@ import importlib.util
 #Flask 
 import json
 from flask import Flask, jsonify, request, render_template, Response, session, stream_with_context
+from importlib import reload 
+import gc
+   
+
+#import subprocess
+#subprocess.Popen("/home/pi/labelImg-master/labelImg.py 1", shell=True)
+#subprocess.Popen(["ls","foo bar"],shell=True)
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Disable Flask Cache as it interferes with streaming
-app.config['SECRET_KEY'] = 'temporary_secret'
-rangeBar = 'Loading...'
-flag = True
 
+video_camera_flag = True# Video Stream class enable
+capture_flag = 'False' # Capture Enable
+capture_image_limit = 20 #Capture LImit
 
+#Client Commands
+os.environ['labels_flag'] = 'labels_on'
+#print('Init: ', os.environ.get('labels_flag'))
+os.environ['scores_flag'] = 'scores_on'
+
+#VideoStream Instance
+instance = []
+ 
 @app.route('/',methods=['GET'])
 def index():
-   flag = True
-   session['frames'] = {'started':True}
-   return render_template('index.html',rangeBar=rangeBar )
+   video_camera_flag = True
+   return render_template('index.html' )
 
-@app.route('/refresh_data')
-def refresh_data():
-   #This is the method that sends data to the javascript poller
-   #print(str(frame_rate_calc))
-   return str(frame_rate_calc)
-   #return jsonify({status: 'success', 'data': str(frame_rate_calc)})
+
+@app.route('/api', methods = ['GET','POST'])
+def api():
+    # POST request - Sensor Fusion Commands
+    if request.method == 'POST':
+        print('Incoming command from Sensor Fusion client ...')
+        
+        sfCommand = request.get_json()
+        
+        print(sfCommand)  # parse as JSON
+        
+        if sfCommand == 'annotate':
+            os.environ['cap_flag'] = 'True'
+            print('Capture Flag Command =', os.environ['cap_flag'])
+            
+        elif sfCommand == 'scores_off':
+            os.environ['scores_flag'] = sfCommand
+            print('Toggle Scores Command =', os.environ['scores_flag'])
+        elif sfCommand == 'scores_on':
+            os.environ['scores_flag'] = sfCommand
+            print('Toggle Scores Command =', os.environ['scores_flag'])
+            
+            
+        elif sfCommand == 'labels_off':
+            os.environ['labels_flag'] = sfCommand
+            print('Toggle Labels Command =', os.environ['labels_flag'])
+        elif sfCommand == 'labels_on':
+            os.environ['labels_flag'] = sfCommand
+            print('Toggle Labels Command =', os.environ['labels_flag'])   
+             
+        return 'OK', 200
+
+    # GET request
+    else:
+        print('GET Request from Client');
+        
+        #session['cap_flag'] = True
+        #print(session.get('capt_flag'))
+        
+        os.environ['cap_flag'] = 'True'
+        print('Capture Flag Command =', os.environ['cap_flag'])
+        
+        message = {'Capture':'Capturing Images!'}
+        return jsonify(message)  # serialize and use JSON headers
+
 
 @app.route('/quit_camera/') 
 def quit_camera():
-   #This is test code, under development
-   print("Quit")
-   print("argv was",sys.argv)
+   #This is test code, under development ! 
+   print("Reload")
+   #print("restart now")  
+   
+   #these methods are too harsh!
+   #print("argv was",sys.argv) 
    #print("sys.executable was", sys.executable)
-   print("restart now")  
-   flag = False
+    #or
+   #quit()
+   
+   #trying to get the instance and delete it
+   #print('The class instance is: ',instance)
+   #newInstance = reload(instance)
+   #instance = locals()['self']
+   #del instance
+   #locals = locals()
+   #print(locals)
+   
+   video_camera_flag = True #if this is false the video class does not run
+   
    #os.execv(sys.executable, ['python'] + sys.argv)
    #webbrowser.open_new('http://localhost:5000')
-   return render_template('base.html')
+   #return render_template('base.html')
+   return "OK", 200
    
 @app.route('/login') 
 def login():
@@ -64,30 +132,40 @@ def register():
 @app.route('/video_feed')
 def video_feed():
     #Video streaming route: goes into src attribute of an img tag
-    #os.execl(sys.executable,os.path.abspath(__file__), *sys.argv) 
-    #print("RangeBar" , rangeBar)
     
+    print('\nin FLASK: locals() value inside class\n', locals())
+    
+    
+           
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/stream')
-def streamed_response():# more test code
-    def generate():
-        yield 'Helo '
-        yield request.args['frameRate']
-        yield '!'
-    return Response(stream_with_context(generate()))
-    
 
 def gen_frames():
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
+
+
     class VideoStream(object):
-        
         """Camera object that controls video streaming from the Picamera"""
         def __init__(self,resolution=(640,480),framerate=30):
-               
+            
+            
             # Initialize the PiCamera and the camera image stream
             self.stream = cv2.VideoCapture(0)
+ 
+            #TO DO
+            global instance
+            instance = VideoStream.__qualname__
+            print('The class instance is: ',instance)
+            #print('\nVIDEOSTREAM: locals() value inside class\n', locals())
+            #print(dir(VideoStream))
+ 
+            #Reload
+            reloadClass = os.environ.get('reload')
+            if reloadClass == 'True':
+                print('Delete Self:')
+                del self
+                os.environ['reload'] = 'False'          
                         
             ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
             ret = self.stream.set(3,resolution[0])
@@ -102,7 +180,6 @@ def gen_frames():
             
         def __del__(self):
             print ("Object destroyed");   
-        
 
         def start(self):
         # Start the thread that reads frames from the video stream
@@ -131,6 +208,7 @@ def gen_frames():
         # Indicate that the camera and thread should be stopped
             self.stopped = True
 
+  
 
     # Define and parse input arguments
     parser = argparse.ArgumentParser()
@@ -198,7 +276,7 @@ def gen_frames():
     # Load the Tensorflow Lite model.
     # If using Edge TPU, use special load_delegate argument
     
-    if flag:#Using a Flag here - for future use
+    if video_camera_flag:#Using a Flag here - for future use
         if use_TPU:
             interpreter = Interpreter(model_path=PATH_TO_CKPT,
                                       experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
@@ -222,18 +300,20 @@ def gen_frames():
     #pdb.set_trace()      
        
     # Initialize frame rate calculation
-    global frame_rate_calc
+    #global frame_rate_calc
     frame_rate_calc = 1
     freq = cv2.getTickFrequency()
 
     # Initialize video stream
+    #global videostream
     videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
     time.sleep(1)
 
+    img_counter = 0
     #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
     try:
         #while True:
-        while flag:
+        while video_camera_flag:
             # Start timer (for calculating frame rate)
             t1 = cv2.getTickCount()
 
@@ -264,6 +344,8 @@ def gen_frames():
             for i in range(len(scores)):
                 if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0)):
 
+                    global ymin
+                    global xmin
                     # Get bounding box coordinates and draw box
                     # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
                     ymin = int(max(1,(boxes[i][0] * imH)))
@@ -271,28 +353,75 @@ def gen_frames():
                     ymax = int(min(imH,(boxes[i][2] * imH)))
                     xmax = int(min(imW,(boxes[i][3] * imW)))
                     
-                    cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
+                    cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 3)
 
-                    # Draw label
-                    object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
-                    label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
-                    labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
-                    label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
-                    cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
-                    cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
 
+                    # Draw label (object_name) and score (%)                    
+                    object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index                  
+                    scores_flag = os.environ.get('scores_flag')
+                    labels_flag = os.environ.get('labels_flag')
+                    
+                    #states
+                    state_ = 11 #both on by default
+                    if labels_flag == 'labels_off' and scores_flag == 'scores_off':
+                        state_ = 0#00
+                        label = object()
+                    
+                    if labels_flag == 'labels_on' and scores_flag == 'scores_on':                    
+                        state_ = 11#11
+                        label = '%s: %d%%' % (object_name.capitalize(), int(scores[i]*100)) # Example: 'person: 72%'
+                    
+                    if labels_flag == 'labels_off' and scores_flag == 'scores_on':
+                        label = '%d%%' % (int(scores[i]*100)) # Example: '72%'
+                        state_ = 1#01    
+                        
+                    if labels_flag == 'labels_on' and scores_flag == 'scores_off':
+                        state_= 10 #10   
+                        label = '%s: ' % (object_name.capitalize()) # Example: 'person: '
+                    
+                    #draw them
+                    if state_ != 0:
+                        labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
+                        label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
+                    
+                        cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (80, 80, 80), cv2.FILLED) # Draw white box to put label text in                   
+                        cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
+                    else:
+                        cv2.rectangle(frame, (xmin,ymin), (xmin,ymin), (80, 80, 80), cv2.FILLED) # Draw frame with no label OR score text !
+                    
+                        
             # Draw framerate in corner of frame
             cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
             
             # All the results have been drawn on the frame, so it's time to display it.
-            #cv2.imshow('Object detector', frame) ## Commented for the API version
+            
+            #cv2.imshow('Object detector', frame) ## Commented for the FLASK API 
 
-            # API Brute Force Motion JPEG, OpenCV defaults to capture raw images,
-            # so we must encode it into JPEG in order to correctly display the
-            # video stream - NOTE need to work on this cv2.imencode tobytes slows the apparent frame rate by about 50%, plus the UI takes some
-            # See: https://www.pyimagesearch.com/2017/02/06/faster-video-file-fps-with-cv2-videocapture-and-opencv/
+            # SENSOR FUSION Flask API 
+            #Brute Force Motion JPEG, OpenCV defaults to capture raw images,
+            #so we must encode it into JPEG in order to correctly display the
+            #video stream - NOTE need to work on this cv2.imencode tobytes slows the apparent frame rate by about 50%, plus the UI takes some
+            #See: https://www.pyimagesearch.com/2017/02/06/faster-video-file-fps-with-cv2-videocapture-and-opencv/
             ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
+            frame = buffer.tobytes()            
+           
+            #Capture
+            capture_flag = os.environ.get('cap_flag')
+            #print('Capture Flag IN CAMERA =', capture_flag)
+            
+            if capture_flag == 'True' and img_counter < capture_image_limit:
+                cv2.namedWindow("Capture Window")
+                cv2.moveWindow("Capture Window", -500, -500)# push it off screen :)
+                img_name="../Pictures/Drew/drew-sf-frame_{}.jpg".format(img_counter)
+                cv2.imwrite(img_name, frame1)
+                print('Wrote Image-'+ img_name)
+                img_counter +=1
+                
+            #Clear Capture Flag when done grabbing images
+            if  capture_flag == 'True' and img_counter >= capture_image_limit: 
+                   os.environ['cap_flag'] = 'False'
+                   img_counter = 0
+                   
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
             ## End API
@@ -309,12 +438,13 @@ def gen_frames():
 
         # Clean up
         cv2.destroyAllWindows()
+        videostream.release()
         videostream.stop()
     except KeyboardInterrupt:
         pass
 
 #########  run api  #########
 if __name__ == '__main__':
-   app.debug = True
-   app.run()
+     app.debug = True
+     app.run()
    
