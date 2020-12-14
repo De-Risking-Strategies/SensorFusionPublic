@@ -26,24 +26,30 @@
       </div>
   </section>
   <section class ="login-reg-main">
+<!--    <h2 class="hel">Create New Account</h2>
+    <h2 class="hel2">Create New Account</h2>
+    <h2 class="rob">Create New Account</h2>
+    <h2 class="sans">Create New Account</h2> -->
     <h2>Create New Account</h2>
-    <form onSubmit='return checkPwMatch()'action='/register' method='post'>
+    <!--    <form onSubmit='return checkPwMatch()'action='/register' method='post'> -->
+    <!--    <form onSubmit='return checkPwMatch()'action="{{ url_for('register') }}" method='post'> -->
+    <form action="{{ url_for('register') }}" method='POST'>
       <div class='form-section'>
         <label for='firstName'>First</label>
-        <input id='firstName' placeholder='First' maxlength='128' autofocus></input>
+        <input id='firstName' name='first' placeholder='First' maxlength='128' autofocus></input>
       </div>
       <div class='form-section'>
         <label for='lastName'>Last</label>
-        <input id='lastName' placeholder='Last' maxlength='128' required></input>
+        <input id='lastName' name='last' placeholder='Last' maxlength='128' required></input>
       </div>
       <div class='form-section'>
         <label for='email'>Email</label>
-        <input id='email' placeholder='Email' required></input>
+        <input id='email' name='email' placeholder='Email' required></input>
       </div>
       <div class='form-section with-eye'>
 	<div>
           <label for='password'>Password</label>
-          <input id='password' placeholder='Password' type='password' maxlength="10" pattern="^(?=.{6,})(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9 ]).*$" onChange='return verifyPswd()' required></input>
+          <input id='password' name='password' placeholder='Password' type='password' maxlength="10" pattern="^(?=.{6,})(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9 ]).*$" onChange='return verifyPswd()' required></input>
 	</div>
 	<div class='visibility-icon'>
 	  <input id='pswd-vis' type='checkbox' onclick='showPassword1()'></input>
@@ -53,12 +59,22 @@
       <div class='form-section with-eye'>
 	<div>
           <label for='re-enterPassword'>Re-Enter Password</label>
-          <input id='re-enterPassword' placeholder='Re-Enter Password' type='password' onChange='return verifyPswd()' required></input>
+          <input id='re-enterPassword' name='re-enterPassword' placeholder='Re-Enter Password' type='password' onChange='return verifyPswd()' required></input>
 	</div>
 	<div class='visibility-icon'>
 	  <input id='confirm-pswd-vis' type='checkbox' onclick='showPassword2()'></input>
 	  <label for='confirm-pswd-vis'></label>
 	</div>
+      </div>
+      <div>
+	<p class='warning-off'>Please accept all the terms and conditions.</p>
+        <div class='warning-off'>
+          <p>Please ensure your password fits the following criteria:</p>
+          <p>1 capital letter</p>
+          <p>1 lowercase letter</p>
+          <p>1 number</p>
+          <p>1 symbol</p>
+        </div>
       </div>
       <div class='terms'>
         <div class='chkbox-group'>
@@ -76,12 +92,13 @@
 	    <label for='age-term'>16+ years old</label>
 	  </div>
 	</div>
+	<p class='warning-off'>Please accept all the terms and conditions.</p>
 	<div class='term-btns'>
 	  <button class='btn'>
-	    <strong>Cancel</strong>
+	    <strong class='btn-outline'>Cancel</strong>
 	  </button>
 	  <button id='submit-btn' class='btn' type='submit'>
-	    <strong>Create Account</strong>
+	    <strong class='btn-outline'>Create Account</strong>
 	  </button>
 	  {% with messages = get_flashed_messages() %}
 	    {% if messages %}

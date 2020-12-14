@@ -1,100 +1,135 @@
 #########################################
 # Sensor Fusion API                     #
 # (C) 2020 - De-Risking Strategies, LLC #
-# DRS ML/AI Flask API                   #
-# Authors: Pushkar K / Drew A           #
-# Sunday 12-6-2020                      #
+# Flask API                             #
 #########################################
 import os
 import argparse
-import cv2 as cv2
+import cv2 
 import numpy as np
 import sys
 import time
 from threading import Thread
 import importlib.util
 
-#Flask 
+#Flask - ATA - November 24, 2020
 import json
-from flask import Flask, jsonify, request, render_template, Response, session, stream_with_context
+# import logging
+from flask import Flask, jsonify, request, render_template, Response, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Disable Flask Cache as it interferes with streaming
-app.config['SECRET_KEY'] = 'temporary_secret'
-rangeBar = 'Loading...'
-flag = True
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sf.db'
+app.secret_key = 'dont tell anyone'
 
+db = SQLAlchemy(app)
+'''
+handler = logging.FileHandler("test.log")  # Create the file logger
+app.logger.addHandler(handler)             # Add it to the built-in logger
+app.logger.setLevel(logging.DEBUG)
+'''
 
-@app.route('/',methods=['GET'])
-def index():
-   flag = True
-   session['frames'] = {'started':True}
-   return render_template('index.html',rangeBar=rangeBar )
+class User(db.Model):
+    User_ID = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(128),nullable=False)
+    last_name = db.Column(db.String(128),nullable=False)
+    email_address = db.Column(db.String(255),nullable=False)
+    password = db.Column(db.String(10),nullable=False)
+    #date_created = db.Column(db.DateTime(), nullable=False,default=datetime.utcnow)
+    model_limit = db.Column(db.Integer,)
+    threshold_max = db.Column(db.Integer,default=128)
+    tipping_point_a = db.Column(db.Integer,default=50)
+    threshold_min = db.Column(db.Integer,default=-128)
+    camera_count = db.Column(db.Integer,default=1)
+    training_limit = db.Column(db.Integer,default=0)
+    purchase_level = db.Column(db.Integer)
 
-@app.route('/refresh_data')
-def refresh_data():
-   #This is the method that sends data to the javascript poller
-   #print(str(frame_rate_calc))
-   return str(frame_rate_calc)
-   #return jsonify({status: 'success', 'data': str(frame_rate_calc)})
+    installed_image_version = db.Column(db.Integer) # should be type long
+    static_models = db.Column(db.Integer)  # should be type array?
+    custom_models = db.Column(db.Integer)  # should be type array?
 
-@app.route('/quit_camera/') 
-def quit_camera():
-   #This is test code, under development
-   print("Quit")
-   print("argv was",sys.argv)
-   #print("sys.executable was", sys.executable)
-   print("restart now")  
-   flag = False
-   #os.execv(sys.executable, ['python'] + sys.argv)
-   #webbrowser.open_new('http://localhost:5000')
-   return render_template('base.html')
-   
+    # specifies the format in which we want to print our user object
+    def __repr__(self):
+        return f"User('{self.User_ID}','{self.first_name}','{self.last_name}','{self.email_address}')"
+
+#def __init__(self,User_ID,first_name,last_name,email_address):
+    #self.User_ID = User_ID
+    #self.first_name = first_name
+    #self.last_name = last_name
+    #self.email_address = email_address
+
 @app.route('/login') 
 def login():
    embedVar='Login'
    return render_template('login.html',embed=embedVar )
 
-@app.route('/register') 
+@app.route('/register', methods=["GET","POST"]) 
 def register():
    embedVar='Register'
+   if request.method == "POST":
+       #print(request.headers)
+       first_name = request.form.get("first")
+       last_name = request.form.get("last")
+       email_address = request.form.get("email")
+       password = request.form.get("password")
+       for key, value in request.form.items():
+           print("key: {0}, value: {1}".format(key, value))
+       #print(first_name)
+   #print('hello world')
    return render_template('register.html',embed=embedVar )
-  
+
+'''
 @app.route('/register', methods=['POST']) 
 def test():
    embedVar='Test'
-   if(not request.form[firstName]):
-       flash('Please enter first name field','error')
-
+   #if(not request.form[firstName]):
+       #flash('Please enter first name','error')
+   #    flash('Please enter first name field')
+   #if(not request.form[lastName]):
+       #flash('Please enter last name','error')
+   #    flash('Please enter last name field')
+   #if(not request.form[email]):
+       #flash('Please enter email','error')
+   #    flash('Please enter email field')
+   #if(not request.form[password]):
+       #flash('Please enter password','error')
+   #    flash('Please enter password field')
+   #if(not request.form[re-enterPassword]):
+       #flash('Please re-enter password','error')
+   #    flash('Please enter re-enter password')
+   #else:
+   #    return request.form
+   #print(request.form[first])
+   print('hello world')
+   list1=[]
+   for key, value in request.form.items():
+      list1.append("key: {0}, value: {1}".format(key, value))
+   print(len(list1))
+   return 'OK'
+'''
   
+
 @app.route('/video_feed')
 def video_feed():
     #Video streaming route: goes into src attribute of an img tag
-    #os.execl(sys.executable,os.path.abspath(__file__), *sys.argv) 
-    #print("RangeBar" , rangeBar)
-    
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/stream')
-def streamed_response():# more test code
-    def generate():
-        yield 'Helo '
-        yield request.args['frameRate']
-        yield '!'
-    return Response(stream_with_context(generate()))
-    
+  
+@app.route('/')
+def index():
+   embedVar='Main'
+   return render_template('index.html',embed=embedVar )
 
 def gen_frames():
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
     class VideoStream(object):
-        
         """Camera object that controls video streaming from the Picamera"""
         def __init__(self,resolution=(640,480),framerate=30):
-               
+                        
             # Initialize the PiCamera and the camera image stream
             self.stream = cv2.VideoCapture(0)
-                        
             ret = self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
             ret = self.stream.set(3,resolution[0])
             ret = self.stream.set(4,resolution[1])
@@ -103,17 +138,13 @@ def gen_frames():
             (self.grabbed, self.frame) = self.stream.read()
 
             # Variable to control when the camera is stopped
-            
-            self.stopped = False            
-            
-        def __del__(self):
-            print ("Object destroyed");   
+            self.stopped = False
+        
         
 
         def start(self):
         # Start the thread that reads frames from the video stream
             Thread(target=self.update,args=()).start()
-            
             return self
 
         def update(self):
@@ -124,19 +155,17 @@ def gen_frames():
                     # Close camera resources
                     self.stream.release()
                     return
-                    
+
                 # Otherwise, grab the next frame from the stream
                 (self.grabbed, self.frame) = self.stream.read()
 
         def read(self):
         # Return the most recent frame
-            this_instance = self
             return self.frame
 
         def stop(self):
         # Indicate that the camera and thread should be stopped
             self.stopped = True
-
 
     # Define and parse input arguments
     parser = argparse.ArgumentParser()
@@ -168,13 +197,13 @@ def gen_frames():
     # If using Coral Edge TPU, import the load_delegate library
     pkg = importlib.util.find_spec('tflite_runtime')
     if pkg:
-        from tflite_runtime.interpreter import Interpreter 
+        from tflite_runtime.interpreter import Interpreter
         if use_TPU:
-            from tflite_runtime.interpreter import load_delegate 
+            from tflite_runtime.interpreter import load_delegate
     else:
-        from tensorflow.lite.python.interpreter import Interpreter 
+        from tensorflow.lite.python.interpreter import Interpreter
         if use_TPU:
-            from tensorflow.lite.python.interpreter import load_delegate 
+            from tensorflow.lite.python.interpreter import load_delegate
 
     # If using Edge TPU, assign filename for Edge TPU model
     if use_TPU:
@@ -203,14 +232,12 @@ def gen_frames():
 
     # Load the Tensorflow Lite model.
     # If using Edge TPU, use special load_delegate argument
-    
-    if flag:#Using a Flag here - for future use
-        if use_TPU:
-            interpreter = Interpreter(model_path=PATH_TO_CKPT,
-                                      experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
-            print(PATH_TO_CKPT)
-        else:
-            interpreter = Interpreter(model_path=PATH_TO_CKPT)
+    if use_TPU:
+        interpreter = Interpreter(model_path=PATH_TO_CKPT,
+                                  experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
+        print(PATH_TO_CKPT)
+    else:
+        interpreter = Interpreter(model_path=PATH_TO_CKPT)
 
     interpreter.allocate_tensors()
 
@@ -228,99 +255,99 @@ def gen_frames():
     #pdb.set_trace()      
        
     # Initialize frame rate calculation
-    global frame_rate_calc
     frame_rate_calc = 1
     freq = cv2.getTickFrequency()
+
 
     # Initialize video stream
     videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
     time.sleep(1)
 
     #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
-    try:
-        #while True:
-        while flag:
-            # Start timer (for calculating frame rate)
-            t1 = cv2.getTickCount()
+    while True:
 
-            # Grab frame from video stream
-            frame1 = videostream.read()
+        # Start timer (for calculating frame rate)
+        t1 = cv2.getTickCount()
 
-            # Acquire frame and resize to expected shape [1xHxWx3]
-            frame = frame1.copy()
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            frame_resized = cv2.resize(frame_rgb, (width, height))
-            input_data = np.expand_dims(frame_resized, axis=0)
-            
-            # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
-            if floating_model:
-                input_data = (np.float32(input_data) - input_mean) / input_std
+        # Grab frame from video stream
+        frame1 = videostream.read()
 
-            # Perform the actual detection by running the model with the image as input
-            interpreter.set_tensor(input_details[0]['index'],input_data)
-            interpreter.invoke()
+        # Acquire frame and resize to expected shape [1xHxWx3]
+        frame = frame1.copy()
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame_resized = cv2.resize(frame_rgb, (width, height))
+        input_data = np.expand_dims(frame_resized, axis=0)
 
-            # Retrieve detection results
-            boxes = interpreter.get_tensor(output_details[0]['index'])[0] # Bounding box coordinates of detected objects
-            classes = interpreter.get_tensor(output_details[1]['index'])[0] # Class index of detected objects
-            scores = interpreter.get_tensor(output_details[2]['index'])[0] # Confidence of detected objects
-            #num = interpreter.get_tensor(output_details[3]['index'])[0]  # Total number of detected objects (inaccurate and not needed)
-           
-            # Loop over all detections and draw detection box if confidence is above minimum threshold
-            for i in range(len(scores)):
-                if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0)):
+                          
+        
+        # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
+        if floating_model:
+            input_data = (np.float32(input_data) - input_mean) / input_std
 
-                    # Get bounding box coordinates and draw box
-                    # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
-                    ymin = int(max(1,(boxes[i][0] * imH)))
-                    xmin = int(max(1,(boxes[i][1] * imW)))
-                    ymax = int(min(imH,(boxes[i][2] * imH)))
-                    xmax = int(min(imW,(boxes[i][3] * imW)))
-                    
-                    cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
+        # Perform the actual detection by running the model with the image as input
+        interpreter.set_tensor(input_details[0]['index'],input_data)
+        interpreter.invoke()
 
-                    # Draw label
-                    object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
-                    label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
-                    labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
-                    label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
-                    cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
-                    cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
+        # Retrieve detection results
+        boxes = interpreter.get_tensor(output_details[0]['index'])[0] # Bounding box coordinates of detected objects
+        classes = interpreter.get_tensor(output_details[1]['index'])[0] # Class index of detected objects
+        scores = interpreter.get_tensor(output_details[2]['index'])[0] # Confidence of detected objects
+        #num = interpreter.get_tensor(output_details[3]['index'])[0]  # Total number of detected objects (inaccurate and not needed)
 
-            # Draw framerate in corner of frame
-            cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
-            
-            # All the results have been drawn on the frame, so it's time to display it.
-            #cv2.imshow('Object detector', frame) ## Commented for the API version
+        # Loop over all detections and draw detection box if confidence is above minimum threshold
+        for i in range(len(scores)):
+            if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0)):
 
-            # API Brute Force Motion JPEG, OpenCV defaults to capture raw images,
-            # so we must encode it into JPEG in order to correctly display the
-            # video stream - NOTE need to work on this cv2.imencode tobytes slows the apparent frame rate by about 50%, plus the UI takes some
-            # See: https://www.pyimagesearch.com/2017/02/06/faster-video-file-fps-with-cv2-videocapture-and-opencv/
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
-            ## End API
+                # Get bounding box coordinates and draw box
+                # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
+                ymin = int(max(1,(boxes[i][0] * imH)))
+                xmin = int(max(1,(boxes[i][1] * imW)))
+                ymax = int(min(imH,(boxes[i][2] * imH)))
+                xmax = int(min(imW,(boxes[i][3] * imW)))
+                
+                cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
 
-            # Calculate framerate
-            t2 = cv2.getTickCount()
-            time1 = (t2-t1)/freq
-            frame_rate_calc= 1/time1
-            
+                # Draw label
+                object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
+                label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
+                labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
+                label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
+                cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
+                cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
 
-            # Press 'q' to quit
-            if cv2.waitKey(1) == ord('q'):
-                break
+        # Draw framerate in corner of frame
+        cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
 
-        # Clean up
-        cv2.destroyAllWindows()
-        videostream.stop()
-    except KeyboardInterrupt:
-        pass
+        # All the results have been drawn on the frame, so it's time to display it.
+        #cv2.imshow('Object detector', frame) ## Commented for the API version
+
+        # Brute Force Motion JPEG, OpenCV defaults to capture raw images,
+        # so we must encode it into JPEG in order to correctly display the
+        # video stream - NOTE need to work on this cv2.imencode tobytes slows the apparent frame rate by about 50%, plus the UI takes some
+        # See: https://www.pyimagesearch.com/2017/02/06/faster-video-file-fps-with-cv2-videocapture-and-opencv/
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
+        ## API
+     
+
+        # Calculate framerate
+        t2 = cv2.getTickCount()
+        time1 = (t2-t1)/freq
+        frame_rate_calc= 1/time1
+        
+
+        # Press 'q' to quit
+        if cv2.waitKey(1) == ord('q'):
+            break
+
+    # Clean up
+    cv2.destroyAllWindows()
+    videostream.stop()
+
 
 #########  run api  #########
 if __name__ == '__main__':
    app.debug = True
    app.run()
-   
