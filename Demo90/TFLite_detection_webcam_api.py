@@ -60,6 +60,7 @@ def api():
         
         if first_char == 'a':
             sfCommand = 'annotate'
+            #TO DO - get the posted data - name, image count, description
   
         if sfCommand == 'annotate':
             os.environ['cap_flag'] = 'True'
@@ -71,7 +72,6 @@ def api():
         elif sfCommand == 'scores_on':
             os.environ['scores_flag'] = sfCommand
             print('Toggle Scores Command =', os.environ['scores_flag'])
-            
             
         elif sfCommand == 'labels_off':
             os.environ['labels_flag'] = sfCommand
@@ -133,13 +133,11 @@ def register():
    embedVar='Register'
    return render_template('register.html',embed=embedVar )
   
-  
 @app.route('/video_feed')
 def video_feed():
     #Video streaming route: goes into src attribute of an img tag
     
     print('\nin FLASK: locals() value inside class\n', locals())
-    
     
            
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -389,10 +387,12 @@ def gen_frames():
                         labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
                         label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
                     
-                        cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (80, 80, 80), cv2.FILLED) # Draw white box to put label text in                   
-                        cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
+                        #cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (237,237,237), cv2.FILLED) # Draw white box to put label text in                   
+                        #cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255,0,255), cv2.FILLED) # Draw white box to put label text in                   
+                       
+                        cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2) # Draw label text
                     else:
-                        cv2.rectangle(frame, (xmin,ymin), (xmin,ymin), (80, 80, 80), cv2.FILLED) # Draw frame with no label OR score text !
+                        cv2.rectangle(frame, (xmin,ymin), (xmin,ymin), (237,237,237), cv2.FILLED) # Draw frame with no label OR score text !
                     
                         
             # Draw framerate in corner of frame

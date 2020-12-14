@@ -5,7 +5,9 @@
 # Authors:  Drew A                      #
 # Sunday 12-13-2020                     #
 #########################################
-
+## December 14, 2020
+- Made Score and Label Green per Don's spec
+- Removed the background rectangle behind the Scores/Labels per Don' spec
  
 ## December 13, 2020
 - Added Javascript to Python/Flask communication via POST,GET
