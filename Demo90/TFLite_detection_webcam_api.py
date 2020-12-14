@@ -74,6 +74,9 @@ def register():
        email_address = request.form.get("email")
        password = request.form.get("password")
        for key, value in request.form.items():
+           if len(value) > 64:
+               print('wrong')
+               return 'wrong'
            print("key: {0}, value: {1}".format(key, value))
        #print(first_name)
    #print('hello world')
