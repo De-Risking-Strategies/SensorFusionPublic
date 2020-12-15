@@ -49,6 +49,7 @@ input {
 input:focus {
    outline: none;
 }
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -96,12 +97,18 @@ button:focus {
    width: 250px;
 }
 
-.with-eye {
-   display: flex;
-}
-
 .login-reg-main {
    margin-left: 20%;
+}
+
+.warning-msgs {
+   color: red;
+   font-size: 14px;
+}
+
+.success-msgs {
+   color: green;
+   font-size: 14px;
 }
 
 .term {
@@ -198,6 +205,11 @@ button:focus {
    display: none;
    font-size: 16px;
 }
+
+.with-eye {
+   display: flex;
+}
+
 /*
 .matching-pswd-warning {
    visibility: hidden;

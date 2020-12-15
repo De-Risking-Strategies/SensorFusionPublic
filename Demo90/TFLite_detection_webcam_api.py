@@ -15,7 +15,7 @@ import importlib.util
 #Flask - ATA - November 24, 2020
 import json
 # import logging
-from flask import Flask, jsonify, request, render_template, Response, redirect, url_for
+from flask import Flask, jsonify, request, render_template, Response, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -30,6 +30,9 @@ handler = logging.FileHandler("test.log")  # Create the file logger
 app.logger.addHandler(handler)             # Add it to the built-in logger
 app.logger.setLevel(logging.DEBUG)
 '''
+
+input_validations = [] # 0: false, 1: true
+
 
 class User(db.Model):
     User_ID = db.Column(db.Integer, primary_key=True)
@@ -67,6 +70,7 @@ def login():
 
 @app.route('/register', methods=["GET","POST"]) 
 def register():
+   isInvalid = 0
    embedVar='Register'
    if request.method == "POST":
        #print(request.headers)
@@ -85,10 +89,11 @@ def register():
                #print('Yeah, what he said') # goes to console
                #return 'Something is wrong' # goes to webpage
            print("key: {0}, value: {1}".format(key, value))
-       type(age_term)
-       print(type(age_term))
+       #type(age_term)
+       #print(type(age_term))
 
        # validation checks
+       #   - is it possible to send the values the user gave back so that they don't have to fill in all the fields again?
 
        # both first and last name need to be between 4 and 128 characters
        #   - should we have alpha numeric checks for names?
@@ -96,36 +101,55 @@ def register():
        #     so should we decrease the lower bound?
        if len(first_name) < 4 or len(first_name) > 128: 
            print('First name either too long or too short')
-           return 'First name is either too long or too short'
+           #return 'First name is either too long or too short'
+           input_validations.append(0)
+           flash('First name is either too long or too short')
+           isInvalid = 1
+           
        if len(last_name) < 4 or len(last_name) > 128: 
            print('Last_name either too long or too short')
-           return 'Last name is either too long or too short'
+           #return 'Last name is either too long or too short'
+           flash('Last name is either too long or too short')
+           isInvalid = 1
 
        # email_address should be between 8 and 255 characters and should not already exist in the table
        if len(email_address) < 8 or len(email_address) > 255: 
            # check to make sure this email does not already exist in the database
            print('Email address either too long or too short')
-           return 'Email address is either too long or too short'
+           #return 'Email address is either too long or too short'
+           flash('Email address is either too long or too short')
+           isInvalid = 1
 
        # password should be at least 8 characters long, encrypted, and should have the specified requirements
        if len(password) < 8:
            # encrypt password to be saved in database
            print('Password too short')
-           return 'Password is too short'
+           #return 'Password is too short'
+           flash('Password is too short')
+           isInvalid = 1
        # check for other password validation requirements?
 
        # re-enterPassword should match password
        if reEnterPassword != password: 
            print('Passwords do not match')
-           return 'Your passwords do not match'
+           #return 'Your passwords do not match'
+           flash('Your passwords do not match')
+           isInvalid = 1
 
        # check if terms of service were accepted
        if agree_term == None or privacy_term == None or age_term == None:
            print('Not all terms were accepted')
-           return('Not all terms were accepted')
+           #return'Not all terms were accepted'
+           flash('Not all terms were accepted')
+           isInvalid = 1
 
-
-
+       if isInvalid == 1:
+           return render_template('register.html', embed=embedVar, isInvalid=isInvalid)
+       else:
+           flash('Congratulations! You have successfully logged in!')
+           for key, value in request.form.items():
+               flash(value)
+          
        #print(first_name)
        #add_user_response = {{ url_for('collection', method='POST') }}
        #add_user_response = make_response({{ url_for('collection') }})
@@ -141,8 +165,8 @@ def register():
        #result = collection()
        #print(result)
 
-   #print('hello world')
-   return render_template('register.html',embed=embedVar )
+   # this will need to redirect to a different location, I think
+   return render_template('register.html',embed=embedVar, isInvalid=isInvalid )
 
 '''
 @app.route('/register', methods=['POST']) 
