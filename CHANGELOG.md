@@ -1,10 +1,11 @@
-#########################################
-# Sensor Fusion MIT License	 CHANGELOG  #
-# (C) 2020 - De-Risking Strategies, LLC #
-# DRS ML/AI Flask API                   #
-# Authors:  Drew A                      #
-# Sunday 12-13-2020                     #
-#########################################
+### Sensor Fusion MIT License	 CHANGELOG  
+### (C) 2020 - De-Risking Strategies, LLC 
+### DRS ML/AI Flask API                   
+### Authors:  Drew A 
+----
+
+## SENSOR FUSION CHANGELOG                     
+----
 ## December 14, 2020
 - Added Keyboard handler - Spacebar for Annotate, F key to toggle Frames per second on and off (off by default now)
 - Enabled saving of annotations for: Directory/File name and number of images to save
