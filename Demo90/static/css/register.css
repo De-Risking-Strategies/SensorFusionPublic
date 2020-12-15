@@ -7,6 +7,26 @@
    src: url(../fonts/HelveticaNeue/);
 }
 
+/*
+.hel {
+   font-family: 'HelveticaNeueCyr';
+   font-weight: 500;
+}
+
+.rob {
+   font-family: 'Roboto';
+   font-weight: bold;
+}
+
+.sans {
+   font-family: 'sans-seif';
+}
+
+.hel2 {
+   font-family: 'HelveticaNeueTwo';
+   font-family: 'serif';
+}*/
+
 body {
    font-weight: bold;
 }
@@ -29,6 +49,20 @@ input {
 input:focus {
    outline: none;
 }
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active 
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+   border: none;
+   -webkit-text-fill-color: white;  /* text color */
+   -webkit-box-shadow: 0 0 0px 30px #444444 inset !important; /* background color*/
+   transition: background-color 5000s ease-in-out; 
+   caret-color: white; /* cursor color */
+}
 
 h2 {
    color: white;
@@ -42,6 +76,10 @@ h2 {
    color: #bb86fc;
    cursor: pointer;
    padding: 5px 10px;
+}
+
+button:focus {
+   outline: none;
 }
 
 .chkbox-group {
@@ -86,28 +124,6 @@ h2 {
    width: 250px;
 }
 
-.visibility-icon input[type='checkbox'] {
-   display: none;
-}
-
-.visibility-icon input + label {
-   background: none;
-   background-color: black;
-   border-color: white;
-   cursor: pointer;
-   height: 20px;
-   width: 30px;
-}
-
-.visibility-icon input[type='checkbox']:checked + label {
-   background: url(../assets/sensor_eye_icon_001.png) no-repeat center center;
-   background-size: contain;
-   cursor: pointer;
-   display: block;
-   height: 20px;
-   width: 30px;
-}
-
 .term input[type='checkbox'] {
    display: none;
 }
@@ -147,3 +163,53 @@ h2 {
    background-color: #bb86fc;
 }
 */
+
+.visibility-icon input[type='checkbox'] {
+   display: none;
+}
+
+.visibility-icon input + label {
+   background: none;
+   background-color: black;
+   border-color: white;
+   cursor: pointer;
+   height: 20px;
+   width: 30px;
+}
+
+.visibility-icon input[type='checkbox']:checked + label {
+   background: url(../assets/sensor_eye_icon_001.png) no-repeat center center;
+   background-size: contain;
+   cursor: pointer;
+   display: block;
+   height: 20px;
+   width: 30px;
+}
+
+/* warning-on, warning-off */
+
+.warning-on {
+   color: red;
+   font-size: 16px;
+   visibility: visible;
+}
+
+.warning-off {
+   display: none;
+   font-size: 16px;
+}
+/*
+.matching-pswd-warning {
+   visibility: hidden;
+   font-size: 16px;
+}
+
+.pswd-cred-warning {
+   visibility: hidden;
+   font-size: 16px;
+}
+
+.terms-warning {
+   visibility: hidden;
+   font-size: 16px;
+}*/
