@@ -17,13 +17,14 @@ import json
 # import logging
 from flask import Flask, jsonify, request, render_template, Response, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sf.db'
 app.secret_key = 'dont tell anyone'
 
+#from sf-db import *
 db = SQLAlchemy(app)
+
 '''
 handler = logging.FileHandler("test.log")  # Create the file logger
 app.logger.addHandler(handler)             # Add it to the built-in logger
@@ -73,12 +74,73 @@ def register():
        last_name = request.form.get("last")
        email_address = request.form.get("email")
        password = request.form.get("password")
+       reEnterPassword = request.form.get("re-enterPassword")
+       agree_term = request.form.get('agree-term')
+       privacy_term = request.form.get('privacy-term')
+       age_term = request.form.get('age-term')
+
        for key, value in request.form.items():
-           if len(value) > 64:
-               print('wrong')
-               return 'wrong'
+           #if len(value) > 64:
+               
+               #print('Yeah, what he said') # goes to console
+               #return 'Something is wrong' # goes to webpage
            print("key: {0}, value: {1}".format(key, value))
+       type(age_term)
+       print(type(age_term))
+
+       # validation checks
+
+       # both first and last name need to be between 4 and 128 characters
+       #   - should we have alpha numeric checks for names?
+       #   - there are people with first and last names that are shorter than 4 characters, 
+       #     so should we decrease the lower bound?
+       if len(first_name) < 4 or len(first_name) > 128: 
+           print('First name either too long or too short')
+           return 'First name is either too long or too short'
+       if len(last_name) < 4 or len(last_name) > 128: 
+           print('Last_name either too long or too short')
+           return 'Last name is either too long or too short'
+
+       # email_address should be between 8 and 255 characters and should not already exist in the table
+       if len(email_address) < 8 or len(email_address) > 255: 
+           # check to make sure this email does not already exist in the database
+           print('Email address either too long or too short')
+           return 'Email address is either too long or too short'
+
+       # password should be at least 8 characters long, encrypted, and should have the specified requirements
+       if len(password) < 8:
+           # encrypt password to be saved in database
+           print('Password too short')
+           return 'Password is too short'
+       # check for other password validation requirements?
+
+       # re-enterPassword should match password
+       if reEnterPassword != password: 
+           print('Passwords do not match')
+           return 'Your passwords do not match'
+
+       # check if terms of service were accepted
+       if agree_term == None or privacy_term == None or age_term == None:
+           print('Not all terms were accepted')
+           return('Not all terms were accepted')
+
+
+
        #print(first_name)
+       #add_user_response = {{ url_for('collection', method='POST') }}
+       #add_user_response = make_response({{ url_for('collection') }})
+       #add_user = redirect(url_for('collection', method='POST'))
+       #print(add_user.headers)
+
+       #response = request.post({{ url_for('collection',data=data,headers=headers) }})
+       #response = redirect({{ url_for('collection', method='POST', firstName = first_name, lastName = last_name,  email = email_address, captureLimit = 5) }})
+       res = redirect("api/user", 303)
+       print(request.form)
+       print('redirected')
+       print(res)
+       #result = collection()
+       #print(result)
+
    #print('hello world')
    return render_template('register.html',embed=embedVar )
 
@@ -123,6 +185,86 @@ def video_feed():
 def index():
    embedVar='Main'
    return render_template('index.html',embed=embedVar )
+
+
+@app.route('/api/user', methods=['GET', 'POST'])
+def collection():
+    print("hello, it's me")
+    if request.method == 'GET':
+        all_users = get_all_users()
+        return json.dumps(all_users)
+    elif request.method == 'POST':
+        data = request.form
+        result = add_user(data['firstName'], data['lastName'], data['email'], data['captureLimit'])
+        return jsonify(result)
+
+
+
+@app.route('/api/user/<user_id>', methods=['GET', 'PUT', 'DELETE'])
+def resource(user_id):
+    if request.method == 'GET':
+        user = get_single_user(user_id)
+        return json.dumps(user)
+    elif request.method == 'PUT':
+        data = request.form
+        result = edit_user(
+            user_id, data['firstName'], data['lastName'],  data['email'], data['captureLimit'])
+        return jsonify(result)
+    elif request.method == 'DELETE':
+        result = delete_user(user_id)
+        return jsonify(result)
+
+
+# helper functions
+
+def add_user(firstName, lastName, email, captureLimit):
+    try:
+        with sqlite3.connect('sf.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute("""
+                INSERT INTO user (firstName, lastName, email, captureLimit) values (?, ?, ?, ?);
+                """, (firstName, lastName, email, captureLimit,))
+            result = {'status': 1, 'message': 'User Added'}
+    except:
+        result = {'status': 0, 'message': 'error'}
+    return result
+
+
+def get_all_users():
+    with sqlite3.connect('sf.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM user ORDER BY id desc")
+        all_users = cursor.fetchall()
+        return all_users
+
+
+def get_single_user(user_id):
+    with sqlite3.connect('sf.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM user WHERE id = ?", (user_id,))
+        user = cursor.fetchone()
+        return user
+
+
+def edit_user(user_id, firstName, lastName, email, captureLimit):
+    try:
+        with sqlite3.connect('sf.db') as connection:
+            connection.execute("UPDATE user SET firstName = ?, lastName = ?,  email = ?, captureLimit = ? WHERE ID = ?;", (firstName, lastName, email, captureLimit, user_id,))
+            result = {'status': 1, 'message': 'USER Edited'}
+    except:
+        result = {'status': 0, 'message': 'Error'}
+    return result
+
+
+def delete_user(user_id):
+    try:
+        with sqlite3.connect('sf.db') as connection:
+            connection.execute("DELETE FROM user WHERE ID = ?;", (user_id,))
+            result = {'status': 1, 'message': 'USER Deleted'}
+    except:
+        result = {'status': 0, 'message': 'Error'}
+    return result
+
 
 def gen_frames():
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
