@@ -51,17 +51,23 @@ def api():
     # POST request - Sensor Fusion Commands
     if request.method == 'POST':
         print('Incoming command from Sensor Fusion client ...')
-        
         sfCommand = request.get_json()
-        
         print(sfCommand)  # parse as JSON
         
         first_char = sfCommand[0] 
-        
         if first_char == 'a':
+            chunks = sfCommand.split(',')
             sfCommand = 'annotate'
-            #TO DO - get the posted data - name, image count, description
-  
+            
+            #Get the annotation data - name, image count, description
+            os.environ['annotate_name'] = str(chunks[1])
+            os.environ['annotate_images'] = str(chunks[2])
+            
+            global anno_images 
+            anno_images = str(chunks[2])
+            
+            os.environ['annotate_description'] = str(chunks[3])
+                
         if sfCommand == 'annotate':
             os.environ['cap_flag'] = 'True'
             print('Capture Flag Command =', os.environ['cap_flag'])
@@ -99,28 +105,8 @@ def api():
 @app.route('/quit_camera/') 
 def quit_camera():
    #This is test code, under development ! 
-   print("Reload")
-   #print("restart now")  
-   
-   #these methods are too harsh!
-   #print("argv was",sys.argv) 
-   #print("sys.executable was", sys.executable)
-    #or
-   #quit()
-   
-   #trying to get the instance and delete it
-   #print('The class instance is: ',instance)
-   #newInstance = reload(instance)
-   #instance = locals()['self']
-   #del instance
-   #locals = locals()
-   #print(locals)
-   
+   print("Reload") 
    video_camera_flag = True #if this is false the video class does not run
-   
-   #os.execv(sys.executable, ['python'] + sys.argv)
-   #webbrowser.open_new('http://localhost:5000')
-   #return render_template('base.html')
    return "OK", 200
    
 @app.route('/login') 
@@ -136,22 +122,16 @@ def register():
 @app.route('/video_feed')
 def video_feed():
     #Video streaming route: goes into src attribute of an img tag
-    
     print('\nin FLASK: locals() value inside class\n', locals())
-    
-           
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 def gen_frames():
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
-
-
     class VideoStream(object):
         """Camera object that controls video streaming from the Picamera"""
         def __init__(self,resolution=(640,480),framerate=30):
-            
             
             # Initialize the PiCamera and the camera image stream
             self.stream = cv2.VideoCapture(0)
@@ -178,7 +158,6 @@ def gen_frames():
             (self.grabbed, self.frame) = self.stream.read()
 
             # Variable to control when the camera is stopped
-            
             self.stopped = False            
             
         def __del__(self):
@@ -210,8 +189,6 @@ def gen_frames():
         def stop(self):
         # Indicate that the camera and thread should be stopped
             self.stopped = True
-
-  
 
     # Define and parse input arguments
     parser = argparse.ArgumentParser()
@@ -313,6 +290,12 @@ def gen_frames():
     time.sleep(1)
 
     img_counter = 0
+    
+    #convert object to integer
+    #annotate_images = os.environ.get('annotate_images')
+    #print("HEY: "+str(annotate_images)+" obj: ");
+    #print(type(annotate_images))
+  
     #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
     try:
         #while True:
@@ -410,14 +393,34 @@ def gen_frames():
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()            
            
-            #Capture
+            #Capture Images and save to Annotate Named subdirectory under ~/Pictures
             capture_flag = os.environ.get('cap_flag')
-            #print('Capture Flag IN CAMERA =', capture_flag)
+            annotate_name = os.environ.get('annotate_name')           
+            annotate_description = os.environ.get('annotate_description')# this is for future use - we'll write our own metadata file
             
+            if capture_flag == 'True':
+                #Check limit
+                try:
+                    print("HEY: " + anno_images)
+                    capture_image_limit = int(anno_images)
+                except:
+                    pass
+      
+                
             if capture_flag == 'True' and img_counter < capture_image_limit:
+                #Create new or use existing directory
+                path_to_directory = '../Pictures/' + annotate_name
+                print("Saving to ", path_to_directory)
+                try:
+                    os.makedirs(path_to_directory)
+                except FileExistsError:
+                    #dir already exists, so overwrite existing (unless we datestamp)!
+                    pass
+                
                 cv2.namedWindow("Capture Window")
                 cv2.moveWindow("Capture Window", -500, -500)# push it off screen :)
-                img_name="../Pictures/Drew/drew-sf-frame_{}.jpg".format(img_counter)
+                
+                img_name="../Pictures/"+annotate_name+"/"+annotate_name+"sf-frame_{}.jpg".format(img_counter)
                 cv2.imwrite(img_name, frame1)
                 print('Wrote Image-'+ img_name)
                 img_counter +=1

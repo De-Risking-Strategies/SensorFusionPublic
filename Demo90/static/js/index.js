@@ -69,15 +69,23 @@ function getAPI(command) {
 function postAPI(command) {
 // POST commands to Flask/Python API route
   console.log('Posting: '+ command);
-             
+  var sfCommandAnnotate = false;
+  var annotateName
+  
   if(command == 'annotate'){
-    var annotateName = document.getElementById('aName').value;
+    var sfCommandAnnotate = true;
+        annotateName = document.getElementById('aName').value;
         console.log(annotateName);
     var annotateImages = document.getElementById('aImages').value;
         console.log(annotateImages);    
     var annotateDescription = document.getElementById('aDescription').value;
         console.log(annotateDescription);
-    command = command+','+annotateName+','+annotateImages+','+ annotateDescription
+        
+    if (annotateName == "" || annotateImages == "" || annotateDescription ==""){
+      alert("No Blank Fields Allowed! Try Again.");
+    }else{    
+      command = command+','+annotateName+','+annotateImages+','+ annotateDescription
+   }
   }             
   if(command == 'labels'){
     if(toggleLabels == true){
@@ -121,6 +129,13 @@ function postAPI(command) {
     .then(function (json) {
         console.log('POST response from Flask');
         console.log(json); 
+        
+        if(json.status== 200 && sfCommandAnnotate ){
+          var modal1 = document.getElementById("modal_body1");
+          var modal2 = document.getElementById("modal_body2");
+          modal1.innerHTML = "<h2>Your Files are saving to: <br><br/>/home/pi/Pictures/"+ annotateName+"</h2>";
+          modal2.innerHTML = "<p>Next, select Main Menu item 3 Run Image Labeler to annotate them!</p><strong style='color:red'>IF YOU USE AN EXISTING FOLDER NAME PREVIOUS FILES WILL BE OVERWRITTEN</strong>";
+        }
     })
 }
 
@@ -133,7 +148,7 @@ function modal1_click(event){
   var mTitle= 'Not Implemented Yet'; 
   var mHtml1='<br><strong>Please come back soon!</strong>'; 
   var mHtml2= '<br>';
-  var mFooter='Click X to cancel';
+  var mFooter='Click out or X to Exit';
 
   if(event =='annotate'){
     mTitle = 'Capture Images for Annotation';
