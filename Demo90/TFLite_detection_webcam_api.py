@@ -93,7 +93,6 @@ def api():
                 fps_flag = True
             else:
                 fps_flag = False
-            print('FPS Flag ='+ fps_flag)   
                 
         return 'OK', 200
 
