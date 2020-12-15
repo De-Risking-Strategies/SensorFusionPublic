@@ -30,7 +30,17 @@ window.onclick = function(event) {
     modal.style.display = "none";
   }
  }
- 
+
+document.body.onkeydown = function(e){
+  console.log(String.fromCharCode(e.keyCode)+"-->"+e.keyCode);
+  if(e.keyCode =='32'){
+    modal1_click('annotate');
+  }else if(e.keyCode == '70'){
+    postAPI('fps')
+  }
+  
+}
+
 }
 
 
