@@ -6,7 +6,9 @@
 # Sunday 12-13-2020                     #
 #########################################
 ## December 14, 2020
+- Added Keyboard handler - Spacebar for Annotate, F key to toggle Frames per second on and off (off by default now)
 - Enabled saving of annotations for: Directory/File name and number of images to save
+- Added new images for MVP  - Annotate, train, settings
 - Added simple Annotate empty field validation and confirmation messaging
 - Made Score and Label Green per Don's spec
 - Removed the background rectangle behind the Scores/Labels per Don' spec

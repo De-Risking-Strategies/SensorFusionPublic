@@ -31,6 +31,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Disable Flask Cache as it interfere
 video_camera_flag = True# Video Stream class enable
 capture_flag = 'False' # Capture Enable
 capture_image_limit = 20 #Capture LImit
+fps_flag = False #showing frames per second is false by default - controlled by 'F' keyboard command
 
 #Client Commands
 os.environ['labels_flag'] = 'labels_on'
@@ -85,7 +86,15 @@ def api():
         elif sfCommand == 'labels_on':
             os.environ['labels_flag'] = sfCommand
             print('Toggle Labels Command =', os.environ['labels_flag'])   
-             
+        elif sfCommand == 'fps':
+            global fps_flag
+            
+            if fps_flag == False:
+                fps_flag = True
+            else:
+                fps_flag = False
+            print('FPS Flag ='+ fps_flag)   
+                
         return 'OK', 200
 
     # GET request
@@ -379,8 +388,11 @@ def gen_frames():
                     
                         
             # Draw framerate in corner of frame
-            cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
-            
+            if fps_flag:
+                cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
+            else:
+                pass
+                
             # All the results have been drawn on the frame, so it's time to display it.
             
             #cv2.imshow('Object detector', frame) ## Commented for the FLASK API 
