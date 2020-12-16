@@ -144,7 +144,7 @@ function postAPI(command) {
           var modal1 = document.getElementById("modal_body1");
           var modal2 = document.getElementById("modal_body2");
           modal1.innerHTML = "<h2>Your Files are saving to: <br><br/>/home/pi/Pictures/"+ annotateName+"</h2>";
-          modal2.innerHTML = "<p>Next, select Main Menu item 3 Run Image Labeler to annotate them!</p><strong style='color:red'>IF YOU USE AN EXISTING FOLDER NAME PREVIOUS FILES WILL BE OVERWRITTEN</strong>";
+          modal2.innerHTML = "<p>Next, select Main Menu item 3 Run Image Labeler to annotate them!</p><strong style='color:red'>IF YOU USE AN EXISTING FOLDER NAME, PREVIOUS FILES WILL BE OVERWRITTEN!</strong>";
         }
     })
 }
@@ -167,7 +167,7 @@ function modal1_click(event){
     //Annotation Form - values to pass to Flask/Python
     var row0 = '<table border="1">';
     var row1 = '<tr><td id="ic1">Name</td><td id="ic2"><input id="aName" type="text" style="width:150px"></input></td></tr>';
-    var row2 = '<tr><td id="ic3">Images to Capture</td><td id="ic4"><input id="aImages" type="text" style="width:50px">500</input></td></tr>';
+    var row2 = '<tr><td id="ic3">Images to Capture</td><td id="ic4"><input id="aImages" type="text" style="width:50px">&nbsp;1,000 MAX!</input></td></tr>';
     var row3 = '<tr><td id="ic5">Description</td><td id="ic6"><input id="aDescription" type="text" style="width:300px"></input></td></tr>';
     var row4 = '</table>'
     var row5 = "<br><input type='button' value='Submit' onclick=postAPI('annotate')>";
