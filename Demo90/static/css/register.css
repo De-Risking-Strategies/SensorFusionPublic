@@ -176,20 +176,23 @@ button:focus {
 }
 
 .visibility-icon input + label {
-   background: none;
-   background-color: black;
+   background: url(../assets/password_eye_001.png) no-repeat center center;
+   background-size: contain;
    border-color: white;
    cursor: pointer;
+   display: block;
    height: 20px;
+   opacity: 0.5;
    width: 30px;
 }
 
 .visibility-icon input[type='checkbox']:checked + label {
-   background: url(../assets/sensor_eye_icon_001.png) no-repeat center center;
+   background: url(../assets/password_eye_001.png) no-repeat center center;
    background-size: contain;
    cursor: pointer;
    display: block;
    height: 20px;
+   opacity: 1.0;
    width: 30px;
 }
 
