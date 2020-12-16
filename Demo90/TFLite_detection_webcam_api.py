@@ -11,6 +11,7 @@ import cv2
 import numpy as np
 import sys
 import time
+
 from threading import Thread
 import importlib.util
 
@@ -21,11 +22,7 @@ from flask import Flask, jsonify, request, render_template, Response, session, s
 from flask_sqlalchemy import SQLAlchemy
 from importlib import reload 
 import gc
-   
-
-#import subprocess
-#subprocess.Popen("/home/pi/labelImg-master/labelImg.py 1", shell=True)
-#subprocess.Popen(["ls","foo bar"],shell=True)
+import threading
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Disable Flask Cache as it interferes with streaming
@@ -88,6 +85,7 @@ os.environ['scores_flag'] = 'scores_on'
 
 #VideoStream Instance
 instance = []
+
  
 @app.route('/',methods=['GET'])
 def index():
@@ -398,7 +396,10 @@ def gen_frames():
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
     class VideoStream(object):
         """Camera object that controls video streaming from the Picamera"""
-        def __init__(self,resolution=(640,480),framerate=30):
+        def __init__(self,resolution=(640,480),framerate=30,target=None,args=()):
+
+            # Add thread safety.
+            self.lock = threading.RLock() 
             
             # Initialize the PiCamera and the camera image stream
             self.stream = cv2.VideoCapture(0)
@@ -454,6 +455,8 @@ def gen_frames():
         def stop(self):
         # Indicate that the camera and thread should be stopped
             self.stopped = True
+
+
 
     # Define and parse input arguments
     parser = argparse.ArgumentParser()
@@ -542,8 +545,6 @@ def gen_frames():
     input_mean = 127.5
     input_std = 127.5
 
-    #pdb.set_trace()      
-       
     # Initialize frame rate calculation
     #global frame_rate_calc
     frame_rate_calc = 1
@@ -557,15 +558,13 @@ def gen_frames():
 
     img_counter = 0
     
-    #convert object to integer
-    #annotate_images = os.environ.get('annotate_images')
-    #print("HEY: "+str(annotate_images)+" obj: ");
-    #print(type(annotate_images))
+
   
     #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
     try:
         #while True:
         while video_camera_flag:
+            
             # Start timer (for calculating frame rate)
             t1 = cv2.getTickCount()
 
@@ -708,11 +707,13 @@ def gen_frames():
             time1 = (t2-t1)/freq
             frame_rate_calc= 1/time1
             
-
+            th.join()
+           
             # Press 'q' to quit
             if cv2.waitKey(1) == ord('q'):
                 break
 
+            
         # Clean up
         cv2.destroyAllWindows()
         videostream.release()
@@ -722,6 +723,10 @@ def gen_frames():
 
 #########  run api  #########
 if __name__ == '__main__':
+     global th
+     th = threading.Thread(target=gen_frames)
+     th.start()
+
      app.debug = True
      app.run()
    

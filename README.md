@@ -1,11 +1,9 @@
-#########################################
 # Sensor Fusion MIT License	 READ ME    #
 # (C) 2020 - De-Risking Strategies, LLC #
 # DRS ML/AI Flask API                   #
 # Authors:  Drew A                      #
-# Update 12-14-2020                     #
-#########################################
-
+# Update 12-15-2020                     #
+````
 
 ##DRS Sensor Fusion Client Setup 	
 ````						    
@@ -25,7 +23,7 @@ NOTE: You may grab latest code from GitHub Remote Repo, which is located here:
 
 https://github.com/De-Risking-Strategies/SensorFusion.git
 
-### 2. Check your Git locally
+### 2. Checkout Master branch from Git Hub
 To Pull a copy of the release branch, at a command line (with GitHub installed and credentials handy):
 EX: git pull <remote> <branch>
  

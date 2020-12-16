@@ -1,11 +1,17 @@
 ### Sensor Fusion MIT License	 CHANGELOG  
-### (C) 2020 - De-Risking Strategies, LLC 
-### DRS ML/AI Flask API                   
-### Authors:  Drew A 
+(C) 2020 - De-Risking Strategies, LLC 
+DRS ML/AI Flask API                   
+Authors:  Drew A, Puskar P, Sharon B
+
 ----
 
 ## SENSOR FUSION CHANGELOG                     
 ----
+##December 15, 2020
+- .gitigonre repaired
+- Cosmetic fixes to Settings and Annotate dialogs
+- README.md spell checked and cleaned up
+
 ## December 14, 2020
 - Added Keyboard handler - Spacebar for Annotate, F key to toggle Frames per second on and off (off by default now)
 - Enabled saving of annotations for: Directory/File name and number of images to save

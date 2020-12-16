@@ -11,7 +11,6 @@
 **/Demo90-env/
 **/checkid-env/
 **/__Pycache__/
-**requirements.txt
 Bookshelf/
 Desktop/
 Downloads/
@@ -36,8 +35,6 @@ scratch.txt
 .vimrc
 .viminfo
 project-posenet-master/models/
-webcam.log
-drew.txt
-Demo90/TFLite_detection_webcam_api.pyc
-Demo90/__pycache__/TFLite_detection_webcam_api.cpython-37.pyc
+webcam.lo
+
 
