@@ -6,6 +6,7 @@
 .Xauthority
 .xsession-errors
 .xsession-errors.old
+**/dev
 **/logs
 **/Demo90-env/
 **/checkid-env/
@@ -30,6 +31,10 @@ scratch.txt
 .bash_history
 .bash_logout
 .bashrc
+.profile
+.vim/*
+.vimrc
+.viminfo
 project-posenet-master/models/
 webcam.log
 drew.txt

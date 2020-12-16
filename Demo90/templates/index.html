@@ -8,14 +8,18 @@
     <meta http-equiv="content-type" content="text/html;charset=utf-8" >
     <link rel='stylesheet', href='/static/css/style.css'>
     <link rel='stylesheet', href='/static/css/sidenav.css'>
+    <script src='/static/js/globals.js'></script>
     <script src='/static/js/utilities.js'></script>
     <script src='/static/js/sidenav.js'></script>
     <script src='/static/js/data.js'></script>
+    <script src='/static/js/index.js'></script>
     <meta http-equiv="Cache-d" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="-1"/>
 </head>
-<body onload=init()>
+<body onload=init();>
+ <form action = 'http://localhost:5000' method = 'post'>
+   <input type='text' name='command' id='command' />
   <h4>Welcome to Sensor Fusion!</h4>
   <noscript>
     You need to enable JavaScript to run Sensor Fusion!
@@ -23,23 +27,32 @@
   <div class='grid' id='cd-main-content'>
   <section class ="header">
       <div id='topnav'>
-      <img class='logo' src='/static/assets/sensor_fusion_logo_001.png'/>
-        <a onclick="alert('turnoff camera')"><span class='title'>SENSOR 1:  ON</span></a>
-        <div id='top-right'>
-          <a onclick='alert("Not Implemented Yet");'><img class='standard_button' src='/static/assets/settings_gear_icon_001.png'/></a>
-           <a onclick='alert("Not Implemented Yet");'><img class='standard_button' src='/static/assets/profile_icon_001.png'/></a>
-           <a id='exit_app' onclick="openSettings()"><img class='standard_button' src='/static/assets/arrow_right_icon_001.png'/></a>
-           <!-- Link below is for test -->
-           <!--<a id='exit_app' href="http://localhost:5000/quit_camera"><img class='standard_button' src='/static/assets/arrow_right_icon_001.png'/></a>-->
-        
-        </div>
+       <table><tr>  
+          <td style='position:absolute;top:1%;left:3%;text-align: center'><img class='logo' src='/static/assets/sensor_fusion_logo_001.png'/></td>
+          <td style='position:absolute;top:1%;left:27%;text-align: center; min-width:25%'>
+            <a onclick="toggleCamera()"><img id='toggleCameraBtn' class='large_button'style='max-height:40px;max-width:65px' src='/static/assets/toggle_switch_on_001.png'/>
+            <span id='sensor_toggle_title'>CAMERA 1: ON</span></a>
+          </td>
+          <td style='position:absolute;top:1%;left:84%;text-align: center'>  
+            <a onclick="modal1_click('thermal');"><img class='standard_button' src='/static/assets/settings_002.png'/></a>
+            </td>
+          <td style='position:absolute;top:1%;left:90%;text-align: center'> 
+             <a onclick="modal1_click('thermal');"><img class='standard_button' src='/static/assets/profile_icon_001.png'/></a>
+             </td>
+          <td style='position:absolute;top:1%;left:96%;text-align: center'>
+             <a id='exit_app' onclick="openSettings()"><img class='standard_button' src='/static/assets/arrow_right_icon_001.png'/></a>
+             <!-- Link below is for test -->
+             <!--<a id='exit_app' href="http://localhost:5000/quit_camera"><img class='standard_button' src='/static/assets/arrow_right_icon_001.png'/></a>-->
+           </td>
+         </tr></table>
+       
         <div id='refresh-data'></div><!--Important - this route gets vars from Flask via polling in data.js-->
       </div>
   </section>
   <section class ="main" id='main'>
    <div id='video-canvas'> 
-        <!--{{(rangeBar)}} FUTURE-->
-    <input type="range"/ style='display:none'><img class='' id='cameraStream' src="{{ url_for('video_feed') }}" width="100%">
+    <img class='' id='cameraStream' src="{{ url_for('video_feed') }}" width="100%" style='display:block'>
+    
    </div>
   </section>
   
@@ -48,16 +61,16 @@
     <div id='botnav'>
       <div id='bottom-controls'>
           <table><tr>
-              <td style='position:absolute;bottom:-46%;left:3%;text-align: center'> <a class="bars_btn" onclick="btn1_click();"><img class='large_button'src='/static/assets/toggle_switch_off_001.png'/><br>%</a></td>
-              <td style='position:absolute;bottom:-46%;left:14%;text-align: center'> <a class="labels_btn" onclick="btn1_click();"><img class='large_button'src='/static/assets/toggle_switch_off_001.png'/><br>Labels</a></td>
-              <td style='position:absolute;bottom:-52%;left:25%;text-align: center'> <a class="model_btn" class=""><img class='standard_button'  src='/static/assets/models_icon_001.png'/><br>Demo.90</a></td>
+              <td style='position:absolute;bottom:-46%;left:3%;text-align: center'> <a id="toggleScoresLink" onclick="postAPI('scores')"><img id="toggleScoresBtn" class='large_button'src='/static/assets/toggle_switch_on_001.png'/><br>%</a></td>
+              <td style='position:absolute;bottom:-46%;left:14%;text-align: center'> <a id="toggleLabelsLink" onclick="postAPI('labels')"><img id="toggleLabelsBtn" class='large_button'src='/static/assets/toggle_switch_on_001.png'/><br>Labels</a></td>
+              <td style='position:absolute;bottom:-52%;left:25%;text-align: center'> <a id="switchModelLink" class="myBtn" onclick="modal1_click('model');"><img class='standard_button'  src='/static/assets/models_icon_001.png'/><br>Demo.90</a></td>
               
               <td style='position:absolute;bottom:-26%;left:35%'> 
-              <a id="check_id_btn" onclick="openNav()"><img class='checkid_button' src='/static/assets/checkid_button_001.png'/></a></td>
+              <a id="annotate_btn" onclick="modal1_click('annotate');"><img class='checkid_button' src='/static/assets/annotate_button_001.png'/></a></td>
              
-              <td style='position:absolute;bottom:-52%;left:66%;text-align: center'> <a class="trained_btn" class=""><img class='standard_button'  src='/static/assets/models_icon_001.png'/><br>Train</a></td>
-              <td style='position:absolute;bottom:-52%;left:77%;text-align: center'> <a id="sensor_btn" class=""><img class='standard_button' src='/static/assets/switch_sensor_screen_icon_001.png'/><br>Switch Sensors</a></td>
-              <td style='position:absolute;bottom:-46%;left:89%;text-align: center'> <a id="toggle_2_btn" class=""><img class='large_button' src='/static/assets/toggle_switch_off_001.png'/><br>Thermal</a></td>
+              <td style='position:absolute;bottom:-52%;left:66%;text-align: center'> <a id="trainBtn" class="myBtn"  onclick="modal1_click('train');"><img class='standard_button'  src='/static/assets/train_model_001.png'/><br>Train</a></td>
+              <td style='position:absolute;bottom:-52%;left:77%;text-align: center'> <a id="sensorBtn" class="myBtn" onclick="modal1_click('sensor');"><img class='standard_button' src='/static/assets/switch_sensor_screen_icon_001.png'/><br>Switch Sensors</a></td>
+              <td style='position:absolute;bottom:-46%;left:89%;text-align: center'> <a id="thermalBtn" class="myBtn" onclick="modal1_click('thermal');"><img class='large_button' src='/static/assets/toggle_switch_off_001.png'/><br>Thermal</a></td>
           </tr></table>
         </div>
       </div>
@@ -71,8 +84,8 @@
             <h2 id="modal_header">Modal Header</h2>
           </div>
           <div class="modal-body">
-            <p id="modal_body1">Some text in the Modal Body</p>
-            <p id="modal_body2">Some other text...</p>
+            <div id="modal_body1">Some text in the Modal Body</div>
+            <div id="modal_body2">Some other text...</div>
           </div>
           <div class="modal-footer">
             <h3 id="modal_footer">Modal Footer</h3>
@@ -94,8 +107,10 @@
   <a href="#">Camera</a>
   <a href="#">Logout</a>
   <a href="#">Password</a>
-  <a href="#">Contact</a>
+  <a href="#">Image Capture Limit</a>
+  <a href="/quit_camera/">Restart</a>
 </div>
+</form>
 </body>
 </html>
 

@@ -1,42 +1,63 @@
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Sensor Fusion</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="HandheldFriendly" content="true">
-    <meta http-equiv="content-type" content="text/html;charset=utf-8" >
-    <link rel='stylesheet', href='/static/css/style.css'>
-    <script src='/static/js/utilities.js'></script>
-</head>
-<body>
-  <noscript>
-    You need to enable JavaScript to run Sensor Fusion!
-  </noscript>
-  <div class='login-reg-top' id='login'>
-
-  <section class ="">
-      <div id=''>
-      <img class='logo' src='/static/assets/sensor_fusion_logo_001.png'/>
-        <span class='title'>LOGIN</span>
-        
-          <img class='login-reg-background' src='/static/assets/onboarding_background_001.png'/>
-           
+   <head>
+      <meta charset="utf-8">
+      <title>Sensor Fusion</title>
+      <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <meta name="HandheldFriendly" content="true">
+      <meta http-equiv="content-type" content="text/html;charset=utf-8" >
+      <link rel='stylesheet', href='/static/css/style.css'>
+      <link rel='stylesheet', href='/static/css/login.css'>
+      <script src='/static/js/utilities.js'></script>
+   </head>
+   <script>
+   function pswdVis(){
+     var password = document.getElementById("password");
+     if(password.type === "password") {
+       password.type = "text";
+     } else {
+       password.type = "password";
+     }
+   }
+   </script>
+   <body>
+      <noscript>
+         You need to enable JavaScript to run Sensor Fusion!
+      </noscript>
+      <div class='login-reg-top' id='login'>
+         <section class ="header">
+            <div id=''>
+               <img class='logo' src='/static/assets/sensor_fusion_logo_001.png'/>
+               <img class='login-reg-background' src='/static/assets/onboarding_background_001.png'/>
+            </div>
+         </section>
+         <section class ="login-reg-main">
+            <h2>Login</h2>
+            <form method="post">
+            <div class = "form-section">
+               <label form="username">Username</label>
+               <input name="username" id="username" placeholder="Username" required>
+            </div>
+            <div class='form-section with-eye'>
+               <div>
+                  <label>Password</label>
+                  <input id="password" placeholder='Password' type='password'></input>
+               </div>
+               <div class='visibility-icon'>
+                  <input id='pswd-vis' type='checkbox' onclick="pswdVis();"></input>
+                  <label for='pswd-vis'></label>
+               </div>
+            </div>
+               <button class='btn' type='submit'>
+               <strong>Login</strong>
+               </button>
+         </form>
+         </section>
+         <section class ="login-reg-foot">
+            <div class='login-reg-foot-text'>
+               <strong>&copy 2020, De-Risking Strategies, LLC</strong>
+            </div>
+         </section>
       </div>
-  </section>
-  <section class ="login-reg-main">
-    <br><br>
-      <strong>LOGIN FIELDS GO HERE</strong>
-  </section>
-  <section class ="login-reg-foot">
-    <div class='login-reg-foot-text'>
-      <strong>&copy 2020, De-Risking Strategies, LLC</strong>
-      </div>
-  </section>
-  </div>
-</body>
+   </body>
 </html>
-
-
-
-   
