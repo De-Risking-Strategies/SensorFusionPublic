@@ -1,11 +1,11 @@
-# Sensor Fusion MIT License	 READ ME    #
-# (C) 2020 - De-Risking Strategies, LLC #
-# DRS ML/AI Flask API                   #
-# Authors:  Drew A                      #
-# Update 12-15-2020                     #
+# Sensor Fusion READ ME   
+(C) 2020 - De-Risking Strategies, LLC 
+DRS ML/AI Flask API                   
+Authors:  Drew A                      
+Update 12-15-2020                     
 ````
 
-##DRS Sensor Fusion Client Setup 	
+## DRS Sensor Fusion Client Setup 	
 ````						    
 This is a basic readme for developers with experience in Linux, Python and Git.
       
@@ -16,7 +16,8 @@ It also assumes you have a current Sensor Fusion image installed on your Raspber
   git config --global user.name "Your Name"      
       
 ## Basic Git Hub Instructions to Pul Latest Code
-````
+----
+
 ### 1. Open a terminal window to the root of the Sensor Fusion directory, which is currently /home/pi
 
 NOTE: You may grab latest code from GitHub Remote Repo, which is located here:
@@ -68,7 +69,7 @@ git branch
 
 You should see:
 pi@raspberrypi:~ $ git branch
-* drew
+* yourbranch
   master
 
 Make sure the '*' is on your branch, and not on 'master' (See online info for creating, checking out and updating a branch in Git).
@@ -202,7 +203,7 @@ Installed:
 $ sudo apt-get dist-upgrade
 
 
-##Install SQL
+## Install SQL
 ============
 https://iot4beginners.com/sqlite-database-on-raspberry-pi/
 NOTE - This should be installed in the image, but if not follow the steps below.
@@ -210,7 +211,7 @@ NOTE - This should be installed in the image, but if not follow the steps below.
 $ sudo apt-get install sqlite3
 
 
-##Activate Environment
+## Activate Environment
 ================
 In a separate terminal window:
 NOTE - This should be installed in the image, but if not follow the steps below.
@@ -218,25 +219,25 @@ NOTE - This should be installed in the image, but if not follow the steps below.
 $ cd ./Demo90
 
 Type
-(Demo90)$ source Demo90-env/bin/activate
+source Demo90-env/bin/activate
 
 
-##Install Flask
+## Install Flask
 =============
 NOTE - This should be installed in the image, but if not follow the steps below.
 
-$ pip install Flask==0.12.1
-$ pip freeze > requirements.txt
+pip install Flask==0.12.1
+pip freeze > requirements.txt
 
 Add Flask to Demo-90 env
 
-Go to the Demo90 Directory,
+Still in the (Demo90-env) Directory,
 Type
-$ pip
+pip
 
-$(demo-90)$ pip install -m flask
+(Demo90-env)$ pip install flask==1.1.2
 
-###Check it:
+### Check Installed Packages 
 ---------
 Type: 'pip list'.  You should see similar to the below:
 (Demo90-env) pi@raspberrypi:~/Demo90 $ pip list
@@ -258,7 +259,7 @@ Keras-Applications   1.0.8
 Keras-Preprocessing  1.1.2      
 Markdown             3.3.3      
 MarkupSafe           1.1.1      
-numpy                1.19.4     git 
+numpy                1.19.4      
 opencv-python        3.4.6.27   
 pip                  18.1       
 pkg-resources        0.0.0      
@@ -277,15 +278,17 @@ zipp                 3.4.0
 
 -------------------------------------
 
-###Exit the Demo90-env:
-$ deactivate
+### Exit the (Demo90-env)
+Type the command below to exit the (Demo90-env)
+
+deactivate
 
 
-##Start Sensor Fusion
+## Start Sensor Fusion
 =====================
 in $/home/pi
 
-$ bash shell.sh
+bash shell.sh
 
 NOTE - You may also use bash main.py to launch the service without the menu commands
 
