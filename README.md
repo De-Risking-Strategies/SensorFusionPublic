@@ -5,9 +5,47 @@ Authors:  Drew A
 Update 12-15-2020                     
 ````
 
-## DRS Sensor Fusion Client Setup 	
+## Start Sensor Fusion
+=====================
+Open a terminal windows in $/home/pi, and type:
+
+bash shell.sh {enter]
+
+NOTE - You may also use 'bash main.py' to launch the service without the menu commands
+
+You should see the Sensor Fusion Main Menu,  similar to this:
+
+
+**************~ SENSOR FUSION MAIN MENU ~**********
+**===================================================
+** 1) Run Sensor Fusion  
+** 2) Stop Sensor Fusion  
+** 3) Run Image Labeler
+** 4) CheckID Trained Model Folder 
+** 5) Annotated Pictures Folder 
+**===================================================
+Please enter a menu option and enter or x to exit. 
+
+
+-To run Sensor Fusion, type '1' and press Enter.  Wait about 5-10 seconds for the service to startup!   
+
+-A browser window should open at http://localhost:5000 to start, give the Sensor Fusion enough time to load the page!
+
+-To stop Sensor Fusion, type '2' on the main menu, and press Enter.  This will kill all browser windows and tabs.
+
+The other menus are self explanatory.
+
+Press 'x' [ENTER] top exit the main menu.
+
+To run the Main Menu again, at a terminal window, type 'bash shell.sh [ENTER]' again!
+
+
+----
+
+
+## Sensor Fusion Client Setup for Developers
 ````						    
-This is a basic readme for developers with experience in Linux, Python and Git.
+This section is a basic readme for developers with experience in Linux, Python and Git.
       
 It also assumes you have a current Sensor Fusion image installed on your Raspberry Pi. (December 4, 2020 or later)      
      
@@ -194,7 +232,7 @@ Click that guy, add comments and description from CHANGELOG.md.
 
 
 
-##Update Packages
+## Update Packages
 ===================
 Bwe sure your Pi is upto date (requires a wifi connection)
 System:
@@ -283,14 +321,6 @@ Type the command below to exit the (Demo90-env)
 
 deactivate
 
-
-## Start Sensor Fusion
-=====================
-in $/home/pi
-
-bash shell.sh
-
-NOTE - You may also use bash main.py to launch the service without the menu commands
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
