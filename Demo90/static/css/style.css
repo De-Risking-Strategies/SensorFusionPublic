@@ -67,7 +67,7 @@ body {
    grid-column:1/4;
    grid-row-start:3;
    grid-row-end:4;
-   padding: 2px 2px;
+   padding: 6px 2px;
    border-color: #e7e7e7;
    
    height:100%;

@@ -1,8 +1,14 @@
 
 var elem = document.documentElement;
-
+ 
 /* View in fullscreen */
 function openFullscreen() {
+  var openFullScreen = document.getElementById("open_fullscreen");
+  var closeFullScreen = document.getElementById("close_fullscreen");
+ 
+  openFullScreen.style.display = "none";
+  closeFullScreen.style.display = "block";
+  
   if (elem.requestFullscreen) {
     elem.requestFullscreen();
   } else if (elem.webkitRequestFullscreen) { /* Safari */
@@ -14,6 +20,12 @@ function openFullscreen() {
 
 /* Close fullscreen */
 function closeFullscreen() {
+  var openFullScreen = document.getElementById("open_fullscreen");
+  var closeFullScreen = document.getElementById("close_fullscreen");
+ 
+  openFullScreen.style.display = "block";
+  closeFullScreen.style.display = "none";
+  
   if (document.exitFullscreen) {
     document.exitFullscreen();
   } else if (document.webkitExitFullscreen) { /* Safari */

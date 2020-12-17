@@ -1,5 +1,6 @@
 //Index page functions
 var toggleCameraBtnFlag = true;
+var toggleInfoCanvasFlag = false;
 var toggleLabels = true;//On by default
 var toggleScores = true;
 var span; 
@@ -48,6 +49,7 @@ function toggleCamera(){
   camera1 = document.getElementById("cameraStream");
   var toggleCameraBtn = document.getElementById("toggleCameraBtn");
   var sensorTitleText = document.getElementById("sensor_toggle_title");
+  
     if (toggleCameraBtnFlag == false) {//turn camera on
       toggleCameraBtnFlag = true
       //camera1.src = "{{ url_for('video_feed') }}";
@@ -148,6 +150,21 @@ function postAPI(command) {
         }
     })
 }
+function display_info(){
+  var infoPic = document.getElementById("infoPic");
+  
+    if (toggleInfoCanvasFlag == false) {//turn info canvas  on
+      toggleInfoCanvasFlag = true
+      infoPic.style.display = "block";
+      
+      }else{
+      toggleInfoCanvasFlag = false
+      infoPic.style.display = "none";
+    }
+}
+function close_info(){
+   infoPic.style.display = "none";
+}
 
 function modal1_click(event){
   var hdr = document.getElementById("modal_header");
@@ -182,4 +199,5 @@ function modal1_click(event){
   modal.style.display = "block";
   
 }
+
 

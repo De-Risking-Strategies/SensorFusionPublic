@@ -7,6 +7,11 @@ Authors:  Drew A, Puskar P, Sharon B
 
 ## SENSOR FUSION CHANGELOG                     
 ----
+## December 16, 2020
+- Full screen toggle implemented
+- Info screen implemented
+- Fixups to Menu.sh
+
 ##December 15, 2020
 - .gitigonre repaired
 - Cosmetic fixes to Settings and Annotate dialogs
