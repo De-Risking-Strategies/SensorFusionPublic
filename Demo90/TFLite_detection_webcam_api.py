@@ -461,7 +461,7 @@ def gen_frames():
         videostream.release()
         videostream.stop()
     except KeyboardInterrupt:
-        pass
+        th.join()
 
 #########  run api  #########
 if __name__ == '__main__':
