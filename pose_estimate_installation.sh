@@ -1,7 +1,7 @@
 #/bashfile/Poseestimation
 #Pushkar Khairnar
 
-cd /home/pi/project-posenet-master
+cd /home/pi/SensorFusion/project-posenet-master
 
 sh install_requirements.sh
 

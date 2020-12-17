@@ -1,11 +1,11 @@
 # Pushkar Khairnar
 #!/bin/bash
 
-git clone https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi.git
+#git clone https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi.git
 
-mv TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi checkid
+#mv TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi checkid
 
-cd checkid
+cd /home/pi/SensorFusion/checkid
 
 sudo pip3 install virtualenv
 
@@ -15,7 +15,7 @@ source checkid-env/bin/activate
 
 bash get_pi_requirements.sh
 
-pip3 install tensorflow==1.14.0
+#pip3 install tensorflow==1.14.0
 
 pip3 install Pillow
 

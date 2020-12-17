@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-cd /home/pi/Demo90
+cd /home/pi/SensorFusion/Demo90
 
 source Demo90-env/bin/activate
 
