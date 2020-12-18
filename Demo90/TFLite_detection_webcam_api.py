@@ -17,11 +17,14 @@ import importlib.util
 
 #Flask 
 import json
+import sqlite3
 from flask import Flask, jsonify, request, render_template, Response, session, stream_with_context, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from importlib import reload 
 import gc
 import threading
+
+#from Demo90.models import 
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Disable Flask Cache as it interferes with streaming
@@ -43,7 +46,36 @@ os.environ['scores_flag'] = 'scores_on'
 #VideoStream Instance
 instance = []
 
- 
+class User(db.Model):
+    User_ID = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(128),nullable=False)
+    last_name = db.Column(db.String(128),nullable=False)
+    email_address = db.Column(db.String(255),nullable=False)
+    password = db.Column(db.String(10),nullable=False)
+    #date_created = db.Column(db.DateTime(), nullable=False,default=datetime.utcnow)
+    model_limit = db.Column(db.Integer,)
+    threshold_max = db.Column(db.Integer,default=128)
+    tipping_point_a = db.Column(db.Integer,default=50)
+    threshold_min = db.Column(db.Integer,default=-128)
+    camera_count = db.Column(db.Integer,default=1)
+    training_limit = db.Column(db.Integer,default=0)
+    purchase_level = db.Column(db.Integer)
+
+    installed_image_version = db.Column(db.Integer) # should be type long
+    static_models = db.Column(db.Integer)  # should be type array?
+    custom_models = db.Column(db.Integer)  # should be type array?
+
+    # specifies the format in which we want to print our user object
+    def __repr__(self):
+        return f"User('{self.User_ID}','{self.first_name}','{self.last_name}','{self.email_address}')"
+
+#def __init__(self,User_ID,first_name,last_name,email_address):
+    #self.User_ID = User_ID
+    #self.first_name = first_name
+    #self.last_name = last_name
+    #self.email_address = email_address
+
+
 @app.route('/',methods=['GET'])
 def index():
    video_camera_flag = True
@@ -204,10 +236,24 @@ def register():
            return render_template('register.html', embed=embedVar, isInvalid=isInvalid)
        else:
            # all user information is valid; add to database
+           #   - unique email addresses
+
+           all_users = get_all_users()
+           print(all_users)
+           for user in all_users:
+               print(user)
+               print(len(user[3].strip('"\'')))
+               print(len(email_address))
+               if user[3].strip('"\'') == email_address:
+                   flash('An account with this email address already exists. Please try a different one.')
+                   isInvalid = 1
+                   return render_template('register.html',embed=embedVar, isInvalid=isInvalid )
 
            flash('Congratulations! You have successfully logged in!')
-           for key, value in request.form.items():
-               flash(value)
+
+           #debugging
+           #for key, value in request.form.items():
+               #flash(value)
           
        #res = redirect("/api/user", 303)
        #print(request.form)
@@ -226,7 +272,7 @@ def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-@app.route('/api/user', methods=['GET', 'POST'])
+#@app.route('/api/user', methods=['GET', 'POST'])
 def collection():
     print("hello, it's me")
     if request.method == 'GET':
@@ -236,12 +282,13 @@ def collection():
     elif request.method == 'POST':
         print('This is a POST method')
         data = request.form
+        print(data)
         #result = add_user(data['firstName'], data['lastName'], data['email'], data['captureLimit'])
-        return jsonify(result)
+        #return jsonify(result)
 
 
 
-@app.route('/api/user/<user_id>', methods=['GET', 'PUT', 'DELETE'])
+#@app.route('/api/user/<user_id>', methods=['GET', 'PUT', 'DELETE'])
 def resource(user_id):
     if request.method == 'GET':
         user = get_single_user(user_id)
