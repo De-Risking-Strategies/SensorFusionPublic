@@ -17,13 +17,18 @@ import importlib.util
 
 #Flask 
 import json
-from flask import Flask, jsonify, request, render_template, Response, session, stream_with_context
+from flask import Flask, jsonify, request, render_template, Response, session, stream_with_context, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
 from importlib import reload 
 import gc
 import threading
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Disable Flask Cache as it interferes with streaming
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sf.db'
+app.secret_key = 'i need a new key'
+
+db = SQLAlchemy(app)
 
 video_camera_flag = True# Video Stream class enable
 capture_flag = 'False' # Capture Enable
@@ -120,16 +125,188 @@ def login():
    embedVar='Login'
    return render_template('login.html',embed=embedVar )
 
-@app.route('/register') 
+@app.route('/register', methods=['GET','POST']) 
 def register():
    embedVar='Register'
-   return render_template('register.html',embed=embedVar )
+   isInvalid = 0  # used to flash error messages if anything was entered incorrectly
+   # if post request, check that user is valid and doesn't already exist in database
+   if request.method == "POST":
+       #print(request.headers)
+       first_name = request.form.get("first")
+       last_name = request.form.get("last")
+       email_address = request.form.get("email")
+       password = request.form.get("password")
+       reEnterPassword = request.form.get("re-enterPassword")
+       agree_term = request.form.get('agree-term')
+       privacy_term = request.form.get('privacy-term')
+       age_term = request.form.get('age-term')
+
+       # debugging
+       for key, value in request.form.items():
+           print("key: {0}, value: {1}".format(key, value))
+
+       # validation checks
+       #   - is it possible to send the values the user gave back so that they don't have to fill 
+       #     in all the fields again?
+
+       # both first and last name need to be between 4 and 128 characters
+       #   - should we have alpha numeric checks for names?
+       #   - there are people with first and last names that are shorter than 4 characters, 
+       #     so should we decrease the lower bound?
+
+       # validate all user inputs
+       if len(first_name) < 4 or len(first_name) > 128: 
+           print('First name either too long or too short')
+           #return 'First name is either too long or too short'
+           input_validations.append(0)
+           flash('First name is either too long or too short')
+           isInvalid = 1
+           
+       if len(last_name) < 4 or len(last_name) > 128: 
+           print('Last_name either too long or too short')
+           #return 'Last name is either too long or too short'
+           flash('Last name is either too long or too short')
+           isInvalid = 1
+
+       # email_address should be between 8 and 255 characters and should not already exist in the table
+       if len(email_address) < 8 or len(email_address) > 255: 
+           # check to make sure this email does not already exist in the database
+           print('Email address either too long or too short')
+           #return 'Email address is either too long or too short'
+           flash('Email address is either too long or too short')
+           isInvalid = 1
+
+       # password should be at least 8 characters long, encrypted, and should have the specified requirements
+       if len(password) < 8:
+           # encrypt password to be saved in database
+           print('Password too short')
+           #return 'Password is too short'
+           flash('Password is too short')
+           isInvalid = 1
+       # check for other password validation requirements?
+
+       # re-enterPassword should match password
+       if reEnterPassword != password: 
+           print('Passwords do not match')
+           #return 'Your passwords do not match'
+           flash('Your passwords do not match')
+           isInvalid = 1
+
+       # check if terms of service were accepted
+       if agree_term == None or privacy_term == None or age_term == None:
+           print('Not all terms were accepted')
+           #return'Not all terms were accepted'
+           flash('Not all terms were accepted')
+           isInvalid = 1
+
+       if isInvalid == 1:
+           # send user back to registartion form to enter their information correctly
+           return render_template('register.html', embed=embedVar, isInvalid=isInvalid)
+       else:
+           # all user information is valid; add to database
+
+           flash('Congratulations! You have successfully logged in!')
+           for key, value in request.form.items():
+               flash(value)
+          
+       #res = redirect("/api/user", 303)
+       #print(request.form)
+       #print('redirected')
+       #print(type(res))
+
+   # this will need to redirect to a different location, I think; the login page maybe?
+   return render_template('register.html',embed=embedVar, isInvalid=isInvalid )
+   #return redirect(url_for('login'))
   
+
 @app.route('/video_feed')
 def video_feed():
     #Video streaming route: goes into src attribute of an img tag
     print('\nin FLASK: locals() value inside class\n', locals())
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route('/api/user', methods=['GET', 'POST'])
+def collection():
+    print("hello, it's me")
+    if request.method == 'GET':
+        print('This is a GET method')
+        all_users = get_all_users()
+        return json.dumps(all_users)
+    elif request.method == 'POST':
+        print('This is a POST method')
+        data = request.form
+        #result = add_user(data['firstName'], data['lastName'], data['email'], data['captureLimit'])
+        return jsonify(result)
+
+
+
+@app.route('/api/user/<user_id>', methods=['GET', 'PUT', 'DELETE'])
+def resource(user_id):
+    if request.method == 'GET':
+        user = get_single_user(user_id)
+        return json.dumps(user)
+    elif request.method == 'PUT':
+        data = request.form
+        result = edit_user(
+            user_id, data['firstName'], data['lastName'],  data['email'], data['captureLimit'])
+        return jsonify(result)
+    elif request.method == 'DELETE':
+        result = delete_user(user_id)
+        return jsonify(result)
+
+
+# helper functions
+
+def add_user(firstName, lastName, email, captureLimit):
+    try:
+        with sqlite3.connect('sf.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute("""
+                INSERT INTO user (firstName, lastName, email, captureLimit) values (?, ?, ?, ?);
+                """, (firstName, lastName, email, captureLimit,))
+            result = {'status': 1, 'message': 'User Added'}
+    except:
+        result = {'status': 0, 'message': 'error'}
+    return result
+
+
+def get_all_users():
+    with sqlite3.connect('sf.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM user ORDER BY id desc")
+        all_users = cursor.fetchall()
+        return all_users
+
+
+def get_single_user(user_id):
+    with sqlite3.connect('sf.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM user WHERE id = ?", (user_id,))
+        user = cursor.fetchone()
+        return user
+
+
+def edit_user(user_id, firstName, lastName, email, captureLimit):
+    try:
+        with sqlite3.connect('sf.db') as connection:
+            connection.execute("UPDATE user SET firstName = ?, lastName = ?,  email = ?, captureLimit = ? WHERE ID = ?;", (firstName, lastName, email, captureLimit, user_id,))
+            result = {'status': 1, 'message': 'USER Edited'}
+    except:
+        result = {'status': 0, 'message': 'Error'}
+    return result
+
+
+def delete_user(user_id):
+    try:
+        with sqlite3.connect('sf.db') as connection:
+            connection.execute("DELETE FROM user WHERE ID = ?;", (user_id,))
+            result = {'status': 1, 'message': 'USER Deleted'}
+    except:
+        result = {'status': 0, 'message': 'Error'}
+    return result
+
+# end helper functions?
 
 
 def gen_frames():
