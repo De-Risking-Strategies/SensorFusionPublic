@@ -164,17 +164,18 @@ def register():
    # if post request, check that user is valid and doesn't already exist in database
    if request.method == "POST":
        #print(request.headers)
-       first_name = request.form.get("first")
-       last_name = request.form.get("last")
-       email_address = request.form.get("email")
-       password = request.form.get("password")
-       reEnterPassword = request.form.get("re-enterPassword")
-       agree_term = request.form.get('agree-term')
-       privacy_term = request.form.get('privacy-term')
-       age_term = request.form.get('age-term')
+       data = request.form
+       first_name = data.get("first")
+       last_name = data.get("last")
+       email_address = data.get("email")
+       password = data.get("password")
+       reEnterPassword = data.get("re-enterPassword")
+       agree_term = data.get('agree-term')
+       privacy_term = data.get('privacy-term')
+       age_term = data.get('age-term')
 
        # debugging
-       for key, value in request.form.items():
+       for key, value in data.items():
            print("key: {0}, value: {1}".format(key, value))
 
        # validation checks
@@ -241,15 +242,21 @@ def register():
            all_users = get_all_users()
            print(all_users)
            for user in all_users:
-               print(user)
-               print(len(user[3].strip('"\'')))
-               print(len(email_address))
+               #print(user)
+               #print(len(user[3].strip('"\'')))
+               #print(len(email_address))
+
+               # if an email already exists in database, return error message
                if user[3].strip('"\'') == email_address:
                    flash('An account with this email address already exists. Please try a different one.')
                    isInvalid = 1
                    return render_template('register.html',embed=embedVar, isInvalid=isInvalid )
 
+           # else, add new user to database and return success message
+           result = add_user(first_name, last_name, email_address, 5)
            flash('Congratulations! You have successfully logged in!')
+           #print(jsonify(result))
+           return jsonify(result)
 
            #debugging
            #for key, value in request.form.items():
