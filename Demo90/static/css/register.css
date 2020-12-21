@@ -95,6 +95,10 @@ button:focus {
    padding-bottom: 25px;
 }
 
+.no-outline:focus {
+   outline: none;
+}
+
 .form-section {
    background-color: #444444;
    border-bottom: 2px #bb86fc solid;
@@ -105,8 +109,65 @@ button:focus {
    width: 250px;
 }
 
+.form-and-msgs {
+   display: flex;
+   font-size: 14px;
+}
+
 .login-reg-main {
    margin-left: 20%;
+}
+
+.msg-section {
+   margin-left: 150px;
+   width: 500px;
+}
+
+.msg-section h3 {
+   margin-top: 0;
+}
+
+.pswd-tip {
+   position: relative;
+   display: inline-block;
+}
+
+.pswd-tip .pswd-tip-text {
+   visibility: hidden;
+   width: 120px;
+   background-color: grey;
+   color: white;
+   text-align: center;
+   padding: 10px;
+   border-radius: 6px;
+
+   /* positoining of tip box */
+   position: absolute;
+   z-index: 1;
+   bottom: 125%;
+   left: 50%;
+   margin-left: -60px;
+
+   /* fade-in effect */
+   opacity: 0;
+   transition: opacity 0.3s;
+}
+
+.pswd-tip .pswd-tip-text::after {
+   /* point on bottom of box (similar to checkboxes) */
+   content: "";
+   position: absolute;
+   top: 100%;
+   left: 50%;
+   margin-left: 5px;
+   border-width: 5px;
+   border-style: solid;
+   border-color: #555 transparent transparent transparent;
+}
+
+.pswd-tip:hover .pswd-tip-text {
+   visibility: visible;
+   opacity: 1;
 }
 
 .success-msgs {

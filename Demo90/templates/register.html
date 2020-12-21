@@ -34,6 +34,7 @@
     <h2>Create New Account</h2>
     <!--    <form onSubmit='return checkPwMatch()'action='/register' method='post'> -->
     <!--    <form onSubmit='return checkPwMatch()'action="{{ url_for('register') }}" method='post'> -->
+    <div class="form-and-msgs">
     <form action="{{ url_for('register') }}" method='POST'>
       <div class='form-section'>
         <label for='firstName'>First</label>
@@ -47,18 +48,38 @@
         <label for='email'>Email</label>
         <input id='email' name='email' placeholder='Email' required></input>
       </div>
-      <div class='form-section with-eye'>
+      <div class='form-section with-eye pswd-tip'>
+<!--
 	<div>
+	  <span class='pswd-tip-text'>
+            <h3>Password should contain the following:</h3>
+              <p>1 capital letter</p>
+              <p>1 lowercase letter</p>
+              <p>1 number</p>
+              <p>1 symbol</p>
+	  </span>
+	</div>
+	-->
+	<div class="no-outline">
           <label for='password'>Password</label>
           <input id='password' name='password' placeholder='Password' type='password' maxlength="10" pattern="^(?=.{6,})(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9 ]).*$" onChange='return verifyPswd()' required></input>
+
 	</div>
 	<div class='visibility-icon'>
 	  <input id='pswd-vis' type='checkbox' onclick='showPassword1()'></input>
 	  <label for='pswd-vis'></label>
 	</div>
+	<span class='pswd-tip-text'>
+            <h3>Password should contain the following:</h3>
+              <p>1 capital letter</p>
+              <p>1 lowercase letter</p>
+              <p>1 number</p>
+              <p>1 symbol</p>
+	  </span>
+
       </div>
       <div class='form-section with-eye'>
-	<div>
+	<div class="no-outline">
           <label for='re-enterPassword'>Re-Enter Password</label>
           <input id='re-enterPassword' name='re-enterPassword' placeholder='Re-Enter Password' type='password' onChange='return verifyPswd()' required></input>
 	</div>
@@ -125,17 +146,7 @@
 	  </button>
         </div>
 	<div class="msgs">
-	  {% if isInvalid %}
-	    <div class='warning-msgs'>
-	      {% with messages = get_flashed_messages() %}
-	        {% if messages %}
-	          {% for message in messages %}
-	            <h3>{{ message }}</h3>
-	          {% endfor %}
-	        {% endif %}
-	      {% endwith %}
-	    </div>
-	  {% else %}
+	  {% if not isInvalid %}
 	    <div class='success-msgs'>
 	      {% with messages = get_flashed_messages() %}
 	        {% if messages %}
@@ -150,6 +161,23 @@
 	</div>
       </div>
     </form>
+      <div class="msg-section">
+	<div class="msgs">
+	  {% if isInvalid %}
+	    <div class='warning-msgs'>
+	      {% with messages = get_flashed_messages() %}
+	        {% if messages %}
+	          {% for message in messages %}
+	            <h3>{{ message }}</h3>
+	          {% endfor %}
+	        {% endif %}
+	      {% endwith %}
+	    </div>
+	  {% endif %}
+	</div>
+
+      </div>
+    </div>
 
   </section>
   <section class ="login-reg-foot">
