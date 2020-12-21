@@ -127,25 +127,34 @@ button:focus {
    margin-top: 0;
 }
 
+.pswd-req {
+   text-indent: 20px;
+}
+
 .pswd-tip {
    position: relative;
    display: inline-block;
 }
 
+.pswd-tip h3 {
+   margin: 5px 0;
+   font-size: 14px;
+}
+
 .pswd-tip .pswd-tip-text {
    visibility: hidden;
-   width: 120px;
+   width: 200px;
    background-color: grey;
    color: white;
-   text-align: center;
-   padding: 10px;
+   text-align: left;
+   padding: 15px;
    border-radius: 6px;
 
    /* positoining of tip box */
    position: absolute;
    z-index: 1;
-   bottom: 125%;
-   left: 50%;
+   top: 130%;
+   left: 30%;
    margin-left: -60px;
 
    /* fade-in effect */
@@ -154,15 +163,16 @@ button:focus {
 }
 
 .pswd-tip .pswd-tip-text::after {
-   /* point on bottom of box (similar to checkboxes) */
+   /* arrow on bottom of box (similar to checkboxes) */
    content: "";
    position: absolute;
-   top: 100%;
-   left: 50%;
+   bottom: 100%;
+   left: 40%;
    margin-left: 5px;
-   border-width: 5px;
+   border-width: 10px;
    border-style: solid;
-   border-color: #555 transparent transparent transparent;
+   border-color: grey transparent transparent transparent;
+   transform: scale(1, -1);
 }
 
 .pswd-tip:hover .pswd-tip-text {
