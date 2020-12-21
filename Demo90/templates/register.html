@@ -94,10 +94,15 @@
 	</div>
 	<p class='warning-off'>Please accept all the terms and conditions.</p>
 	<div class='term-btns'>
+	     <!--
 	  <button class='btn'>
-	    <strong class='btn-outline'>Cancel</strong>
-	  </button>
-	  <button id='submit-btn' class='btn' type='submit'>
+	    <strong class='btn-outline' value='canel' onClick="window.location.assign({{ url_for('login') }})">
+	      Cancel
+	    </strong>
+	  </button> 
+	     -->
+	  <a href="{{ url_for('login') }}"><strong>Cancel</strong></a> 
+	  <button id='submit-btn' class='btn' type='submit' value='create'>
 	    <strong class='btn-outline'>Create Account</strong>
 	  </button>
 	  {% if isInvalid %}
@@ -116,6 +121,8 @@
 	        {% if messages %}
 	          {% for message in messages %}
 	            <h3>{{ message }}</h3>
+		    <h3>Return to the login page to login</h3>
+	            <a href="{{ url_for('login') }}">Login</a>
 	          {% endfor %}
 	        {% endif %}
 	      {% endwith %}

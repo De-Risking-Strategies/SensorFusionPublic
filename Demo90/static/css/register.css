@@ -4,6 +4,11 @@
 }
 
 @font-face {
+   src: url(../fonts/Roboto/Roboto-Bold.ttf);
+   font-family: Roboto-Bold;
+}
+
+@font-face {
    src: url(../fonts/HelveticaNeue/);
 }
 
@@ -76,7 +81,10 @@ h2 {
    border: none;
    color: #bb86fc;
    cursor: pointer;
-   padding: 5px 10px;
+   font-family: 'Roboto-Bold', sans-serif;
+   font-size: 14px;
+   padding: 5px 15px;
+
 }
 
 button:focus {
@@ -99,11 +107,6 @@ button:focus {
 
 .login-reg-main {
    margin-left: 20%;
-}
-
-.warning-msgs {
-   color: red;
-   font-size: 14px;
 }
 
 .success-msgs {
@@ -162,6 +165,23 @@ button:focus {
    width: 10px;
 }
 
+a {
+   font-family: bold;
+}
+
+.term-btns a:link,
+.term-btns a:hover,
+.term-btns a:visited, 
+.term-btns a:active {
+   outline: none;
+   color: #bb86fc;
+   font-family:'Roboto-Bold', sans-serif;
+   font-size: 14px;
+   font-weight: bold;
+   padding: 5px 15px;
+   text-decoration: none;
+}
+
 /*
 .term input[type='checkbox']:checked + label[] {
    background: none;
@@ -194,6 +214,15 @@ button:focus {
    height: 20px;
    opacity: 1.0;
    width: 30px;
+}
+
+.warning-msgs {
+   color: red;
+   font-size: 13px;
+}
+
+.warning-msgs h3 {
+   margin: .5em 0;
 }
 
 /* warning-on, warning-off */

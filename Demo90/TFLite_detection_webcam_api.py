@@ -14,6 +14,7 @@ import time
 
 from threading import Thread
 import importlib.util
+from hashlib import sha256
 
 #Flask 
 import json
@@ -29,6 +30,7 @@ import threading
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Disable Flask Cache as it interferes with streaming
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sf.db'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///local.db'
 app.secret_key = 'i need a new key'
 
 db = SQLAlchemy(app)
@@ -45,35 +47,36 @@ os.environ['scores_flag'] = 'scores_on'
 
 #VideoStream Instance
 instance = []
+input_validations = [] # 0: false, 1: true
 
-class User(db.Model):
-    User_ID = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(128),nullable=False)
-    last_name = db.Column(db.String(128),nullable=False)
-    email_address = db.Column(db.String(255),nullable=False)
-    password = db.Column(db.String(10),nullable=False)
-    #date_created = db.Column(db.DateTime(), nullable=False,default=datetime.utcnow)
-    model_limit = db.Column(db.Integer,)
-    threshold_max = db.Column(db.Integer,default=128)
-    tipping_point_a = db.Column(db.Integer,default=50)
-    threshold_min = db.Column(db.Integer,default=-128)
-    camera_count = db.Column(db.Integer,default=1)
-    training_limit = db.Column(db.Integer,default=0)
-    purchase_level = db.Column(db.Integer)
-
-    installed_image_version = db.Column(db.Integer) # should be type long
-    static_models = db.Column(db.Integer)  # should be type array?
-    custom_models = db.Column(db.Integer)  # should be type array?
-
-    # specifies the format in which we want to print our user object
-    def __repr__(self):
-        return f"User('{self.User_ID}','{self.first_name}','{self.last_name}','{self.email_address}')"
-
-#def __init__(self,User_ID,first_name,last_name,email_address):
-    #self.User_ID = User_ID
-    #self.first_name = first_name
-    #self.last_name = last_name
-    #self.email_address = email_address
+#class User(db.Model):
+#    User_ID = db.Column(db.Integer, primary_key=True)
+#    first_name = db.Column(db.String(128),nullable=False)
+#    last_name = db.Column(db.String(128),nullable=False)
+#    email_address = db.Column(db.String(255),nullable=False)
+#    password = db.Column(db.String(10),nullable=False)
+#    #date_created = db.Column(db.DateTime(), nullable=False,default=datetime.utcnow)
+#    model_limit = db.Column(db.Integer,default=5)
+#    threshold_max = db.Column(db.Integer,default=128)
+#    tipping_point_a = db.Column(db.Integer,default=50)
+#    threshold_min = db.Column(db.Integer,default=-128)
+#    camera_count = db.Column(db.Integer,default=1)
+#    training_limit = db.Column(db.Integer,default=0)
+#    purchase_level = db.Column(db.Integer)
+#
+#    installed_image_version = db.Column(db.Integer) # should be type long
+#    static_models = db.Column(db.Integer)  # should be type array?
+#    custom_models = db.Column(db.Integer)  # should be type array?
+#
+#    # specifies the format in which we want to print our user object
+#    def __repr__(self):
+#        return f"User('{self.User_ID}','{self.first_name}','{self.last_name}','{self.email_address}')"
+#
+##def __init__(self,User_ID,first_name,last_name,email_address):
+#    #self.User_ID = User_ID
+#    #self.first_name = first_name
+#    #self.last_name = last_name
+#    #self.email_address = email_address
 
 
 @app.route('/',methods=['GET'])
@@ -160,19 +163,23 @@ def login():
 @app.route('/register', methods=['GET','POST']) 
 def register():
    embedVar='Register'
+   print(get_all_users)
+#   delete_user(4)
+#   delete_user(5)
+#   delete_user(6)
    isInvalid = 0  # used to flash error messages if anything was entered incorrectly
    # if post request, check that user is valid and doesn't already exist in database
    if request.method == "POST":
-       #print(request.headers)
-       data = request.form
-       first_name = data.get("first")
-       last_name = data.get("last")
-       email_address = data.get("email")
-       password = data.get("password")
-       reEnterPassword = data.get("re-enterPassword")
-       agree_term = data.get('agree-term')
-       privacy_term = data.get('privacy-term')
-       age_term = data.get('age-term')
+       #print(type(request.form))
+       data = request.form.to_dict()
+       first_name = data["first"]
+       last_name = data["last"]
+       email_address = data["email"]
+       password = data["password"]
+       reEnterPassword = data["re-enterPassword"]
+       agree_term = data['agree-term']
+       privacy_term = data['privacy-term']
+       age_term = data['age-term']
 
        # debugging
        for key, value in data.items():
@@ -191,7 +198,7 @@ def register():
        if len(first_name) < 4 or len(first_name) > 128: 
            print('First name either too long or too short')
            #return 'First name is either too long or too short'
-           input_validations.append(0)
+           #input_validations.append(0)
            flash('First name is either too long or too short')
            isInvalid = 1
            
@@ -253,19 +260,18 @@ def register():
                    return render_template('register.html',embed=embedVar, isInvalid=isInvalid )
 
            # else, add new user to database and return success message
-           result = add_user(first_name, last_name, email_address, 5)
-           flash('Congratulations! You have successfully logged in!')
-           #print(jsonify(result))
-           return jsonify(result)
+
+           # create hash of password and add that to table
+           pswd_hash = sha256(password.encode("utf-8")).hexdigest()
+
+           # add user to database; passwords currently not being saved, but are being hashed
+           result = add_user(first_name, last_name, email_address, 5) # eventually save pswd_hash
+           flash('Congratulations! You have successfully registered! Please go to the login page to sign in!')
+           print(all_users)
 
            #debugging
            #for key, value in request.form.items():
                #flash(value)
-          
-       #res = redirect("/api/user", 303)
-       #print(request.form)
-       #print('redirected')
-       #print(type(res))
 
    # this will need to redirect to a different location, I think; the login page maybe?
    return render_template('register.html',embed=embedVar, isInvalid=isInvalid )
@@ -318,7 +324,7 @@ def add_user(firstName, lastName, email, captureLimit):
             cursor = connection.cursor()
             cursor.execute("""
                 INSERT INTO user (firstName, lastName, email, captureLimit) values (?, ?, ?, ?);
-                """, (firstName, lastName, email, captureLimit,))
+                """, (firstName, lastName, email, captureLimit))
             result = {'status': 1, 'message': 'User Added'}
     except:
         result = {'status': 0, 'message': 'error'}
@@ -331,24 +337,6 @@ def get_all_users():
         cursor.execute("SELECT * FROM user ORDER BY id desc")
         all_users = cursor.fetchall()
         return all_users
-
-
-def get_single_user(user_id):
-    with sqlite3.connect('sf.db') as connection:
-        cursor = connection.cursor()
-        cursor.execute("SELECT * FROM user WHERE id = ?", (user_id,))
-        user = cursor.fetchone()
-        return user
-
-
-def edit_user(user_id, firstName, lastName, email, captureLimit):
-    try:
-        with sqlite3.connect('sf.db') as connection:
-            connection.execute("UPDATE user SET firstName = ?, lastName = ?,  email = ?, captureLimit = ? WHERE ID = ?;", (firstName, lastName, email, captureLimit, user_id,))
-            result = {'status': 1, 'message': 'USER Edited'}
-    except:
-        result = {'status': 0, 'message': 'Error'}
-    return result
 
 
 def delete_user(user_id):
