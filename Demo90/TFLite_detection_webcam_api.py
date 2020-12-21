@@ -25,15 +25,14 @@ from importlib import reload
 import gc
 import threading
 
-#from Demo90.models import 
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Disable Flask Cache as it interferes with streaming
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sf.db'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///local.db'
-app.secret_key = 'i need a new key'
+#app.secret_key = 'i need a new key'
+app.secret_key = 'HKkSeJXfs1aaQNpon0JvFg6H8urt5YWy'
 
-db = SQLAlchemy(app)
+#db = SQLAlchemy(app)
 
 video_camera_flag = True# Video Stream class enable
 capture_flag = 'False' # Capture Enable
@@ -48,35 +47,6 @@ os.environ['scores_flag'] = 'scores_on'
 #VideoStream Instance
 instance = []
 input_validations = [] # 0: false, 1: true
-
-#class User(db.Model):
-#    User_ID = db.Column(db.Integer, primary_key=True)
-#    first_name = db.Column(db.String(128),nullable=False)
-#    last_name = db.Column(db.String(128),nullable=False)
-#    email_address = db.Column(db.String(255),nullable=False)
-#    password = db.Column(db.String(10),nullable=False)
-#    #date_created = db.Column(db.DateTime(), nullable=False,default=datetime.utcnow)
-#    model_limit = db.Column(db.Integer,default=5)
-#    threshold_max = db.Column(db.Integer,default=128)
-#    tipping_point_a = db.Column(db.Integer,default=50)
-#    threshold_min = db.Column(db.Integer,default=-128)
-#    camera_count = db.Column(db.Integer,default=1)
-#    training_limit = db.Column(db.Integer,default=0)
-#    purchase_level = db.Column(db.Integer)
-#
-#    installed_image_version = db.Column(db.Integer) # should be type long
-#    static_models = db.Column(db.Integer)  # should be type array?
-#    custom_models = db.Column(db.Integer)  # should be type array?
-#
-#    # specifies the format in which we want to print our user object
-#    def __repr__(self):
-#        return f"User('{self.User_ID}','{self.first_name}','{self.last_name}','{self.email_address}')"
-#
-##def __init__(self,User_ID,first_name,last_name,email_address):
-#    #self.User_ID = User_ID
-#    #self.first_name = first_name
-#    #self.last_name = last_name
-#    #self.email_address = email_address
 
 
 @app.route('/',methods=['GET'])
@@ -163,15 +133,13 @@ def login():
 @app.route('/register', methods=['GET','POST']) 
 def register():
    embedVar='Register'
-   print(get_all_users)
-   delete_user(8)
-#   delete_user(5)
-#   delete_user(6)
+   #print(get_all_users)
+
    isInvalid = 0  # used to flash error messages if anything was entered incorrectly
-   redirect = 0  # used to tell wether page was freshly loaded or redirected 
+   redirect = 0  # used to tell wether page was freshly loaded or redirected
+
    # if post request, check that user is valid and doesn't already exist in database
    if request.method == "POST":
-       #print(type(request.form))
        data = request.form.to_dict()
        first_name = data["first"]
        last_name = data["last"]
@@ -183,8 +151,8 @@ def register():
        age_term = data['age-term']
 
        # debugging
-       for key, value in data.items():
-           print("key: {0}, value: {1}".format(key, value))
+       #for key, value in data.items():
+           #print("key: {0}, value: {1}".format(key, value))
 
        # validation checks
        #   - is it possible to send the values the user gave back so that they don't have to fill 
@@ -197,46 +165,40 @@ def register():
 
        # validate all user inputs
        if len(first_name) < 4 or len(first_name) > 128: 
-           print('First name either too long or too short')
-           #return 'First name is either too long or too short'
+           #print('First name either too long or too short')
            #input_validations.append(0)
            flash('First name is either too long or too short')
            isInvalid = 1
            
        if len(last_name) < 4 or len(last_name) > 128: 
-           print('Last_name either too long or too short')
-           #return 'Last name is either too long or too short'
+           #print('Last_name either too long or too short')
            flash('Last name is either too long or too short')
            isInvalid = 1
 
        # email_address should be between 8 and 255 characters and should not already exist in the table
        if len(email_address) < 8 or len(email_address) > 255: 
            # check to make sure this email does not already exist in the database
-           print('Email address either too long or too short')
-           #return 'Email address is either too long or too short'
+           #print('Email address either too long or too short')
            flash('Email address is either too long or too short')
            isInvalid = 1
 
        # password should be at least 8 characters long, encrypted, and should have the specified requirements
        if len(password) < 8:
            # encrypt password to be saved in database
-           print('Password too short')
-           #return 'Password is too short'
+           #print('Password too short')
            flash('Password is too short')
            isInvalid = 1
        # check for other password validation requirements?
 
        # re-enterPassword should match password
        if reEnterPassword != password: 
-           print('Passwords do not match')
-           #return 'Your passwords do not match'
+           #print('Passwords do not match')
            flash('Your passwords do not match')
            isInvalid = 1
 
        # check if terms of service were accepted
        if agree_term == None or privacy_term == None or age_term == None:
-           print('Not all terms were accepted')
-           #return'Not all terms were accepted'
+           #print('Not all terms were accepted')
            flash('Not all terms were accepted')
            isInvalid = 1
 
@@ -248,11 +210,8 @@ def register():
            #   - unique email addresses
 
            all_users = get_all_users()
-           print(all_users)
+           #print(all_users)
            for user in all_users:
-               #print(user)
-               #print(len(user[3].strip('"\'')))
-               #print(len(email_address))
 
                # if an email already exists in database, return error message
                if user[3].strip('"\'') == email_address:
@@ -266,7 +225,7 @@ def register():
            pswd_hash = sha256(password.encode("utf-8")).hexdigest()
 
            # add user to database; passwords currently not being saved, but are being hashed
-           #result = add_user(first_name, last_name, email_address, 5) # eventually save pswd_hash
+           result = add_user(first_name, last_name, email_address, 5) # eventually save pswd_hash
            redirect = 1
            flash('Congratulations! You have successfully registered! Please go to the login page to sign in!')
            print(all_users)
@@ -277,7 +236,6 @@ def register():
 
    # this will need to redirect to a different location, I think; the login page maybe?
    return render_template('register.html',embed=embedVar, isInvalid=isInvalid, redirect=redirect)
-   #return redirect(url_for('login'))
   
 
 @app.route('/video_feed')
