@@ -11,6 +11,7 @@
     <script src='/static/js/utilities.js'></script>
     <script src='/static/js/register.js'></script>
 </head>
+
 <body>
   <noscript>
     You need to enable JavaScript to run Sensor Fusion!
@@ -66,6 +67,7 @@
 	  <label for='confirm-pswd-vis'></label>
 	</div>
       </div>
+      <!--
       <div>
 	<p class='warning-off'>Please accept all the terms and conditions.</p>
         <div class='warning-off'>
@@ -76,8 +78,13 @@
           <p>1 symbol</p>
         </div>
       </div>
-      <div class='terms'>
-        <div class='chkbox-group'>
+      -->
+      <div class='terms' id='terms'>
+	{% if not isInvalid and redirect %}
+          <div class='chkbox-group' id='chkbox-group' hidden>
+        {% else %}
+          <div class='chkbox-group' id='chkbox-group'>
+	{% endif %}
 	  <h3>I agree</h3>
 	  <div class='term'>
 	    <input id='agree-term' name='agree-term' type='checkbox' required></input>
@@ -92,8 +99,19 @@
 	    <label for='age-term'>16+ years old</label>
 	  </div>
 	</div>
+	<!--
 	<p class='warning-off'>Please accept all the terms and conditions.</p>
-	<div class='term-btns'>
+	-->
+	<!--
+	{{ isInvalid }}
+	{{ redirect }}
+	-->
+	{% if not isInvalid and redirect %}
+	  <div class='term-btns' id='term-btns' hidden>
+        {% else %}
+	  <div class='term-btns' id='term-btns'>
+	{% endif %}
+
 	     <!--
 	  <button class='btn'>
 	    <strong class='btn-outline' value='canel' onClick="window.location.assign({{ url_for('login') }})">
@@ -105,6 +123,8 @@
 	  <button id='submit-btn' class='btn' type='submit' value='create'>
 	    <strong class='btn-outline'>Create Account</strong>
 	  </button>
+        </div>
+	<div class="msgs">
 	  {% if isInvalid %}
 	    <div class='warning-msgs'>
 	      {% with messages = get_flashed_messages() %}
@@ -121,14 +141,13 @@
 	        {% if messages %}
 	          {% for message in messages %}
 	            <h3>{{ message }}</h3>
-		    <h3>Return to the login page to login</h3>
 	            <a href="{{ url_for('login') }}">Login</a>
 	          {% endfor %}
 	        {% endif %}
 	      {% endwith %}
 	    </div>
 	  {% endif %}
-        </div>
+	</div>
       </div>
     </form>
 

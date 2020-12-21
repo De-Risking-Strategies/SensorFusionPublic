@@ -112,6 +112,11 @@ button:focus {
 .success-msgs {
    color: green;
    font-size: 14px;
+   /*margin-bottom: 10px;*/
+}
+
+.success-msgs a {
+   color: green;
 }
 
 .term {
@@ -130,7 +135,7 @@ button:focus {
    box-sizing: border-box;
    color: white;
    font-size: 16px;
-   padding: 5px 20px;
+   padding: 5px 20px 10px 20px;
    width: 250px;
 }
 
@@ -169,10 +174,10 @@ a {
    font-family: bold;
 }
 
-.term-btns a:link,
-.term-btns a:hover,
-.term-btns a:visited, 
-.term-btns a:active {
+.terms a:link,
+.terms a:hover,
+.terms a:visited, 
+.terms a:active {
    outline: none;
    color: #bb86fc;
    font-family:'Roboto-Bold', sans-serif;

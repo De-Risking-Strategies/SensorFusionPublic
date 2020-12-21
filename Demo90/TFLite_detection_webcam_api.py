@@ -164,10 +164,11 @@ def login():
 def register():
    embedVar='Register'
    print(get_all_users)
-#   delete_user(4)
+   delete_user(8)
 #   delete_user(5)
 #   delete_user(6)
    isInvalid = 0  # used to flash error messages if anything was entered incorrectly
+   redirect = 0  # used to tell wether page was freshly loaded or redirected 
    # if post request, check that user is valid and doesn't already exist in database
    if request.method == "POST":
        #print(type(request.form))
@@ -265,7 +266,8 @@ def register():
            pswd_hash = sha256(password.encode("utf-8")).hexdigest()
 
            # add user to database; passwords currently not being saved, but are being hashed
-           result = add_user(first_name, last_name, email_address, 5) # eventually save pswd_hash
+           #result = add_user(first_name, last_name, email_address, 5) # eventually save pswd_hash
+           redirect = 1
            flash('Congratulations! You have successfully registered! Please go to the login page to sign in!')
            print(all_users)
 
@@ -274,7 +276,7 @@ def register():
                #flash(value)
 
    # this will need to redirect to a different location, I think; the login page maybe?
-   return render_template('register.html',embed=embedVar, isInvalid=isInvalid )
+   return render_template('register.html',embed=embedVar, isInvalid=isInvalid, redirect=redirect)
    #return redirect(url_for('login'))
   
 
