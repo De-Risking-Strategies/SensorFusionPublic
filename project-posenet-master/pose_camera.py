@@ -109,7 +109,7 @@ def run(inf_callback, render_callback):
     elif args.res == '1280x720':
         src_size = (1280, 720)
         appsink_size = (1280, 720)
-        model = args.model or default_model % (721, 1281)
+        model = args.model or default_model % (721, 1281)     
 
     print('Loading model: ', model)
     engine = PoseEngine(model)
@@ -123,7 +123,6 @@ def run(inf_callback, render_callback):
                            h264=args.h264,
                            jpeg=args.jpeg
                            )
-
 
 def main():
     n = 0
@@ -154,6 +153,7 @@ def main():
         shadow_text(svg_canvas, 10, 20, text_line)
         for pose in outputs:
             draw_pose(svg_canvas, pose, src_size, inference_box)
+           
         return (svg_canvas.tostring(), False)
 
     run(run_inference, render_overlay)
