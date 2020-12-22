@@ -11,10 +11,12 @@ show_menu(){
     printf "\n${menu}**************~ SENSOR FUSION MAIN MENU ~**********${normal}\n"
     printf "${menu}**===================================================${normal}\n"
     printf "${menu}**${number} 1)${menu} Run Sensor Fusion  ${normal}\n"
-    printf "${menu}**${number} 2)${menu} Stop Sensor Fusion  ${normal}\n"
-    printf "${menu}**${number} 3)${menu} Run Image Labeler${normal}\n"
-    printf "${menu}**${number} 4)${menu} CheckID Trained Model Folder ${normal}\n"
-    printf "${menu}**${number} 5)${menu} Annotated Pictures Folder ${normal}\n"  
+    printf "${menu}**${number} 2)${menu} Run Sensor Fusion no TPU  ${normal}\n"
+    printf "${menu}**${number} 3)${menu} Stop Sensor Fusion  ${normal}\n"
+    printf "${menu}**${number} 4)${menu} Run Image Labeler${normal}\n"
+    printf "${menu}**${number} 5)${menu} Run CheckID ${normal}\n"
+    printf "${menu}**${number} 6)${menu} Run CheckID no TPU ${normal}\n"
+    printf "${menu}**${number} 7)${menu} Run PoseEstimate ${normal}\n"  
     printf "${menu}**===================================================${normal}\n"
     printf "Please enter a menu option and enter or ${fgred}x to exit. ${normal}"
     read opt
@@ -41,28 +43,40 @@ while [ $opt != '' ]
 	    x-terminal-emulator -e "bash 'launch.sh'";
             show_menu;
         ;;
-        2) clear;
+	2) clear;
+            option_picked "Run Sensor Fusion no TPU ";
+            printf "Running Full System using: 'bash launch_noTPU.sh'";
+	    x-terminal-emulator -e "bash 'launch_noTPU.sh'";
+            show_menu;
+        ;;
+        3) clear;
             option_picked "Stop Sensor Fusion ";
             printf "sudo killall python";
 	    x-terminal-emulator -e "bash -c 'bash killall.sh'";
             show_menu;
         ;;
-        3) clear;
+        4) clear;
             option_picked "Run Image Labeler";
-            printf "/home/pi/labelImg-master folder: python3 labelImg.py";
-	    x-terminal-emulator -e "bash -c 'exec python3 ~/labelImg-master/labelImg.py'";
+            printf "SensorFusion/labelImg-master folder: python3 labelImg.py";
+	    x-terminal-emulator -e "bash -c 'exec python3 labelImg-master/labelImg.py'";
             show_menu;
         ;;
-        4) clear;
-            option_picked "Check.ID Trained Model Folder";
-            printf "/checkid/Sample_tflite_model";
-	    ls -al checkid/Sample_TFLite_model;
+        5) clear;
+            option_picked "Run CheckID";
+            printf "SensorFusion/checkid/Sample_tflite_model";
+	    x-terminal-emulator -e "bash 'Check.ID.C.sh'";
 	    show_menu;
         ;;
-        5) clear;
-            option_picked "Annotated Pictures Folder";
-            printf "Pictures";
-	    ls -al Pictures;
+	6) clear;
+            option_picked "Run CheckID no TPU";
+	    printf "SensorFusion/checkid/Sample_tflite_model";
+	    x-terminal-emulator -e "bash 'Check.ID.Pi.sh'";
+	    show_menu;
+        ;;
+        7) clear;
+            option_picked "Run PoseEstimate";
+	    printf "SensorFusion/project-posenet-master";
+	    x-terminal-emulator -e "bash 'PoseEstimation.C.sh'";
 	    show_menu;
         ;;
         x)exit;

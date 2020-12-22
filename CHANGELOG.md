@@ -7,6 +7,11 @@ Authors:  Drew A, Puskar P, Sharon B
 
 ## SENSOR FUSION CHANGELOG                     
 ----
+## December 21, 2020
+- Consolidated all the models in one environment.
+- Added new models for custom models placeholder (in PreLoadedModels).
+- changed the scripts to work in the SF environment.
+
 ## December 16, 2020
 - Full screen toggle implemented
 - Info screen implemented

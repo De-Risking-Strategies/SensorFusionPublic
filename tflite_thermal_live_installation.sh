@@ -1,11 +1,11 @@
 # Pushkar Khairnar
 #/bash_file/Tflite_thermal_live_with_coral_installation
 
-git clone https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi.git
+#git clone https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi.git
 
-mv TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi thermal01
+#mv TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi thermal01
 
-cd thermal01
+cd /home/pi/SensorFusion/thermal01
 
 sudo pip3 install virtualenv
 

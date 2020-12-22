@@ -1,8 +1,10 @@
-#/bashfile
+#!/bin/bash 
 
-cd /home/pi/Demo90
+cd /home/pi/SensorFusion/
 
-source Demo90-env/bin/activate
+source SF-env/bin/activate
+
+cd /home/pi/SensorFusion/Demo90
 
 python3 TFLite_detection_webcam.py --modeldir=Sample_TFLite_model --edgetpu
 

@@ -2,15 +2,15 @@
 
 # Install tensorflow object detection API on raspberry pi 4
 
-sudo apt-get update
+#sudo apt-get update
 
-sudo apt-get upgrade
+#sudo apt-get upgrade
 
-git clone https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi.git
+#git clone https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi.git
 
-mv TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/ Demo90
+#mv TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/ Demo90
 
-cd /home/pi/Demo90
+cd /home/pi/SensorFusion/Demo90
 
 sudo pip3 install virtualenv
 
@@ -20,13 +20,13 @@ source Demo90-env/bin/activate
 
 bash get_pi_requirements.sh
 
-pip3 install tensorflow==1.13.1
+#pip3 install tensorflow==1.13.1
 
 wget https://storage.googleapis.com/download.tensorflow.org/models/tflite/coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip
 
 unzip coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip -d Sample_TFLite_model
 
-cd /home/pi/Demo90
+cd /home/pi/SensorFusion/Demo90
 
 source Demo90-env/bin/activate
 
