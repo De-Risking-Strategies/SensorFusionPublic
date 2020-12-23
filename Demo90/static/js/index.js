@@ -11,6 +11,7 @@ var toggleLabelsBtn = document.getElementById("toggleLabelsBtn");
 var toggleScoresBtn = document.getElementById("toggleCameraBtn");
 //Clear Modal on outside click
 document.getElementById("main").addEventListener("click", function() {
+ postAPI('restore_tesnorFlow');
  modal.style.display = "none";
 });
 //modal = document.getElementById("sfModal");
@@ -23,19 +24,23 @@ var btnLength = btn.length;
 // Get the <span> element that closes the modal
 span = document.getElementsByClassName("close")[0];
 span.onclick = function() {
+   postAPI('restore_tesnorFlow');
    modal.style.display = "none";
 }
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
   if (event.target == modal) {
-    modal.style.display = "none";
+   postAPI('restore_tesnorFlow');
+   modal.style.display = "none";
   }
  }
 
 document.body.onkeydown = function(e){
   console.log(String.fromCharCode(e.keyCode)+"-->"+e.keyCode);
-  if(e.keyCode =='32'){
+  if(e.keyCode =='32'){//SPACEBAR
     modal1_click('annotate');
+  }else if(e.keyCode == '81'){//Q
+    postAPI('quit');
   }else if(e.keyCode == '70'){
     postAPI('fps')
   }
@@ -47,23 +52,26 @@ document.body.onkeydown = function(e){
 
 function toggleCamera(){
   camera1 = document.getElementById("cameraStream");
-  var toggleCameraBtn = document.getElementById("toggleCameraBtn");
+  toggleCameraBtn = document.getElementById("toggleCameraBtn");
   var sensorTitleText = document.getElementById("sensor_toggle_title");
+  var infoCam = document.getElementById("infoCam");
   
-    if (toggleCameraBtnFlag == false) {//turn camera on
+   if (toggleCameraBtnFlag == false) {//turn camera on
       toggleCameraBtnFlag = true
       //camera1.src = "{{ url_for('video_feed') }}";
       //camera1.src = "http://localhost:5000/video_feed";
       camera1.style.display = "block";
-      sensorTitleText.innerText="CAMERA 1: ON";
-      
+      sensorTitleText.innerText="SENSOR 1: ON";
+      infoCam.style.display = "none";
       toggleCameraBtn.src = "/static/assets/toggle_switch_on_001.png";
+      
     }else{
       toggleCameraBtnFlag = false
       //camera1.src = "";
       camera1.style.display = "none";
-      sensorTitleText.innerText="CAMERA 1: OFF";
+      sensorTitleText.innerText="SENSOR 1: OFF";
       toggleCameraBtn.src = "/static/assets/toggle_switch_off_001.png";
+      infoCam.style.display = "block";
     }
   
 }
@@ -125,8 +133,15 @@ function postAPI(command) {
    
     }
    }
-  
-
+   if(command == 'quit'){
+      console.log('quitting')
+    }
+   if(command == 'kill_tesnorFlow'){
+      console.log('restore_tesnorFlow')
+    } 
+   if(command == 'restore_tensorFlow'){
+      console.log('restore_tensorFlow')
+    }
   fetch('/api',{
     method: 'post',
     headers:{
@@ -146,7 +161,7 @@ function postAPI(command) {
           var modal1 = document.getElementById("modal_body1");
           var modal2 = document.getElementById("modal_body2");
           modal1.innerHTML = "<h2>Your Files are saving to: <br><br/>/home/pi/Pictures/"+ annotateName+"</h2>";
-          modal2.innerHTML = "<p>Next, select Main Menu item 3 Run Image Labeler to annotate them!</p><strong style='color:red'>IF YOU USE AN EXISTING FOLDER NAME, PREVIOUS FILES WILL BE OVERWRITTEN!</strong>";
+          modal2.innerHTML = "<p>Next, select Main Menu item 3 Run Image Labeler to annotate them!</p>";
         }
     })
 }
@@ -163,7 +178,10 @@ function display_info(){
     }
 }
 function close_info(){
+   toggleCameraBtnFlag = false;
+   toggleInfoCanvasFlag = false;
    infoPic.style.display = "none";
+   infoCam.style.display= "none";
 }
 
 function modal1_click(event){
@@ -178,19 +196,24 @@ function modal1_click(event){
   var mFooter='Click out or X to Exit';
 
   if(event =='annotate'){
+    
+    postAPI('kill_tesnorFlow');
     mTitle = 'Capture Images for Annotation';
     mHtml1 ='<br><strong>Name, Number and Description</strong><br>';
     
     //Annotation Form - values to pass to Flask/Python
     var row0 = '<table border="1">';
-    var row1 = '<tr><td id="ic1">Name</td><td id="ic2"><input id="aName" type="text" style="width:150px"></input></td></tr>';
-    var row2 = '<tr><td id="ic3">Images to Capture</td><td id="ic4"><input id="aImages" type="text" style="width:50px">&nbsp;1,000 MAX!</input></td></tr>';
-    var row3 = '<tr><td id="ic5">Description</td><td id="ic6"><input id="aDescription" type="text" style="width:300px"></input></td></tr>';
-    var row4 = '</table>'
-    var row5 = "<br><input type='button' value='Submit' onclick=postAPI('annotate')>";
-    mHtml2 = row0+row1+row2+row3+row4+row5;
-
+    var row1 = '<tr><td id="ic1">Name</td><td id="ic2"><input id="aName" type="text" style="width:150px"></input><br/>';
+    var row2 = '<strong style="color:red">IF YOU USE AN EXISTING FOLDER NAME, PREVIOUS FILES WILL BE OVERWRITTEN!</strong></td></tr>';
+    var row3 = '<tr><td id="ic3">Images to Capture</td><td id="ic4"><input id="aImages" type="text" style="width:50px">&nbsp;2,000 MAX!</input></td></tr>';
+    var row4 = '<tr><td id="ic5">Description</td><td id="ic6"><input id="aDescription" type="text" style="width:300px"></input></td></tr>';
+    var row5 = '</table>'
+    var row6 = "<br><input type='button' value='Submit' onclick=postAPI('annotate')>";
+    mHtml2 = row0+row1+row2+row3+row4+row5+row6;
+    
   }
+ 
+  
   //Draw the Modal
   hdr.innerHTML  = mTitle
   modal1.innerHTML = mHtml1;
@@ -199,5 +222,26 @@ function modal1_click(event){
   modal.style.display = "block";
   
 }
+function selectFile(){
+  var input = document.createElement('input')
+  input.type = 'file';
+  input.click();
+  var file;
+  var fName
+  var fType
+  var fSize
 
+  input.onchange = e =>{
+   file = e.target.files[0];
+   fName = file.name;
+   fType = file.type;
+   fSize = file.size;    
 
+   document.getElementById('fileSelected').innerHTML = fName +":"+ fSize +":"+ fType ||'no file selected';
+
+  if (fSize > 90000000){alert("File Size too large, please try again")}
+  
+  if (fType != 'application/zip'){alert("File must be a ZIP archive, please try again")
+  }
+ }
+}

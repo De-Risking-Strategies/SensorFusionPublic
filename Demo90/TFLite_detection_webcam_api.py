@@ -3,11 +3,11 @@
 # (C) 2020 - De-Risking Strategies, LLC #
 # DRS ML/AI Flask API                   #
 # Authors: Pushkar K / Drew A           #
-# Sunday 12-132020                      #
+# Updated 12-22-2020                    #
 #########################################
 import os
 import argparse
-import cv2 
+import cv2 as cv2
 import numpy as np
 import sys
 import time
@@ -20,30 +20,47 @@ import json
 from flask import Flask, jsonify, request, render_template, Response, session, stream_with_context
 from importlib import reload 
 import gc
-import threading
+import webbrowser
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Disable Flask Cache as it interferes with streaming
 
+global video_camera_flag
 video_camera_flag = True# Video Stream class enable
-capture_flag = 'False' # Capture Enable
-capture_image_limit = 20 #Capture LImit
+
+capture_flag = 'False' # Capture Enableg
+
+
+capture_image_limit = 2000 #Capture LImit
 fps_flag = False #showing frames per second is false by default - controlled by 'F' keyboard command
 
 #Client Commands
 os.environ['labels_flag'] = 'labels_on'
 #print('Init: ', os.environ.get('labels_flag'))
 os.environ['scores_flag'] = 'scores_on'
+#Capture
+os.environ['cap_flag'] = 'False'
+#kill_TF
+os.environ['kill_tensorFlow'] = 'False'
+
 
 #VideoStream Instance
 instance = []
 
- 
+  
 @app.route('/',methods=['GET'])
 def index():
    video_camera_flag = True
-   return render_template('index.html' )
+   #On a reload
+   quit_flag = os.environ.get('quit_flag')
+   if quit_flag == 'quit':#
+       cv2.destroyAllWindows()
+       if videostream:
+         #videostream.release()
+         videostream.stop()
 
+
+   return render_template('index.html' )
 
 @app.route('/api', methods = ['GET','POST'])
 def api():
@@ -59,6 +76,7 @@ def api():
             sfCommand = 'annotate'
             
             #Get the annotation data - name, image count, description
+            
             os.environ['annotate_name'] = str(chunks[1])
             os.environ['annotate_images'] = str(chunks[2])
             
@@ -66,11 +84,26 @@ def api():
             anno_images = str(chunks[2])
             
             os.environ['annotate_description'] = str(chunks[3])
-                
-        if sfCommand == 'annotate':
-            os.environ['cap_flag'] = 'True'
-            print('Capture Flag Command =', os.environ['cap_flag'])
+        #kill TensorFlow
+        if first_char == 'k':
+            os.environ['kill_tensorFlow'] = 'True'
+        #Restore Tensor Flow
+        if first_char == 'r':
+            os.environ['kill_tensorFlow'] = 'False'
+            print('Restore Tensor Flow')
+       
+        #custom, model
+        if first_char == 'c':
+            print('Custom Model Changed')
+       
+        if first_char == 'm':
+            print('Model changed')
             
+        #Annotate    
+        if sfCommand == 'annotate':
+            capture_flag =  os.environ['cap_flag'] = 'True'
+            print('Capture Flag Command =',capture_flag)
+        #Labels    
         elif sfCommand == 'scores_off':
             os.environ['scores_flag'] = sfCommand
             print('Toggle Scores Command =', os.environ['scores_flag'])
@@ -87,33 +120,31 @@ def api():
         elif sfCommand == 'fps':
             global fps_flag
             
-            if fps_flag == False:
+            if fps_flag == False:#Show/Hide Frames per second
                 fps_flag = True
             else:
                 fps_flag = False
+        elif sfCommand == 'quit':
+            os.environ['quit_flag'] = sfCommand
+            print('Quit command recieved')
                 
+        
         return 'OK', 200
 
     # GET request
     else:
         print('GET Request from Client');
-        
         #session['cap_flag'] = True
         #print(session.get('capt_flag'))
-        
         os.environ['cap_flag'] = 'True'
         print('Capture Flag Command =', os.environ['cap_flag'])
         
         message = {'Capture':'Capturing Images!'}
         return jsonify(message)  # serialize and use JSON headers
 
-
 @app.route('/quit_camera/') 
 def quit_camera():
-   #This is test code, under development ! 
-   print("Reload") 
-   video_camera_flag = True #if this is false the video class does not run
-   return "OK", 200
+   return "Not Implemented yet", 200
    
 @app.route('/login') 
 def login():
@@ -129,23 +160,21 @@ def register():
 def video_feed():
     #Video streaming route: goes into src attribute of an img tag
     print('\nin FLASK: locals() value inside class\n', locals())
+    
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-
+# ============================
 def gen_frames():
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
     class VideoStream(object):
         """Camera object that controls video streaming from the Picamera"""
         def __init__(self,resolution=(640,480),framerate=30,target=None,args=()):
-
-            # Add thread safety.
-            self.lock = threading.RLock() 
-            
+           
             # Initialize the PiCamera and the camera image stream
             self.stream = cv2.VideoCapture(0)
  
-            #TO DO
+            #VideoStream Instance
             global instance
             instance = VideoStream.__qualname__
             print('The class instance is: ',instance)
@@ -199,8 +228,6 @@ def gen_frames():
         # Indicate that the camera and thread should be stopped
             self.stopped = True
 
-
-
     # Define and parse input arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('--modeldir', help='Folder the .tflite file is located in',
@@ -230,6 +257,8 @@ def gen_frames():
     # If tflite_runtime is installed, import interpreter from tflite_runtime, else import from regular tensorflow
     # If using Coral Edge TPU, import the load_delegate library
     pkg = importlib.util.find_spec('tflite_runtime')
+    print('TPU Runtime' + str(pkg))
+
     if pkg:
         from tflite_runtime.interpreter import Interpreter 
         if use_TPU:
@@ -267,13 +296,14 @@ def gen_frames():
     # Load the Tensorflow Lite model.
     # If using Edge TPU, use special load_delegate argument
     
-    if video_camera_flag:#Using a Flag here - for future use
-        if use_TPU:
-            interpreter = Interpreter(model_path=PATH_TO_CKPT,
-                                      experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
-            print(PATH_TO_CKPT)
-        else:
-            interpreter = Interpreter(model_path=PATH_TO_CKPT)
+    #if video_camera_flag:#Using a Flag here - for future use
+    if use_TPU:
+        interpreter = Interpreter(model_path=PATH_TO_CKPT,
+                                  experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
+        print('TPU Detected' + PATH_TO_CKPT)
+    else:
+        interpreter = Interpreter(model_path=PATH_TO_CKPT)
+        print('No TPU detected!'+ PATH_TO_CKPT)            
 
     interpreter.allocate_tensors()
 
@@ -294,13 +324,13 @@ def gen_frames():
     freq = cv2.getTickFrequency()
 
     # Initialize video stream
-    #global videostream
+    global videostream
     videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
     time.sleep(1)
 
     img_counter = 0
     
-
+   
   
     #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
     try:
@@ -328,17 +358,27 @@ def gen_frames():
             interpreter.invoke()
 
             # Retrieve detection results
+            global scores
+            global classes
+            global person_found
+            
+            person_found = False
+            
             boxes = interpreter.get_tensor(output_details[0]['index'])[0] # Bounding box coordinates of detected objects
             classes = interpreter.get_tensor(output_details[1]['index'])[0] # Class index of detected objects
             scores = interpreter.get_tensor(output_details[2]['index'])[0] # Confidence of detected objects
             #num = interpreter.get_tensor(output_details[3]['index'])[0]  # Total number of detected objects (inaccurate and not needed)
-           
+            
+            #Kill TensofFlow while Annotating
+            global kill_tensorFlow
+            kill_tensorFlow = os.environ.get('kill_tensorFlow')
+            #print("TensofFlow Status: " + str(kill_tensorFlow))
+
             # Loop over all detections and draw detection box if confidence is above minimum threshold
             for i in range(len(scores)):
                 if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0)):
-
-                    global ymin
-                    global xmin
+                    
+            
                     # Get bounding box coordinates and draw box
                     # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
                     ymin = int(max(1,(boxes[i][0] * imH)))
@@ -346,11 +386,20 @@ def gen_frames():
                     ymax = int(min(imH,(boxes[i][2] * imH)))
                     xmax = int(min(imW,(boxes[i][3] * imW)))
                     
-                    cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 3)
+                    #print("Kill TF Flag: "+ str(kill_tensorFlow))
+                    if kill_tensorFlow != 'True':
+                        cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 3)
 
-
-                    # Draw label (object_name) and score (%)                    
-                    object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index                  
+                    # Draw label (object_name) and score (%)    
+                    global object_name   
+                    object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index 
+                    #print(labels[int(classes[i])]+": "+str(i))  
+                    
+                    
+                    if labels[int(classes[0])]== 'person':#NOTE - The bar is for one person only
+                        #print('Person Found!')
+                        person_found = True# used for bar below
+                    
                     scores_flag = os.environ.get('scores_flag')
                     labels_flag = os.environ.get('labels_flag')
                     
@@ -372,30 +421,132 @@ def gen_frames():
                         state_= 10 #10   
                         label = '%s: ' % (object_name.capitalize()) # Example: 'person: '
                     
-                    #draw them
+                    #draw the labels, background score and box
                     if state_ != 0:
-                        labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
-                        label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
-                    
+                        labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size                        
+                        label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window                    
                         #cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (237,237,237), cv2.FILLED) # Draw white box to put label text in                   
-                        #cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255,0,255), cv2.FILLED) # Draw white box to put label text in                   
-                       
-                        cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2) # Draw label text
+                        if kill_tensorFlow != 'True':
+                            cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (128,128,128), cv2.FILLED) # Draw gray box to put label text in                   
+                            cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2) # Draw label text
                     else:
-                        cv2.rectangle(frame, (xmin,ymin), (xmin,ymin), (237,237,237), cv2.FILLED) # Draw frame with no label OR score text !
-                    
+                        if kill_tensorFlow != 'True':
+                            cv2.rectangle(frame, (xmin,ymin), (xmin,ymin), (237,237,237), cv2.FILLED) # Draw frame with no label OR score text !
                         
-            # Draw framerate in corner of frame
+            # Draw framerate in corner of frame - use 'F' key to toggle on/off
             if fps_flag:
                 cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
             else:
                 pass
                 
             # All the results have been drawn on the frame, so it's time to display it.
-            
             #cv2.imshow('Object detector', frame) ## Commented for the FLASK API 
-
-            # SENSOR FUSION Flask API 
+ 
+            #Draw vertical bar
+            window_name ='Object detector'
+                 
+            top = int(scores[0]*100)
+            color = (0, 0, 255)
+            
+            if person_found == True:
+                #print('p')
+                if top >= 100:
+                    top = 100
+                    color = (0, 255, 0) #1 BGR format 
+                #   It never sees 100%! 
+                elif top >= 98 <=99:
+                    top = 120
+                    color = (0, 255, 0) #Green                
+                elif top >= 96 <=97:
+                    top = 130
+                    color = (0, 255, 0) #  
+                elif top >= 94 <=95:
+                    top = 140
+                    color = (0, 255, 0)  #Top                 
+                elif top >= 92 <=93:
+                    top = 150
+                    color = (0, 255, 36)        
+                elif top >= 90 <=91:
+                    top = 160
+                    color = (0, 255, 52)       
+                elif top >= 88 <=89:
+                    top = 170
+                    color = (0, 255, 69)        
+                elif top >= 86 <=87:
+                    top = 180
+                    color = (0, 255, 85)       
+                elif top >= 84 <=85:
+                    top = 190
+                    color = (0, 255, 102)       
+                elif top >= 81 <=83:
+                    top = 200
+                    color = (0, 255, 110)  
+                elif top >= 78 <=80:
+                    top = 210
+                    color = (0, 255, 136)  
+                elif top >= 75 <=77:
+                    top = 220
+                    color = (0, 255, 153) 
+                
+                # Yellow   
+                elif top >= 72 <=74:
+                    top = 230
+                    color = (0, 255, 170)            
+                elif top >= 69 <=71:
+                    top = 240
+                    color = (0, 255, 187)           
+                elif top >=66 <=68:
+                    top = 250    
+                    color = (0, 255, 204)  
+                elif top >= 63 <=65:
+                    top = 260
+                    color = (0, 255, 231)            
+                elif top >= 60 <=62:
+                    top = 270
+                    color = (0, 255, 238)           
+                elif top >=57 <=59:
+                    top = 280    
+                    color = (0, 255, 254)  
+                elif top >=54 <=56:
+                    top = 290    
+                    color = (0, 255, 255)  
+                elif top >=51 <=53:
+                    top = 300    
+                    color = (0, 255, 255)  
+                                
+                # anything below 50 is red          
+                elif top >=40 <=50:
+                    top = 310    
+                    color = (0, 200, 255)           
+                elif top >=30 <=39:
+                    top = 330    
+                    color = (0, 150, 255)
+                elif top >=20 <=29:
+                    top = 340    
+                    color = (0, 75, 255) 
+                elif top >=10 <=19:
+                    top = 350    
+                    color = (0, 0, 255) 
+                elif top >=0 <=9:
+                    top = 360    
+                    color = (0, 0, 255) #10    BGR Red         
+              
+            else:#no person detected
+                  top = 360
+                  color=(0,0,255)
+                                        
+            bottom = 400
+            left = 13
+            start_point = (left, top)
+            end_point = (left,bottom)
+            thickness = 14
+            if kill_tensorFlow != 'True':
+                image = cv2.line(frame, start_point, end_point, color, thickness)
+           
+            # Displaying the image - DO NOT USE!
+            #cv2.imshow(window_name, image)  
+          
+            #SENSOR FUSION Flask VIDEO API 
             #Brute Force Motion JPEG, OpenCV defaults to capture raw images,
             #so we must encode it into JPEG in order to correctly display the
             #video stream - NOTE need to work on this cv2.imencode tobytes slows the apparent frame rate by about 50%, plus the UI takes some
@@ -407,16 +558,15 @@ def gen_frames():
             capture_flag = os.environ.get('cap_flag')
             annotate_name = os.environ.get('annotate_name')           
             annotate_description = os.environ.get('annotate_description')# this is for future use - we'll write our own metadata file
-            
+                      
             if capture_flag == 'True':
                 #Check limit
                 try:
-                    print("HEY: " + anno_images)
+                    print("image limit: " + anno_images)
                     capture_image_limit = int(anno_images)
                 except:
                     pass
       
-                
             if capture_flag == 'True' and img_counter < capture_image_limit:
                 #Create new or use existing directory
                 path_to_directory = '../Pictures/' + annotate_name
@@ -436,39 +586,52 @@ def gen_frames():
                 img_counter +=1
                 
             #Clear Capture Flag when done grabbing images
-            if  capture_flag == 'True' and img_counter >= capture_image_limit: 
+            if capture_flag == 'True' and img_counter >= capture_image_limit: 
                    os.environ['cap_flag'] = 'False'
                    img_counter = 0
                    
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
-            ## End API
+            ## End Video Stream API ###
 
             # Calculate framerate
             t2 = cv2.getTickCount()
             time1 = (t2-t1)/freq
             frame_rate_calc= 1/time1
-            
-            th.join()
-           
+                       
             # Press 'q' to quit
             if cv2.waitKey(1) == ord('q'):
+                print("CV2 Break")
                 break
-
+        
             
+            # Press 'q' to quit
+            quit_flag = os.environ.get('quit_flag')
+            if quit_flag == 'quit':#
+                os.environ['quit_flag'] = ''
+                print("CV2 Quit " + quit_flag)
+                cv2.destroyAllWindows()
+                if videostream:
+                    #videostream.release()
+                    videostream.stop()
+                    print('Videostream stopped')
+                break
+            
+                
+            #print("quit_flag " + str(quit_flag))    
         # Clean up
         cv2.destroyAllWindows()
-        videostream.release()
-        videostream.stop()
+        if videostream:
+            #videostream.release()
+            videostream.stop()
+        webbrowser.open('http://localhost:5000')
+            
     except KeyboardInterrupt:
-        th.join()
+        pass
 
 #########  run api  #########
 if __name__ == '__main__':
-     global th
-     th = threading.Thread(target=gen_frames)
-     th.start()
-
+     
      app.debug = True
      app.run()
-   
+     

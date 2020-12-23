@@ -1,16 +1,27 @@
 ### Sensor Fusion MIT License	 CHANGELOG  
 (C) 2020 - De-Risking Strategies, LLC 
-DRS ML/AI Flask API                   
-Authors:  Drew A, Puskar P, Sharon B
-
 ----
 
 ## SENSOR FUSION CHANGELOG                     
 ----
-## December 21, 2020
+## December 23 - Merge of Pushkar and Drew S changes
+- Fixed Menu.sh (launch.sh) problem with large image captures under annotations
+  NOTE - Browser has to be launched manually  (for) now
+- Removed the Tensor Flow objects when capturing images
+- Make the Video Camera Code reentratn! Press'q' key to Relaunch TF service and reload browser.  Also Use the Settings Restart menu.
+- Updated the Capture Image Warning message
+### December 21, 2020 - Pushkar's changes
 - Consolidated all the models in one environment.
 - Added new models for custom models placeholder (in PreLoadedModels).
 - changed the scripts to work in the SF environment.
+### December 18-22,2020 - Drew's Changes
+- Merged Puskars' code from last week
+- Added CSS @Media tags for small screens: 800 x 420 and 1024 x 768
+- Added basic Meter/Scale for single person
+- Modified launch.sh to get rid of the ERR_CONNECTION_REFUSED on launch message
+- Added Backgrond Camera Off image
+- Stubbed out Training - Upload File function 
+
 
 ## December 16, 2020
 - Full screen toggle implemented
