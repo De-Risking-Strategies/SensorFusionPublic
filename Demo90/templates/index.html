@@ -25,7 +25,9 @@
     You need to enable JavaScript to run Sensor Fusion!
   </noscript>
    <div id ='info-canvas'> 
-     <img class='' onclick='close_info()'; id='infoPic' src="/static/assets/MVP0_Tutorial_001.png" width="100%" style="display:none;position:absolute;top:0px;height:100%;z-index:1">
+     <img class='' onclick='toggleCamera();' id='infoCam' src="/static/assets/MVP0-SingleSensorCameraOFF.png" width="100%" style="display:none;position:absolute;top:0px;height:100%;z-index:1">
+     <img class='' onclick='close_info();' id='infoPic' src="/static/assets/MVP0_Tutorial_001.png" width="100%" style="display:none;position:absolute;top:0px;height:100%;z-index:1">
+   
    </div> 
   <div class='grid' id='cd-main-content'>
   <section class ="header">
@@ -34,16 +36,16 @@
           <td style='position:absolute;top:1%;left:3%;text-align: center'><img class='logo' src='/static/assets/sensor_fusion_logo_001.png'/></td>
           <td style='position:absolute;top:1%;left:27%;text-align: center; min-width:25%'>
             <a onclick="toggleCamera()"><img id='toggleCameraBtn' class='large_button'style='max-height:40px;max-width:65px' src='/static/assets/toggle_switch_on_001.png'/>
-            <span id='sensor_toggle_title'>CAMERA 1: ON</span></a>
+            <span id='sensor_toggle_title'>SENSOR 1: ON</span></a>
           </td>
           <td style='position:absolute;top:1%;left:78%;text-align: center'>  
             <a onclick="display_info();"><img class='standard_button' src='/static/assets/info_002.png'/></a>
             </td>
           <td style='position:absolute;top:1%;left:84%;text-align: center'>  
-            <a onclick="modal1_click('thermal');"><img class='standard_button' src='/static/assets/settings_002.png'/></a>
+            <a onclick="openSettings();"><img class='standard_button' src='/static/assets/settings_002.png'/></a>
             </td>  
           <td style='position:absolute;top:1%;left:90%;text-align: center'> 
-             <a onclick="modal1_click('thermal');"><img class='standard_button' src='/static/assets/profile_icon_001.png'/></a>
+             <a onclick="modal1_click('profile');"><img class='standard_button' src='/static/assets/profile_icon_001.png'/></a>
              </td>
           <td style='position:absolute;top:1%;left:96%;text-align: center'>
              <a onclick="openFullscreen();"><img id='open_fullscreen' class='standard_button' src='/static/assets/icon-navigation-fullscreen_001.png'/></a>
@@ -55,11 +57,12 @@
         <div id='refresh-data'></div><!--Important - this route gets vars from Flask via polling in data.js-->
       </div>
   </section>
-  <section class ="main" id='main'>
-
-   <div id='video-canvas'> 
-    <img class='' id='cameraStream' src="{{ url_for('video_feed') }}" width="100%" style='display:block'>
+  <section class="main" >
+  <div id='main'>
+    <div id='video-canvas'> 
+      <img class='' id='cameraStream' src="{{ url_for('video_feed') }}" width="100%" style='display:block'>
     
+    </div>
    </div>
   </section>
   
@@ -68,16 +71,16 @@
     <div id='botnav'>
       <div id='bottom-controls'>
           <table><tr>
-              <td style='position:absolute;bottom:-46%;left:3%;text-align: center'> <a id="toggleScoresLink" onclick="postAPI('scores')"><img id="toggleScoresBtn" class='large_button'src='/static/assets/toggle_switch_on_001.png'/><br>%</a></td>
-              <td style='position:absolute;bottom:-46%;left:14%;text-align: center'> <a id="toggleLabelsLink" onclick="postAPI('labels')"><img id="toggleLabelsBtn" class='large_button'src='/static/assets/toggle_switch_on_001.png'/><br>Labels</a></td>
-              <td style='position:absolute;bottom:-52%;left:25%;text-align: center'> <a id="switchModelLink" class="myBtn" onclick="modal1_click('model');"><img class='standard_button'  src='/static/assets/models_icon_001.png'/><br>Demo.90</a></td>
+              <td id="controlCellScore" style='position:absolute;text-align: center'> <a id="toggleScoresLink" onclick="postAPI('scores')"><img id="toggleScoresBtn" class='large_button'src='/static/assets/toggle_switch_on_001.png'/><br><span class="controlBtnLabel">%</span></a></td>
+              <td id="controlCellLabel" style='position:absolute;text-align: center'> <a id="toggleLabelsLink" onclick="postAPI('labels')"><img id="toggleLabelsBtn" class='large_button'src='/static/assets/toggle_switch_on_001.png'/><br><span class="controlBtnLabel">Labels</span></a></td>
+              <td id="controlCellModel" style='position:absolute;text-align: center'> <a id="switchModelLink" class="myBtn" onclick="postAPI('model');"><img class='standard_button'  src='/static/assets/models_icon_001.png'/><br><span class="controlBtnLabel">Demo.90</span></a></td>
               
-              <td style='position:absolute;bottom:-26%;left:35%'> 
+              <td id="controlCellSpaceBar" style='position:absolute;'> 
               <a id="annotate_btn" onclick="modal1_click('annotate');"><img class='checkid_button' src='/static/assets/annotate_button_001.png'/></a></td>
              
-              <td style='position:absolute;bottom:-52%;left:66%;text-align: center'> <a id="trainBtn" class="myBtn"  onclick="modal1_click('custom');"><img class='standard_button'  src='/static/assets/models_icon_001.png'/><br>Custom Models</a></td>
-              <td style='position:absolute;bottom:-52%;left:78.5%;text-align: center'> <a id="sensorBtn" class="myBtn" onclick="modal1_click('train');"><img class='standard_button' src='/static/assets/train_model_001.png'/><br>Train</a></td>
-              <td style='position:absolute;bottom:-46%;left:89%;text-align: center'> <a id="thermalBtn" class="myBtn" onclick="modal1_click('thermal');"><img class='large_button' src='/static/assets/toggle_switch_off_001.png'/><br>Thermal</a></td>
+              <td id="controlCellTrain" style='position:absolute;text-align: center'> <a id="trainBtn" class="myBtn"  onclick="postAPI('custom');"><img class='standard_button'  src='/static/assets/models_icon_001.png'/><br><span class="controlBtnLabel">Custom Models</span></a></td>
+              <td id="controlCellSensor" style='position:absolute;text-align: center'> <a id="sensorBtn" class="myBtn" onclick="selectFile('train');"><img class='standard_button' src='/static/assets/train_model_001.png'/><br><span class="controlBtnLabel">Train</span></a></td>
+              <td id="controlCellThermal" style='position:absolute;text-align: center'> <a id="thermalBtn" class="myBtn" onclick="modal1_click('thermal');"><img class='large_button' src='/static/assets/toggle_switch_off_001.png'/><br><span class="controlBtnLabel">Thermal</span></a></td>
           </tr></table>
         </div>
       </div>
@@ -111,12 +114,14 @@
 <!-- The settings-->
 <div id="sfSettings" class="settings">
   <a href="javascript:void(0)" class="sclosebtn" onclick="closeSettings()">&times;</a>
-  <a href="#">Camera</a>
-  <a href="#">Logout</a>
-  <a href="#">Password</a>
-  <a href="#">Image Capture Limit</a>
-  <a href="/quit_camera/">Restart</a>
+  <a href="/register">Register</a>
+  <a href="/login">Logout</a>
+  <a href="#" onclick="modal1_click();">Reset Password</a>
+  <a onclick="postAPI('quit');">Restart Sensor Fusion </a>
 </div>
+<div id='fileSelected'></div>
+
+
 </form>
 </body>
 </html>

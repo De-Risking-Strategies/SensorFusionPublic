@@ -6,4 +6,5 @@ source SF-env/bin/activate
 
 cd /home/pi/SensorFusion/Demo90
 
-python3 TFLite_detection_webcam_api.py --modeldir=Sample_TFLite_model --edgetpu |& python3 -mwebbrowser http://localhost:5000
+python3 TFLite_detection_webcam_api.py --modeldir=Sample_TFLite_model --edgetpu 
+#Don't use - |& python3 -mwebbrowser http://localhost:5000

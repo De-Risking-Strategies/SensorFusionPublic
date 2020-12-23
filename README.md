@@ -1,17 +1,16 @@
 # Sensor Fusion READ ME   
 (C) 2020 - De-Risking Strategies, LLC 
-DRS ML/AI Flask API                   
-Authors:  Drew A                      
-Update 12-15-2020                     
+DRS ML/AI Flask API                                        
+Update 12-223-2020                     
 ````
 
-## Start Sensor Fusion
-=====================
+## Starting Sensor Fusion
+=========================
 Open a terminal windows in $/home/pi, and type:
 
-bash shell.sh {enter]
+bash menu.sh {enter]
 
-NOTE - You may also use 'bash main.py' to launch the service without the menu commands
+NOTE - You may also use 'bash main.sh' to launch the service without the menu commands.
 
 You should see the Sensor Fusion Main Menu,  similar to this:
 
@@ -19,19 +18,34 @@ You should see the Sensor Fusion Main Menu,  similar to this:
 **************~ SENSOR FUSION MAIN MENU ~**********
 **===================================================
 ** 1) Run Sensor Fusion  
-** 2) Stop Sensor Fusion  
-** 3) Run Image Labeler
-** 4) CheckID Trained Model Folder 
-** 5) Annotated Pictures Folder 
+** 2) Run Sensor Fusion no TPU  
+** 3) Stop Sensor Fusion  
+** 4) Run Image Labeler
+** 5) Run CheckID 
+** 6) Run CheckID no TPU 
+** 7) Run PoseEstimate 
 **===================================================
-Please enter a menu option and enter or x to exit. 
+Please enter a menu option and enter or x to exit.
 
+-To run Sensor Fusion, type '1' and press the [ENTER] key.  Wait few seconds for the service to startup in a new terminal window. You should see:
 
--To run Sensor Fusion, type '1' and press Enter.  Wait about 5-10 seconds for the service to startup!   
+ * Serving Flask app "TFLite_detection_webcam_api" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 905-196-496
 
--A browser window should open at http://localhost:5000 to start, give the Sensor Fusion enough time to load the page!
+   
 
--To stop Sensor Fusion, type '2' on the main menu, and press Enter.  This will kill all browser windows and tabs.
+-Next, Open your browser to http://localhost:5000 to start
+
+-To stop Sensor Fusion, hit 'q' on the browser and then you can exit, or reload.
+ 
+You may also Type '3'[ENTER] on the main menu, and press Enter.  This will kill all browser windows and tabs.
 
 The other menus are self explanatory.
 
@@ -78,7 +92,7 @@ You will be prompted for your (2-Factor*) GitHub password:
 
 You should see something similar to:
 
-Password for 'https://DrewAnderson@github.com': 
+Password for 'https://YourGitId@github.com': 
 remote: Enumerating objects: 4, done.
 remote: Counting objects: 100% (4/4), done.
 remote: Compressing objects: 100% (4/4), done.
@@ -95,7 +109,6 @@ Fast-forward
 
 >NOTE - If you are not editing code, yu may jump down to the section below to run it:
 >see the ##Start Sensor Fusion section below
-
 
 
 ### 3. Check in your changes 
@@ -119,7 +132,7 @@ type:
 git status
 
 You should see something like the below (your changes will be different)
-On branch drew
+On branch <yourbranch>
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git checkout -- <file>..." to discard changes in working directory)
@@ -169,7 +182,7 @@ You should see something like this if successful:
 
 pi@raspberrypi:~ $ git commit -m 'Major updates for JS controls, dialogs, and a Main Menu script'
 
-[drew 17cb076] Major updates for JS controls, dialogs, and a Main Menu script
+[yourbranch 17cb076] Major updates for JS controls, dialogs, and a Main Menu script
  21 files changed, 866 insertions(+), 191 deletions(-)
  create mode 100644 CHANGELOG.md
  create mode 100644 Demo90/static/assets/favicon.ico
@@ -194,12 +207,16 @@ EX: git push origin <branch>
 Type:
 git push SensorFusion 'your branch name'
 
+or type:
+git push https://github.com/De-Risking-Strategies/SensorFusion.git 'your branch name'
+
+
 If you prompt you for you Git UserName and (long) password.
 
 Your output if successful, will look like this:
 
-Username for 'https://github.com': DrewAnderson 
-Password for 'https://DrewAnderson@github.com': 
+Username for 'https://github.com': <yourGitId> 
+Password for 'https://yourEmail@github.com': 
 Enumerating objects: 44, done.
 Counting objects: 100% (44/44), done.
 Delta compression using up to 4 threads
@@ -212,7 +229,7 @@ remote: GitHub found 12 vulnerabilities on De-Risking-Strategies/SensorFusion's 
 remote:      https://github.com/De-Risking-Strategies/SensorFusion/network/alerts
 remote: 
 To https://github.com/De-Risking-Strategies/SensorFusion.git
-   b0a15b0..17cb076  drew -> drew
+   b0a15b0..17cb076  yourbranch -> yourbranch
 
 
 #### FINALLY - MAKE A Pull Request
@@ -224,17 +241,17 @@ Open your browser to:
 https://github.com/De-Risking-Strategies/SensorFusion
 
 You should see similar to this:
- drew had recent pushes 2 minutes ago
+ yourbranch had recent pushes 2 minutes ago
 
 To the right is a big green button marked "Compare and Pull Request"
 
 Click that guy, add comments and description from CHANGELOG.md.
 
-
+# INSATALLATION
 
 ## Update Packages
 ===================
-Bwe sure your Pi is upto date (requires a wifi connection)
+Be sure your Pi is upto date (requires a wifi connection)
 System:
 $ sudo apt-get update
 Installed:
@@ -257,7 +274,7 @@ NOTE - This should be installed in the image, but if not follow the steps below.
 $ cd ./Demo90
 
 Type
-source Demo90-env/bin/activate
+source SF-env/bin/activate
 
 
 ## Install Flask
@@ -267,24 +284,28 @@ NOTE - This should be installed in the image, but if not follow the steps below.
 pip install Flask==0.12.1
 pip freeze > requirements.txt
 
-Add Flask to Demo-90 env
+Add Flask to SF env
 
-Still in the (Demo90-env) Directory,
+Still in the (SF-env) Directory,
 Type
 pip
 
-(Demo90-env)$ pip install flask==1.1.2
+(SF-env)$ pip install flask==1.1.2
+
+
 
 ### Check Installed Packages 
 ---------
 Type: 'pip list'.  You should see similar to the below:
-(Demo90-env) pi@raspberrypi:~/Demo90 $ pip list
+
+(SF-env) pi@raspberrypi:~/SensorFusion $ pip list
 Package              Version    
 -------------------- -----------
 absl-py              0.11.0     
 astor                0.8.1      
 cached-property      1.5.2      
 click                7.1.2      
+evdev                1.3.0      
 Flask                1.1.2      
 gast                 0.4.0      
 google-pasta         0.2.0      
@@ -297,11 +318,12 @@ Keras-Applications   1.0.8
 Keras-Preprocessing  1.1.2      
 Markdown             3.3.3      
 MarkupSafe           1.1.1      
-numpy                1.19.4      
+numpy                1.19.4     
 opencv-python        3.4.6.27   
 pip                  18.1       
 pkg-resources        0.0.0      
 protobuf             3.14.0     
+python-xlib          0.29       
 setuptools           40.8.0     
 six                  1.15.0     
 tensorboard          1.13.1     
@@ -312,12 +334,11 @@ tflite-runtime       2.1.0.post1
 Werkzeug             1.0.1      
 wheel                0.35.1     
 wrapt                1.12.1     
-zipp                 3.4.0      
-
+zipp                 3.4.0 
 -------------------------------------
 
-### Exit the (Demo90-env)
-Type the command below to exit the (Demo90-env)
+### Exit the (SF-env)
+Type the command below to exit the (SF-env)
 
 deactivate
 

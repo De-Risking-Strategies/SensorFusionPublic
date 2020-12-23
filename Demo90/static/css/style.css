@@ -4,7 +4,7 @@ Author: ATA
 Description: CMS Theme WordPress
 Version: 0.0.1
 Author URI: http://www.xxxyyyzzz.com
-Tags: streaming with TFLite and Coral
+Tags: AI/ML Streaming with TFLite and Coral
 */
 body{
    height:100%;
@@ -106,14 +106,14 @@ input[type="range"] {
     display: -ms-flexbox;
 }
 .standard_button{
-   width:50px;
-   height:46lpx;
+   width:45px;
+   height:45px;
    margin:1px;
    margin-top:0px;
 }
 .large_button{
-   width:90px;
-   height:50px;
+   width:85px;
+   height:45px;
 }
 #top-right{
    margin-right: 30%;
@@ -235,3 +235,138 @@ input[type="range"] {
   from {top: -300px; opacity: 0}
   to {top: 0; opacity: 1}
 }
+
+#controlCellScore{
+bottom:-46%;
+left:3%;
+}
+#controlCellLabel{
+bottom:-46%;
+left:14%;
+}
+#controlCellModel{
+bottom:-52%;
+left:25%;
+}
+#controlCellSpaceBar{
+bottom:-26%;
+left:35%
+}
+#controlCellTrain{
+bottom:-52%;
+left:66%;
+}
+#controlCellSensor{
+bottom:-52%;
+left:78.5%;
+}
+#controlCellThermal{
+bottom:-46%;
+left:89%;
+}
+
+
+@media only screen and (max-width: 800px) {
+.logo {
+    height: 27px;
+} 
+.controlBtnLabel{
+ font-size:80%
+}
+.checkid_button{
+   width:52%!important;
+   
+ }
+.large_button {
+    width: 40px;
+    height: 25px;
+}
+#sensor_toggle_title {
+    font-size: 1.0em;
+    position: absolute;
+    margin-top: 0px;
+    color: white;
+    width: 100%;
+    top: 20%;
+    left: 43%;
+}
+.standard_button {
+    width:25px;
+    height: 25px;
+    
+} 
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 17%;
+    top: 17%;
+    width: 61%;
+    height: 18%;
+    overflow: none;
+    font-size: 0.25em;
+ }
+#controlCellScore{
+bottom:-46%;
+left:3%;
+}
+#controlCellLabel{
+bottom:-46%;
+left:14%;
+}
+#controlCellModel{
+bottom:-40%;
+left:25%;
+}
+#controlCellSpaceBar{
+bottom:-26%;
+left:35%
+}
+#controlCellTrain{
+bottom:-40%;
+left:66%;
+}
+#controlCellSensor{
+bottom:-40%;
+left:78.5%;
+}
+#controlCellThermal{
+bottom:-46%;
+left:89%;
+} 
+ 
+}
+
+@media only screen and (max-width: 1024px) and (min-width: 801px)  {
+.standard_button {
+    height: 38px;
+    width: 38px;
+
+}
+.large_button {
+    width: 72px;
+    height: 39px;
+}    
+    
+.checkid_button{
+   width:69%!important;
+ } 
+#sensor_toggle_title {
+    font-size: 1.4em;
+    left: 128px;
+} 
+ 
+.modal{
+   width:42%;
+}
+}
+
+
+@media only screen and (max-width: 1920px)and (min-width: 1025px)  {
+.checkid_button{
+   width:100%!important;
+ } 
+ 
+}
+
+
