@@ -4,37 +4,23 @@
 }
 
 @font-face {
+   src: url(../fonts/Roboto/Roboto-Bold.ttf);
+   font-family: Roboto-Bold;
+}
+
+@font-face {
    src: url(../fonts/HelveticaNeue/);
 }
 
-/*
-.hel {
-   font-family: 'HelveticaNeueCyr';
-   font-weight: 500;
+
+button:focus {
+   outline: none;
 }
 
-.rob {
-   font-family: 'Roboto';
-   font-weight: bold;
-}
-
-.sans {
-   font-family: 'sans-seif';
-}
-
-.hel2 {
-   font-family: 'HelveticaNeueTwo';
-   font-family: 'serif';
-}*/
-
-body {
-   font-weight: bold;
-}
-
-label {
-   color: #bb86fc;
-   display: block;
-   font-size: 13px;
+h2 {
+   color: white;
+   font-size: 30px;
+   padding: 10px 0;
 }
 
 input {
@@ -59,16 +45,16 @@ select:-webkit-autofill:hover,
 select:-webkit-autofill:focus,
 select:-webkit-autofill:active {
    border: none;
+   caret-color: white; /* cursor color */
+   transition: background-color 5000s ease-in-out; 
    -webkit-text-fill-color: white;  /* text color */
    -webkit-box-shadow: 0 0 0px 30px #444444 inset !important; /* background color*/
-   transition: background-color 5000s ease-in-out; 
-   caret-color: white; /* cursor color */
 }
 
-h2 {
-   color: white;
-   font-size: 30px;
-   padding: 10px 0;
+label {
+   color: #bb86fc;
+   display: block;
+   font-size: 13px;
 }
 
 .btn {
@@ -76,11 +62,10 @@ h2 {
    border: none;
    color: #bb86fc;
    cursor: pointer;
-   padding: 5px 10px;
-}
+   font-family: 'Roboto-Bold', sans-serif;
+   font-size: 14px;
+   padding: 5px 15px;
 
-button:focus {
-   outline: none;
 }
 
 .chkbox-group {
@@ -88,22 +73,88 @@ button:focus {
 }
 
 .form-section {
+   align-items: center;
    background-color: #444444;
    border-bottom: 2px #bb86fc solid;
    box-sizing: border-box;
-   align-items: center;
    margin-bottom: 15px;
    padding: 5px 10px;
    width: 250px;
+}
+
+.form-and-msgs {
+   display: flex;
+   font-size: 14px;
 }
 
 .login-reg-main {
    margin-left: 20%;
 }
 
-.warning-msgs {
-   color: red;
+.msg-section {
+   margin-left: 150px;
+   width: 350px;
+}
+
+.msg-section h3 {
+   margin-top: 0;
+}
+
+.no-outline:focus {
+   outline: none;
+}
+
+.pswd-req {
+   text-indent: 20px;
+}
+
+.pswd-tip {
+   display: inline-block;
+   position: relative;
+}
+
+.pswd-tip h3 {
    font-size: 14px;
+   margin: 5px 0;
+}
+
+.pswd-tip .pswd-tip-text {
+   background-color: grey;
+   border-radius: 6px;
+   color: white;
+   padding: 15px;
+   text-align: left;
+   visibility: hidden;
+   width: 200px;
+
+   /* positoining of tip box */
+   left: 30%;
+   margin-left: -60px;
+   position: absolute;
+   top: 130%;
+   z-index: 1;
+
+   /* fade-in effect */
+   opacity: 0;
+   transition: opacity 0.3s;
+}
+
+.pswd-tip .pswd-tip-text::after {
+   /* arrow on bottom of box (similar to checkboxes) */
+   border-color: grey transparent transparent transparent;
+   border-style: solid;
+   border-width: 10px;
+   bottom: 100%;
+   content: "";
+   left: 40%;
+   margin-left: 5px;
+   position: absolute;
+   transform: scale(1, -1);
+}
+
+.pswd-tip:hover .pswd-tip-text {
+   opacity: 1;
+   visibility: visible;
 }
 
 .success-msgs {
@@ -111,9 +162,13 @@ button:focus {
    font-size: 14px;
 }
 
+.success-msgs a {
+   color: green;
+}
+
 .term {
-   display: flex;
    align-items: center;
+   display: flex;
    margin: 10px 0;
 }
 
@@ -127,7 +182,7 @@ button:focus {
    box-sizing: border-box;
    color: white;
    font-size: 16px;
-   padding: 5px 20px;
+   padding: 5px 20px 10px 20px;
    width: 250px;
 }
 
@@ -162,14 +217,18 @@ button:focus {
    width: 10px;
 }
 
-/*
-.term input[type='checkbox']:checked + label[] {
-   background: none;
-   height: 10px;
-   width: 10px;
-   background-color: #bb86fc;
+.terms a:link,
+.terms a:hover,
+.terms a:visited, 
+.terms a:active {
+   color: #bb86fc;
+   font-family:'Roboto-Bold', sans-serif;
+   font-size: 14px;
+   font-weight: bold;
+   outline: none;
+   padding: 5px 15px;
+   text-decoration: none;
 }
-*/
 
 .visibility-icon input[type='checkbox'] {
    display: none;
@@ -196,35 +255,18 @@ button:focus {
    width: 30px;
 }
 
-/* warning-on, warning-off */
-
-.warning-on {
+.warning-msgs h3 {
+   background-color: #111111;
+   border: 1px #444444 solid;
    color: red;
-   font-size: 16px;
-   visibility: visible;
+   font-size: 14px;
+   margin: .5em 0;
+   padding: 5px 20px 10px 20px;
 }
 
-.warning-off {
-   display: none;
-   font-size: 16px;
-}
+/* warning-on, warning-off */
 
 .with-eye {
    display: flex;
 }
 
-/*
-.matching-pswd-warning {
-   visibility: hidden;
-   font-size: 16px;
-}
-
-.pswd-cred-warning {
-   visibility: hidden;
-   font-size: 16px;
-}
-
-.terms-warning {
-   visibility: hidden;
-   font-size: 16px;
-}*/

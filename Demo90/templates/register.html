@@ -11,6 +11,7 @@
     <script src='/static/js/utilities.js'></script>
     <script src='/static/js/register.js'></script>
 </head>
+
 <body>
   <noscript>
     You need to enable JavaScript to run Sensor Fusion!
@@ -26,13 +27,8 @@
       </div>
   </section>
   <section class ="login-reg-main">
-<!--    <h2 class="hel">Create New Account</h2>
-    <h2 class="hel2">Create New Account</h2>
-    <h2 class="rob">Create New Account</h2>
-    <h2 class="sans">Create New Account</h2> -->
     <h2>Create New Account</h2>
-    <!--    <form onSubmit='return checkPwMatch()'action='/register' method='post'> -->
-    <!--    <form onSubmit='return checkPwMatch()'action="{{ url_for('register') }}" method='post'> -->
+    <div class="form-and-msgs">
     <form action="{{ url_for('register') }}" method='POST'>
       <div class='form-section'>
         <label for='firstName'>First</label>
@@ -46,18 +42,27 @@
         <label for='email'>Email</label>
         <input id='email' name='email' placeholder='Email' required></input>
       </div>
-      <div class='form-section with-eye'>
-	<div>
+      <div class='form-section with-eye pswd-tip'>
+	<div class="no-outline">
           <label for='password'>Password</label>
           <input id='password' name='password' placeholder='Password' type='password' maxlength="10" pattern="^(?=.{6,})(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9 ]).*$" onChange='return verifyPswd()' required></input>
+
 	</div>
 	<div class='visibility-icon'>
 	  <input id='pswd-vis' type='checkbox' onclick='showPassword1()'></input>
 	  <label for='pswd-vis'></label>
 	</div>
+	<span class='pswd-tip-text'>
+            <h3>Password should contain the following:</h3>
+              <h3 class="pswd-req">- 1 capital letter</h3>
+              <h3 class="pswd-req">- 1 lowercase letter</h3>
+              <h3 class="pswd-req">- 1 number</h3>
+              <h3 class="pswd-req">- 1 symbol</h3>
+	  </span>
+
       </div>
       <div class='form-section with-eye'>
-	<div>
+	<div class="no-outline">
           <label for='re-enterPassword'>Re-Enter Password</label>
           <input id='re-enterPassword' name='re-enterPassword' placeholder='Re-Enter Password' type='password' onChange='return verifyPswd()' required></input>
 	</div>
@@ -66,18 +71,12 @@
 	  <label for='confirm-pswd-vis'></label>
 	</div>
       </div>
-      <div>
-	<p class='warning-off'>Please accept all the terms and conditions.</p>
-        <div class='warning-off'>
-          <p>Please ensure your password fits the following criteria:</p>
-          <p>1 capital letter</p>
-          <p>1 lowercase letter</p>
-          <p>1 number</p>
-          <p>1 symbol</p>
-        </div>
-      </div>
-      <div class='terms'>
-        <div class='chkbox-group'>
+      <div class='terms' id='terms'>
+	{% if not isInvalid and redirect %}
+          <div class='chkbox-group' id='chkbox-group' hidden>
+        {% else %}
+          <div class='chkbox-group' id='chkbox-group'>
+	{% endif %}
 	  <h3>I agree</h3>
 	  <div class='term'>
 	    <input id='agree-term' name='agree-term' type='checkbox' required></input>
@@ -92,14 +91,34 @@
 	    <label for='age-term'>16+ years old</label>
 	  </div>
 	</div>
-	<p class='warning-off'>Please accept all the terms and conditions.</p>
-	<div class='term-btns'>
-	  <button class='btn'>
-	    <strong class='btn-outline'>Cancel</strong>
-	  </button>
-	  <button id='submit-btn' class='btn' type='submit'>
+	{% if not isInvalid and redirect %}
+	  <div class='term-btns' id='term-btns' hidden>
+        {% else %}
+	  <div class='term-btns' id='term-btns'>
+	{% endif %}
+	  <a href="{{ url_for('login') }}"><strong>Cancel</strong></a> 
+	  <button id='submit-btn' class='btn' type='submit' value='create'>
 	    <strong class='btn-outline'>Create Account</strong>
 	  </button>
+        </div>
+        {% if not isInvalid %}
+          <div class="msgs">
+	    <div class='success-msgs'>
+	      {% with messages = get_flashed_messages() %}
+	        {% if messages %}
+	          {% for message in messages %}
+	            <h3>{{ message }}</h3>
+	            <a href="{{ url_for('login') }}">Login</a>
+	          {% endfor %}
+	        {% endif %}
+	      {% endwith %}
+	    </div>
+	  </div>
+	{% endif %}
+      </div>
+    </form>
+      <div class="msg-section">
+	<div class="msgs">
 	  {% if isInvalid %}
 	    <div class='warning-msgs'>
 	      {% with messages = get_flashed_messages() %}
@@ -110,20 +129,11 @@
 	        {% endif %}
 	      {% endwith %}
 	    </div>
-	  {% else %}
-	    <div class='success-msgs'>
-	      {% with messages = get_flashed_messages() %}
-	        {% if messages %}
-	          {% for message in messages %}
-	            <h3>{{ message }}</h3>
-	          {% endfor %}
-	        {% endif %}
-	      {% endwith %}
-	    </div>
 	  {% endif %}
-        </div>
+	</div>
+
       </div>
-    </form>
+    </div>
 
   </section>
   <section class ="login-reg-foot">
