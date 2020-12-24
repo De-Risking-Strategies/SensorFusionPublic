@@ -290,8 +290,15 @@ Still in the (SF-env) Directory,
 Type
 pip
 
+
 (SF-env)$ pip install flask==1.1.2
 
+## Install SQL Alchemy
+=============
+
+(SF-env)$ pip3 install flask_sqlalchemy
+
+You should see it install the package.
 
 
 ### Check Installed Packages 
@@ -299,42 +306,36 @@ pip
 Type: 'pip list'.  You should see similar to the below:
 
 (SF-env) pi@raspberrypi:~/SensorFusion $ pip list
-Package              Version    
--------------------- -----------
-absl-py              0.11.0     
-astor                0.8.1      
-cached-property      1.5.2      
-click                7.1.2      
-evdev                1.3.0      
-Flask                1.1.2      
-gast                 0.4.0      
-google-pasta         0.2.0      
-grpcio               1.33.2     
-h5py                 3.1.0      
-importlib-metadata   2.0.0      
-itsdangerous         1.1.0      
-Jinja2               2.11.2     
-Keras-Applications   1.0.8      
-Keras-Preprocessing  1.1.2      
-Markdown             3.3.3      
-MarkupSafe           1.1.1      
-numpy                1.19.4     
-opencv-python        3.4.6.27   
-pip                  18.1       
-pkg-resources        0.0.0      
-protobuf             3.14.0     
-python-xlib          0.29       
-setuptools           40.8.0     
-six                  1.15.0     
-tensorboard          1.13.1     
-tensorflow           1.13.1     
-tensorflow-estimator 1.14.0     
-termcolor            1.1.0      
-tflite-runtime       2.1.0.post1
-Werkzeug             1.0.1      
-wheel                0.35.1     
-wrapt                1.12.1     
-zipp                 3.4.0 
+Package          Version    
+---------------- -----------
+click            7.1.2      
+cycler           0.10.0     
+decorator        4.4.2      
+Flask            1.1.2      
+Flask-SQLAlchemy 2.4.4      
+imageio          2.9.0      
+itsdangerous     1.1.0      
+Jinja2           2.11.2     
+kiwisolver       1.3.1      
+MarkupSafe       1.1.1      
+matplotlib       3.3.3      
+networkx         2.5        
+numpy            1.19.4     
+opencv-python    3.4.6.27   
+Pillow           8.0.1      
+pip              18.1       
+pkg-resources    0.0.0      
+pyparsing        2.4.7      
+python-dateutil  2.8.1      
+PyWavelets       1.1.1      
+scikit-image     0.18.0     
+scipy            1.5.4      
+setuptools       40.8.0     
+six              1.15.0     
+SQLAlchemy       1.3.22     
+tflite-runtime   2.1.0.post1
+tifffile         2020.12.8  
+Werkzeug         1.0.1 
 -------------------------------------
 
 ### Exit the (SF-env)
