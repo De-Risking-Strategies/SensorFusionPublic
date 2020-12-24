@@ -3,10 +3,11 @@
 # (C) 2020 - De-Risking Strategies, LLC #
 # DRS ML/AI Flask API                   #
 # Authors: Pushkar K / Drew A           #
-# Updated 12-22-2020                    #
+# Updated 12-23-2020                    #
 #########################################
 import os
 import argparse
+import config 
 import cv2 as cv2
 import numpy as np
 import sys
@@ -14,34 +15,19 @@ import time
 
 from threading import Thread
 import importlib.util
-from hashlib import sha256
 
 #Flask 
 import json
-import sqlite3
-from flask import Flask, jsonify, request, render_template, Response, session, stream_with_context, redirect, url_for, flash
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, jsonify, request, render_template, Response, session, stream_with_context
 from importlib import reload 
 import gc
 import webbrowser
 
 
+from sfui import widgets #custom package
+
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Disable Flask Cache as it interferes with streaming
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sf.db'
-#app.secret_key = 'i need a new key'
-app.secret_key = 'HKkSeJXfs1aaQNpon0JvFg6H8urt5YWy'
-
-#db = SQLAlchemy(app)
-
-global video_camera_flag
-video_camera_flag = True# Video Stream class enable
-
-capture_flag = 'False' # Capture Enableg
-
-
-capture_image_limit = 2000 #Capture LImit
-fps_flag = False #showing frames per second is false by default - controlled by 'F' keyboard command
 
 #Client Commands
 os.environ['labels_flag'] = 'labels_on'
@@ -52,11 +38,8 @@ os.environ['cap_flag'] = 'False'
 #kill_TF
 os.environ['kill_tensorFlow'] = 'False'
 
-
-#VideoStream Instance
-instance = []
-input_validations = [] # 0: false, 1: true
-
+#local var
+fps_flag = False #showing frames per second is false by default - controlled by 'F' keyboard command
 
 @app.route('/',methods=['GET'])
 def index():
@@ -68,13 +51,14 @@ def index():
        if videostream:
          #videostream.release()
          videostream.stop()
-
-
    return render_template('index.html' )
-
+   
+from routes import routes #custom package
+'''
 @app.route('/api', methods = ['GET','POST'])
 def api():
     # POST request - Sensor Fusion Commands
+   
     if request.method == 'POST':
         print('Incoming command from Sensor Fusion client ...')
         sfCommand = request.get_json()
@@ -86,11 +70,9 @@ def api():
             sfCommand = 'annotate'
             
             #Get the annotation data - name, image count, description
-            
             os.environ['annotate_name'] = str(chunks[1])
             os.environ['annotate_images'] = str(chunks[2])
             
-            global anno_images 
             anno_images = str(chunks[2])
             
             os.environ['annotate_description'] = str(chunks[3])
@@ -100,7 +82,7 @@ def api():
         #Restore Tensor Flow
         if first_char == 'r':
             os.environ['kill_tensorFlow'] = 'False'
-            print('Restore Tensor Flow')
+            #print('Restore Tensor Flow')
        
         #custom, model
         if first_char == 'c':
@@ -128,8 +110,8 @@ def api():
             os.environ['labels_flag'] = sfCommand
             print('Toggle Labels Command =', os.environ['labels_flag'])   
         elif sfCommand == 'fps':
-            global fps_flag
-            
+            global fps_flag#local scope
+           
             if fps_flag == False:#Show/Hide Frames per second
                 fps_flag = True
             else:
@@ -137,7 +119,6 @@ def api():
         elif sfCommand == 'quit':
             os.environ['quit_flag'] = sfCommand
             print('Quit command recieved')
-                
         
         return 'OK', 200
 
@@ -151,7 +132,7 @@ def api():
         
         message = {'Capture':'Capturing Images!'}
         return jsonify(message)  # serialize and use JSON headers
-
+'''
 @app.route('/quit_camera/') 
 def quit_camera():
    return "Not Implemented yet", 200
@@ -161,114 +142,11 @@ def login():
    embedVar='Login'
    return render_template('login.html',embed=embedVar )
 
-@app.route('/register', methods=['GET','POST']) 
+@app.route('/register') 
 def register():
    embedVar='Register'
-   #print(get_all_users)
-
-   isInvalid = 0  # used to flash error messages if anything was entered incorrectly
-   redirect = 0  # used to tell wether page was freshly loaded or redirected
-
-   # if post request, check that user is valid and doesn't already exist in database
-   if request.method == "POST":
-       data = request.form.to_dict()
-       first_name = data["first"]
-       last_name = data["last"]
-       email_address = data["email"]
-       password = data["password"]
-       reEnterPassword = data["re-enterPassword"]
-       agree_term = data['agree-term']
-       privacy_term = data['privacy-term']
-       age_term = data['age-term']
-
-       # debugging
-       #for key, value in data.items():
-           #print("key: {0}, value: {1}".format(key, value))
-
-       # validation checks
-       #   - is it possible to send the values the user gave back so that they don't have to fill 
-       #     in all the fields again?
-
-       # both first and last name need to be between 4 and 128 characters
-       #   - should we have alpha numeric checks for names?
-       #   - there are people with first and last names that are shorter than 4 characters, 
-       #     so should we decrease the lower bound?
-
-       # validate all user inputs
-       if len(first_name) < 4 or len(first_name) > 128: 
-           #print('First name either too long or too short')
-           #input_validations.append(0)
-           flash('First name is either too long or too short')
-           isInvalid = 1
-           
-       if len(last_name) < 4 or len(last_name) > 128: 
-           #print('Last_name either too long or too short')
-           flash('Last name is either too long or too short')
-           isInvalid = 1
-
-       # email_address should be between 8 and 255 characters and should not already exist in the table
-       if len(email_address) < 8 or len(email_address) > 255: 
-           # check to make sure this email does not already exist in the database
-           #print('Email address either too long or too short')
-           flash('Email address is either too long or too short')
-           isInvalid = 1
-
-       # password should be at least 8 characters long, encrypted, and should have the specified requirements
-       if len(password) < 8:
-           # encrypt password to be saved in database
-           #print('Password too short')
-           flash('Password is too short')
-           isInvalid = 1
-       # check for other password validation requirements?
-
-       # re-enterPassword should match password
-       if reEnterPassword != password: 
-           #print('Passwords do not match')
-           flash('Your passwords do not match')
-           isInvalid = 1
-
-       # check if terms of service were accepted
-       if agree_term == None or privacy_term == None or age_term == None:
-           #print('Not all terms were accepted')
-           flash('Not all terms were accepted')
-           isInvalid = 1
-
-       if isInvalid == 1:
-           # send user back to registartion form to enter their information correctly
-           return render_template('register.html', embed=embedVar, isInvalid=isInvalid)
-       else:
-           # all user information is valid; add to database
-           #   - unique email addresses
-
-           all_users = get_all_users()
-           #print(all_users)
-           for user in all_users:
-
-               # if an email already exists in database, return error message
-               if user[3].strip('"\'') == email_address:
-                   flash('An account with this email address already exists. Please try a different one.')
-                   isInvalid = 1
-                   return render_template('register.html',embed=embedVar, isInvalid=isInvalid )
-
-           # else, add new user to database and return success message
-
-           # create hash of password and add that to table
-           pswd_hash = sha256(password.encode("utf-8")).hexdigest()
-
-           # add user to database; passwords currently not being saved, but are being hashed
-           result = add_user(first_name, last_name, email_address, 5) # eventually save pswd_hash
-           redirect = 1
-           flash('Congratulations! You have successfully registered! Please go to the login page to sign in!')
-           print(all_users)
-
-           #debugging
-           #for key, value in request.form.items():
-               #flash(value)
-
-   # this will need to redirect to a different location, I think; the login page maybe?
-   return render_template('register.html',embed=embedVar, isInvalid=isInvalid, redirect=redirect)
+   return render_template('register.html',embed=embedVar )
   
-
 @app.route('/video_feed')
 def video_feed():
     #Video streaming route: goes into src attribute of an img tag
@@ -276,70 +154,7 @@ def video_feed():
     
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-
-#@app.route('/api/user', methods=['GET', 'POST'])
-def collection():
-    print("hello, it's me")
-    if request.method == 'GET':
-        print('This is a GET method')
-        all_users = get_all_users()
-        return json.dumps(all_users)
-    elif request.method == 'POST':
-        print('This is a POST method')
-        data = request.form
-        print(data)
-        #result = add_user(data['firstName'], data['lastName'], data['email'], data['captureLimit'])
-        #return jsonify(result)
-
-
-
-#@app.route('/api/user/<user_id>', methods=['GET', 'PUT', 'DELETE'])
-def resource(user_id):
-    if request.method == 'GET':
-        user = get_single_user(user_id)
-        return json.dumps(user)
-    elif request.method == 'PUT':
-        data = request.form
-        result = edit_user(
-            user_id, data['firstName'], data['lastName'],  data['email'], data['captureLimit'])
-        return jsonify(result)
-    elif request.method == 'DELETE':
-        result = delete_user(user_id)
-        return jsonify(result)
-
-
-# helper functions
-
-def add_user(firstName, lastName, email, captureLimit):
-    try:
-        with sqlite3.connect('sf.db') as connection:
-            cursor = connection.cursor()
-            cursor.execute("""
-                INSERT INTO user (firstName, lastName, email, captureLimit) values (?, ?, ?, ?);
-                """, (firstName, lastName, email, captureLimit))
-            result = {'status': 1, 'message': 'User Added'}
-    except:
-        result = {'status': 0, 'message': 'error'}
-    return result
-
-
-def get_all_users():
-    with sqlite3.connect('sf.db') as connection:
-        cursor = connection.cursor()
-        cursor.execute("SELECT * FROM user ORDER BY id desc")
-        all_users = cursor.fetchall()
-        return all_users
-
-
-def delete_user(user_id):
-    try:
-        with sqlite3.connect('sf.db') as connection:
-            connection.execute("DELETE FROM user WHERE ID = ?;", (user_id,))
-            result = {'status': 1, 'message': 'USER Deleted'}
-    except:
-        result = {'status': 0, 'message': 'Error'}
-    return result
-
+# ============================
 def gen_frames():
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
@@ -351,7 +166,6 @@ def gen_frames():
             self.stream = cv2.VideoCapture(0)
  
             #VideoStream Instance
-            global instance
             instance = VideoStream.__qualname__
             print('The class instance is: ',instance)
             #print('\nVIDEOSTREAM: locals() value inside class\n', locals())
@@ -495,23 +309,19 @@ def gen_frames():
     input_std = 127.5
 
     # Initialize frame rate calculation
-    #global frame_rate_calc
     frame_rate_calc = 1
     freq = cv2.getTickFrequency()
 
     # Initialize video stream
-    global videostream
     videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
     time.sleep(1)
 
     img_counter = 0
-    
-   
   
     #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
     try:
-        #while True:
-        while video_camera_flag:
+        while True:
+        #while video_camera_flag:
             
             # Start timer (for calculating frame rate)
             t1 = cv2.getTickCount()
@@ -533,11 +343,7 @@ def gen_frames():
             interpreter.set_tensor(input_details[0]['index'],input_data)
             interpreter.invoke()
 
-            # Retrieve detection results
-            global scores
-            global classes
-            global person_found
-            
+            # Retrieve detection results           
             person_found = False
             
             boxes = interpreter.get_tensor(output_details[0]['index'])[0] # Bounding box coordinates of detected objects
@@ -546,7 +352,7 @@ def gen_frames():
             #num = interpreter.get_tensor(output_details[3]['index'])[0]  # Total number of detected objects (inaccurate and not needed)
             
             #Kill TensofFlow while Annotating
-            global kill_tensorFlow
+            
             kill_tensorFlow = os.environ.get('kill_tensorFlow')
             #print("TensofFlow Status: " + str(kill_tensorFlow))
 
@@ -554,7 +360,6 @@ def gen_frames():
             for i in range(len(scores)):
                 if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0)):
                     
-            
                     # Get bounding box coordinates and draw box
                     # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
                     ymin = int(max(1,(boxes[i][0] * imH)))
@@ -567,7 +372,7 @@ def gen_frames():
                         cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 3)
 
                     # Draw label (object_name) and score (%)    
-                    global object_name   
+                    
                     object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index 
                     #print(labels[int(classes[i])]+": "+str(i))  
                     
@@ -610,115 +415,26 @@ def gen_frames():
                             cv2.rectangle(frame, (xmin,ymin), (xmin,ymin), (237,237,237), cv2.FILLED) # Draw frame with no label OR score text !
                         
             # Draw framerate in corner of frame - use 'F' key to toggle on/off
-            if fps_flag:
-                cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
-            else:
+            try:
+                if fps_flag:
+                    cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
+                else:
+                    pass
+            except:
                 pass
-                
             # All the results have been drawn on the frame, so it's time to display it.
             #cv2.imshow('Object detector', frame) ## Commented for the FLASK API 
  
-            #Draw vertical bar
-            window_name ='Object detector'
-                 
-            top = int(scores[0]*100)
-            color = (0, 0, 255)
-            
-            if person_found == True:
-                #print('p')
-                if top >= 100:
-                    top = 100
-                    color = (0, 255, 0) #1 BGR format 
-                #   It never sees 100%! 
-                elif top >= 98 <=99:
-                    top = 120
-                    color = (0, 255, 0) #Green                
-                elif top >= 96 <=97:
-                    top = 130
-                    color = (0, 255, 0) #  
-                elif top >= 94 <=95:
-                    top = 140
-                    color = (0, 255, 0)  #Top                 
-                elif top >= 92 <=93:
-                    top = 150
-                    color = (0, 255, 36)        
-                elif top >= 90 <=91:
-                    top = 160
-                    color = (0, 255, 52)       
-                elif top >= 88 <=89:
-                    top = 170
-                    color = (0, 255, 69)        
-                elif top >= 86 <=87:
-                    top = 180
-                    color = (0, 255, 85)       
-                elif top >= 84 <=85:
-                    top = 190
-                    color = (0, 255, 102)       
-                elif top >= 81 <=83:
-                    top = 200
-                    color = (0, 255, 110)  
-                elif top >= 78 <=80:
-                    top = 210
-                    color = (0, 255, 136)  
-                elif top >= 75 <=77:
-                    top = 220
-                    color = (0, 255, 153) 
-                
-                # Yellow   
-                elif top >= 72 <=74:
-                    top = 230
-                    color = (0, 255, 170)            
-                elif top >= 69 <=71:
-                    top = 240
-                    color = (0, 255, 187)           
-                elif top >=66 <=68:
-                    top = 250    
-                    color = (0, 255, 204)  
-                elif top >= 63 <=65:
-                    top = 260
-                    color = (0, 255, 231)            
-                elif top >= 60 <=62:
-                    top = 270
-                    color = (0, 255, 238)           
-                elif top >=57 <=59:
-                    top = 280    
-                    color = (0, 255, 254)  
-                elif top >=54 <=56:
-                    top = 290    
-                    color = (0, 255, 255)  
-                elif top >=51 <=53:
-                    top = 300    
-                    color = (0, 255, 255)  
-                                
-                # anything below 50 is red          
-                elif top >=40 <=50:
-                    top = 310    
-                    color = (0, 200, 255)           
-                elif top >=30 <=39:
-                    top = 330    
-                    color = (0, 150, 255)
-                elif top >=20 <=29:
-                    top = 340    
-                    color = (0, 75, 255) 
-                elif top >=10 <=19:
-                    top = 350    
-                    color = (0, 0, 255) 
-                elif top >=0 <=9:
-                    top = 360    
-                    color = (0, 0, 255) #10    BGR Red         
-              
-            else:#no person detected
-                  top = 360
-                  color=(0,0,255)
-                                        
-            bottom = 400
-            left = 13
-            start_point = (left, top)
-            end_point = (left,bottom)
-            thickness = 14
+            #Module widgets.meter()
             if kill_tensorFlow != 'True':
-                image = cv2.line(frame, start_point, end_point, color, thickness)
-           
+                #window_name ='Object detector'                     
+                top = int(scores[0]*100)
+                color = (0,0,255)
+                if person_found == True:
+                     widgets.meter(frame,top)#module
+            #End Module
+
+             
             # Displaying the image - DO NOT USE!
             #cv2.imshow(window_name, image)  
           

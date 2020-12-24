@@ -4,6 +4,11 @@
 
 ## SENSOR FUSION CHANGELOG                     
 ----
+## December 24 - Create config, routes and widgets packages
+- Modularize configuration (globals)
+- Create widgets.meter Package - move the meter bar out of the main line
+- Create routes.api, login and register packages
+
 ## December 23 - Merge of Pushkar and Drew S changes
 - Fixed Menu.sh (launch.sh) problem with large image captures under annotations
   NOTE - Browser has to be launched manually  (for) now
