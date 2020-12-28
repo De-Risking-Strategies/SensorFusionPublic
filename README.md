@@ -1,7 +1,7 @@
 # Sensor Fusion READ ME   
 (C) 2020 - De-Risking Strategies, LLC 
 DRS ML/AI Flask API                                        
-Update 12-223-2020                     
+Update 12-23-2020                     
 ````
 
 ## Starting Sensor Fusion
@@ -271,7 +271,7 @@ $ sudo apt-get install sqlite3
 In a separate terminal window:
 NOTE - This should be installed in the image, but if not follow the steps below.
 
-$ cd ./Demo90
+$ cd /home/pi/SensorFusion
 
 Type
 source SF-env/bin/activate
