@@ -59,9 +59,12 @@
   </section>
   <section class="main" >
   <div id='main'>
+   
     <div id='video-canvas'> 
+      
       <img class='' id='cameraStream' src="{{ url_for('video_feed') }}" width="100%" style='display:block'>
-    
+       <span id='annotateFileStatus' style='position:absolute; top:9%;height: 4%; font-size: 0.5em;color:red'></span>
+       <a id='annoLink' style ='color: red;position: absolute;top: 13%;font-size: .5em;'></a>
     </div>
    </div>
   </section>

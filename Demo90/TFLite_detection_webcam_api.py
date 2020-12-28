@@ -3,7 +3,7 @@
 # (C) 2020 - De-Risking Strategies, LLC #
 # DRS ML/AI Flask API                   #
 # Authors: Pushkar K / Drew A           #
-# Updated 12-23-2020                    #
+# Updated 12-27-2020                    #
 #########################################
 import os
 import argparse
@@ -23,11 +23,13 @@ from importlib import reload
 import gc
 import webbrowser
 
-
 from sfui import widgets #custom package
+
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Disable Flask Cache as it interferes with streaming
+
+capture_image_limit = 2000
 
 #Client Commands
 os.environ['labels_flag'] = 'labels_on'
@@ -52,9 +54,7 @@ def index():
          #videostream.release()
          videostream.stop()
    return render_template('index.html' )
-   
-from routes import routes #custom package
-'''
+
 @app.route('/api', methods = ['GET','POST'])
 def api():
     # POST request - Sensor Fusion Commands
@@ -72,7 +72,7 @@ def api():
             #Get the annotation data - name, image count, description
             os.environ['annotate_name'] = str(chunks[1])
             os.environ['annotate_images'] = str(chunks[2])
-            
+            global anno_images
             anno_images = str(chunks[2])
             
             os.environ['annotate_description'] = str(chunks[3])
@@ -84,12 +84,34 @@ def api():
             os.environ['kill_tensorFlow'] = 'False'
             #print('Restore Tensor Flow')
        
-        #custom, model
+        #Custom model changed - TO DO
         if first_char == 'c':
             print('Custom Model Changed')
        
+        #Basic model changed - TO DO
         if first_char == 'm':
-            print('Model changed')
+            print('Basic changed')
+ 
+        #Check if directory exists
+        if first_char == 'd':
+            print('check if directory exists')
+            chunks = sfCommand.split(",")
+                       
+            global annotatePath
+            annotatePath = '/home/pi/SensorFusion/Pictures/'+ str(chunks[1])
+            print('Py Checking Path: ',annotatePath)
+           
+            isDir = os.path.exists(annotatePath)
+            print('Dirctory checked isDir'+ str(isDir))
+            
+            if isDir:
+                message = {'statusText':'true'}
+                print('Dirctory Exists')
+                return 'Forbidden', 403
+            else:
+                message = {'statusText':'false'}
+                print('Directory Does not Exist')
+                return 'OK', 200
             
         #Annotate    
         if sfCommand == 'annotate':
@@ -132,7 +154,7 @@ def api():
         
         message = {'Capture':'Capturing Images!'}
         return jsonify(message)  # serialize and use JSON headers
-'''
+
 @app.route('/quit_camera/') 
 def quit_camera():
    return "Not Implemented yet", 200
@@ -161,6 +183,8 @@ def gen_frames():
     class VideoStream(object):
         """Camera object that controls video streaming from the Picamera"""
         def __init__(self,resolution=(640,480),framerate=30,target=None,args=()):
+            global capture_image_limit
+            capture_image_limit = 2000
            
             # Initialize the PiCamera and the camera image stream
             self.stream = cv2.VideoCapture(0)
@@ -217,6 +241,7 @@ def gen_frames():
         def stop(self):
         # Indicate that the camera and thread should be stopped
             self.stopped = True
+
 
     # Define and parse input arguments
     parser = argparse.ArgumentParser()
@@ -450,11 +475,14 @@ def gen_frames():
             capture_flag = os.environ.get('cap_flag')
             annotate_name = os.environ.get('annotate_name')           
             annotate_description = os.environ.get('annotate_description')# this is for future use - we'll write our own metadata file
-                      
+            
+            apture_image_limit = 20;
+            
             if capture_flag == 'True':
                 #Check limit
                 try:
                     print("image limit: " + anno_images)
+                    
                     capture_image_limit = int(anno_images)
                 except:
                     pass

@@ -4,6 +4,13 @@
 
 ## SENSOR FUSION CHANGELOG                     
 ----
+
+## December 27 - Annotate API enchancemant and check for existing dir on annotation
+- Created a Path check fAPI in Python to check for existing Directory Names  - preventingf overwriting
+- Added a status bar and removed the dialog when capturing images for annotation
+- Made it so the F and Spacebar are disabled during annotation
+
+
 ## December 24 - Create config, routes and widgets packages
 - Modularize configuration (globals)
 - Create widgets.meter Package - move the meter bar out of the main line

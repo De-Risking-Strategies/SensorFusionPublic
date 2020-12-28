@@ -4,7 +4,8 @@ var toggleInfoCanvasFlag = false;
 var toggleLabels = true;//On by default
 var toggleScores = true;
 var span; 
-var modal 
+var modal;
+var modalOpen = false;
 
 function init(){
 var toggleLabelsBtn = document.getElementById("toggleLabelsBtn");
@@ -13,6 +14,7 @@ var toggleScoresBtn = document.getElementById("toggleCameraBtn");
 document.getElementById("main").addEventListener("click", function() {
  postAPI('restore_tesnorFlow');
  modal.style.display = "none";
+ modalOpen = false;
 });
 //modal = document.getElementById("sfModal");
 modal = document.getElementsByClassName("modal")[0];
@@ -26,27 +28,34 @@ span = document.getElementsByClassName("close")[0];
 span.onclick = function() {
    postAPI('restore_tesnorFlow');
    modal.style.display = "none";
+    modalOpen = false;
 }
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
   if (event.target == modal) {
    postAPI('restore_tesnorFlow');
    modal.style.display = "none";
+   modalOpen = false;
   }
+
+  var status1 = document.getElementById("annotateFileStatus");
+  status1.innerText = "";
+
  }
 
 document.body.onkeydown = function(e){
-  console.log(String.fromCharCode(e.keyCode)+"-->"+e.keyCode);
-  if(e.keyCode =='32'){//SPACEBAR
-    modal1_click('annotate');
-  }else if(e.keyCode == '81'){//Q
-    postAPI('quit');
-  }else if(e.keyCode == '70'){
-    postAPI('fps')
-  }
-  
-}
+ // console.log(String.fromCharCode(e.keyCode)+"-->"+e.keyCode);
 
+if (modalOpen == false){
+  if(e.keyCode =='32'){//SPACEBAR
+      modal1_click('annotate');
+    }else if(e.keyCode == '81'){//Q
+      postAPI('quit');
+    }else if(e.keyCode == '70'){
+      postAPI('fps')
+    } 
+  }
+ }
 }
 
 
@@ -89,11 +98,11 @@ function getAPI(command) {
 function postAPI(command) {
 // POST commands to Flask/Python API route
   console.log('Posting: '+ command);
-  var sfCommandAnnotate = false;
+  sfCommandAnnotate = false;
   var annotateName
   
   if(command == 'annotate'){
-    var sfCommandAnnotate = true;
+    sfCommandAnnotate = true;
         annotateName = document.getElementById('aName').value;
         console.log(annotateName);
     var annotateImages = document.getElementById('aImages').value;
@@ -137,9 +146,10 @@ function postAPI(command) {
       console.log('quitting')
     }
    if(command == 'kill_tesnorFlow'){
-      console.log('restore_tesnorFlow')
+      console.log('kill_tesnorFlow')
     } 
    if(command == 'restore_tensorFlow'){
+
       console.log('restore_tensorFlow')
     }
   fetch('/api',{
@@ -158,12 +168,29 @@ function postAPI(command) {
         console.log(json); 
         
         if(json.status== 200 && sfCommandAnnotate ){
-          var modal1 = document.getElementById("modal_body1");
-          var modal2 = document.getElementById("modal_body2");
-          modal1.innerHTML = "<h2>Your Files are saving to: <br><br/>/home/pi/Pictures/"+ annotateName+"</h2>";
-          modal2.innerHTML = "<p>Next, select Main Menu item 3 Run Image Labeler to annotate them!</p>";
+          var status1 = document.getElementById("annotateFileStatus");
+          var link = "/home/pi/SensorFusion/Pictures/"+ annotateName
+          
+          status1.innerText = "Your files are saving to: "+link;
+         
+          //aLink = 'file:///'+link;
+          
+          //#document.getElementById('annoLink').href = aLink;
+          //document.getElementById('annoLink').innerHTML = link;
+          
+          //modal2.innerHTML = "<p>Next, select Main Menu item 3 Run Image Labeler to annotate them!</p>";
+          modal.style.display = "none";
         }
+      
+       var cd = command.split(",");     
+       if (json.status == 403 && cd[0] =='dirCheck'){
+         alert('This Name is already Taken, please try again');
+         document.getElementById('aName').value='';
+         
+       }
     })
+ modalOpen = false;
+    
 }
 function display_info(){
   var infoPic = document.getElementById("infoPic");
@@ -183,8 +210,15 @@ function close_info(){
    infoPic.style.display = "none";
    infoCam.style.display= "none";
 }
-
+function checkDirectoryExists(dir){
+    console.log('Check Directory Exists '+dir)
+    checkDir = document.getElementById('aName').value
+    
+    postAPI('dirCheck,'+checkDir)
+    
+}
 function modal1_click(event){
+
   var hdr = document.getElementById("modal_header");
   var modal1 = document.getElementById("modal_body1");
   var modal2 = document.getElementById("modal_body2");
@@ -203,8 +237,8 @@ function modal1_click(event){
     
     //Annotation Form - values to pass to Flask/Python
     var row0 = '<table border="1">';
-    var row1 = '<tr><td id="ic1">Name</td><td id="ic2"><input id="aName" type="text" style="width:150px"></input><br/>';
-    var row2 = '<strong style="color:red">IF YOU USE AN EXISTING FOLDER NAME, PREVIOUS FILES WILL BE OVERWRITTEN!</strong></td></tr>';
+    var row1 = '<tr><td id="ic1">Name</td><td id="ic2"><input id="aName" type="text" style="width:150px" onchange="checkDirectoryExists(this)"></input><br/>';
+    var row2 = '<strong style="color:red">Files are saved in /home/pi/SensorFusion/<name></strong></td></tr>';
     var row3 = '<tr><td id="ic3">Images to Capture</td><td id="ic4"><input id="aImages" type="text" style="width:50px">&nbsp;2,000 MAX!</input></td></tr>';
     var row4 = '<tr><td id="ic5">Description</td><td id="ic6"><input id="aDescription" type="text" style="width:300px"></input></td></tr>';
     var row5 = '</table>'
@@ -215,11 +249,13 @@ function modal1_click(event){
  
   
   //Draw the Modal
+  modalOpen = true;
   hdr.innerHTML  = mTitle
   modal1.innerHTML = mHtml1;
   modal2.innerHTML = mHtml2;
   ftr.innerHTML = mFooter;
   modal.style.display = "block";
+  document.getElementById("aName").focus;
   
 }
 function selectFile(){
