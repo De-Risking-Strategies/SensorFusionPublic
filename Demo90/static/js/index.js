@@ -82,9 +82,12 @@ if (modelType == 'preLoaded'|| modelType ==""){
   }
 }else{
     customModelIndex = getCookie('customModelIndex');
-    setCookie("customModelIndex", "0", 30);
+    if (isNaN(customModelIndex)){customModelIndex = 0};
+   
+    //setCookie("customModelIndex", customModelIndex, 30);
     setCookie("modelType", "Custom", 30);
-    customModelIndex = 1;
+    
+     
     document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
     document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_selected_001.png'; 
 
@@ -173,7 +176,9 @@ function postAPI(command) {
       var len = customModel.length;
       var customModelIndex = parseInt(getCookie('customModelIndex'));
       
-      if (isNaN(customModelIndex)){customModelIndex = 0}
+      if (isNaN(customModelIndex)){customModelIndex = 0};
+      
+      if (customModelIndex == 0){customModelIndex = 1};//Skip 0th
       
       if(customModelIndex >= 4){
         customModelIndex = 1;//Skip over the initial placeholder 'custom'
