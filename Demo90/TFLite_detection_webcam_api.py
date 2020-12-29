@@ -58,9 +58,12 @@ def index():
    quit_flag = os.environ.get('quit_flag')
    if quit_flag == 'quit':#
        cv2.destroyAllWindows()
-       if videostream:
-         #videostream.release()
-         videostream.stop()
+       try:
+           if videostream:
+             #videostream.release()
+             videostream.stop()
+       except:
+           pass
    return render_template('index.html' )
 
 @app.route('/api', methods = ['GET','POST'])
