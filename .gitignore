@@ -34,7 +34,10 @@ scratch.txt
 .vim/*
 .vimrc
 .viminfo
+.gitignore.swp
+.gitignore.save.1
+.idea/
 project-posenet-master/models/
 webcam.lo
-
+venv/
 

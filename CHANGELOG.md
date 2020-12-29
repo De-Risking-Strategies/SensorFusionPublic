@@ -5,6 +5,13 @@
 ## SENSOR FUSION CHANGELOG                     
 ----
 
+## December 28-29 - Added Multi Modal support for PreLoaded and Custom Models 
+- Python pickle obj store for inter instance setting
+- Added Cookies for inter instance model persistance
+- Add PreLoaded Model support for ['Demo90','Model01.Deer', 'Model02.Head', 'Model03.Eyes', 'Model04.Tree'] - Click the 'Models' button to cycle through them
+- Added Custom Model support for ['Custom.01','Custom.02', 'Custom.03', 'Custom.04'] - Click the 'Custom' button to cycle through them
+- Added train Image On Off image
+
 ## December 27 - Annotate API enchancemant and check for existing dir on annotation
 - Created a Path check fAPI in Python to check for existing Directory Names  - preventingf overwriting
 - Added a status bar and removed the dialog when capturing images for annotation

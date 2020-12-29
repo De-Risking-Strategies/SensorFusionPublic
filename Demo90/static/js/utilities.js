@@ -38,6 +38,3 @@ function closeFullscreen() {
 function notImplementedYet(){
   alert("Not Yet Implemented");
 }
-
-
-
