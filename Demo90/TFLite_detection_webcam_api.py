@@ -22,6 +22,8 @@ from flask import Flask, jsonify, request, render_template, Response, session, s
 from importlib import reload 
 import gc
 import webbrowser
+import pickle
+
 
 from sfui import widgets #custom package
 
@@ -30,6 +32,12 @@ app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Disable Flask Cache as it interferes with streaming
 
 capture_image_limit = 2000
+
+#Model Switcher
+with open('/home/pi/SensorFusion/model.obj', 'rb' ) as input:
+    run_model = pickle.load(input)
+    os.environ['run_model'] = run_model
+    print("run_model "+ run_model)   
 
 #Client Commands
 os.environ['labels_flag'] = 'labels_on'
@@ -86,12 +94,31 @@ def api():
        
         #Custom model changed - TO DO
         if first_char == 'c':
-            print('Custom Model Changed')
+            chunks = sfCommand.split(",")
+            model_changed_to = str(chunks[1])
+            print('Custom Model changed to: '+model_changed_to)
+            
+            filehandler = open('model.obj','wb')
+            pickle.dump(model_changed_to,filehandler)
+            filehandler.close()
+            os.environ['run_model'] = model_changed_to
+            #rerun
+            os.environ['quit_flag'] = 'quit'
+
        
-        #Basic model changed - TO DO
+        #PreLoaded model changed 
         if first_char == 'm':
-            print('Basic changed')
- 
+            chunks = sfCommand.split(",")
+            model_changed_to = str(chunks[1])
+            print('PreLoaded Model changed to: '+model_changed_to)
+            
+            filehandler = open('model.obj','wb')
+            pickle.dump(model_changed_to,filehandler)
+            filehandler.close()
+            os.environ['run_model'] = model_changed_to
+            #rerun
+            os.environ['quit_flag'] = 'quit'
+            
         #Check if directory exists
         if first_char == 'd':
             print('check if directory exists')
@@ -259,14 +286,17 @@ def gen_frames():
                         action='store_true')
 
     args = parser.parse_args()
+    
 
     MODEL_NAME = args.modeldir
+    print('~~~~ Param Default Model Name: ' + str(MODEL_NAME))
     GRAPH_NAME = args.graph
     LABELMAP_NAME = args.labels
     min_conf_threshold = float(args.threshold)
     resW, resH = args.resolution.split('x')
     imW, imH = int(resW), int(resH)
     use_TPU = args.edgetpu
+
 
     # Import TensorFlow libraries
     # If tflite_runtime is installed, import interpreter from tflite_runtime, else import from regular tensorflow
@@ -290,13 +320,35 @@ def gen_frames():
             GRAPH_NAME = 'edgetpu.tflite'       
 
     # Get path to current working directory
+    # Multi-Model
+    # Demo90 /home/pi/SensorFusion/Demo90
+    # Deer: /home/pi/SensorFusion/PreLoadedModels/Model01.Deer
+    # Head: /home/pi/SensorFusion/PreLoadedModels/Model02.Head
+    # Eyes: /home/pi/SensorFusion/PreLoadedModels/Model03.Eyes
+    # Tree: /home/pi/SensorFusion/PreLoadedModels/Model04.Tree
+    # check.id - cd /home/pi/SensorFusion/checkid
+
     CWD_PATH = os.getcwd()
+    print("Default Path: "+ CWD_PATH)
+     
+    newModel = str(os.environ.get('run_model'))
+    
+    print("New Model Name: "+ newModel)
+    
+    if newModel == "Demo90":
+        CWD_PATH = "/home/pi/SensorFusion/"+ newModel 
+        
+    else:
+        CWD_PATH = "/home/pi/SensorFusion/PreLoadedModels/"+ newModel 
+            
+        print("Current Model Path: "+ CWD_PATH)
 
     # Path to .tflite file, which contains the model that is used for object detection
     PATH_TO_CKPT = os.path.join(CWD_PATH,MODEL_NAME,GRAPH_NAME)
 
     # Path to label map file
     PATH_TO_LABELS = os.path.join(CWD_PATH,MODEL_NAME,LABELMAP_NAME)
+    print("Current Path to Label Map: "+ PATH_TO_LABELS)
 
     # Load the label map
     with open(PATH_TO_LABELS, 'r') as f:
@@ -544,7 +596,8 @@ def gen_frames():
         if videostream:
             #videostream.release()
             videostream.stop()
-        webbrowser.open('http://localhost:5000')
+            #os.system("pkill chromium")
+        #webbrowser.open('http://localhost:5000', new=0)
             
     except KeyboardInterrupt:
         pass

@@ -6,6 +6,15 @@ var toggleScores = true;
 var span; 
 var modal;
 var modalOpen = false;
+var preLoadedModel = ['Demo90','Model01.Deer', 'Model02.Head', 'Model03.Eyes', 'Model04.Tree'];
+var customModel = ['Custom','Custom.01','Custom.02', 'Custom.03', 'Custom.04'];
+var customModelIndex = 0;
+
+var preLoadedModelSelected = 'Demo90';//Default Model
+var preLoadedModelIndex = 0;
+
+var modelType = 'preLoaded';
+
 
 function init(){
 var toggleLabelsBtn = document.getElementById("toggleLabelsBtn");
@@ -29,6 +38,8 @@ span.onclick = function() {
    postAPI('restore_tesnorFlow');
    modal.style.display = "none";
     modalOpen = false;
+    
+    
 }
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
@@ -56,6 +67,32 @@ if (modalOpen == false){
     } 
   }
  }
+
+//Load stored Model setting
+modelType = getCookie('modelType');
+
+if (modelType == 'preLoaded'|| modelType ==""){
+  preLoadedModelIndex = getCookie('modelIndex');
+  if(preLoadedModelIndex == ""){
+    setCookie("modelIndex", "0", 30);
+    setCookie("modelType", "preLoaded", 30);
+    preLoadedModelIndex = 0;
+    document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_selected_001.png'; 
+    document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
+  }
+}else{
+    customModelIndex = getCookie('customModelIndex');
+    setCookie("customModelIndex", "0", 30);
+    setCookie("modelType", "Custom", 30);
+    customModelIndex = 1;
+    document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
+    document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_selected_001.png'; 
+
+}
+
+document.getElementById('switchModelLabel').innerText = preLoadedModel[preLoadedModelIndex];
+document.getElementById('switchCustomLabel').innerText = customModel[customModelIndex];
+     
 }
 
 
@@ -83,17 +120,6 @@ function toggleCamera(){
       infoCam.style.display = "block";
     }
   
-}
-function getAPI(command) {
-// GET is the default method, don't need to set it, but is not used in SF for now.
-  fetch('/api')
-    .then(function (response) {
-        return response.json(); //  parse it as JSON 
-    })
-    .then(function (json) {
-        console.log('GET response as JSON:');
-        console.log(json); 
-    })
 }
 function postAPI(command) {
 // POST commands to Flask/Python API route
@@ -142,6 +168,60 @@ function postAPI(command) {
    
     }
    }
+   if(command == 'custom'){//CUSTOM MODEL
+      //switchCustomImage();
+      var len = customModel.length;
+      var customModelIndex = parseInt(getCookie('customModelIndex'));
+      
+      if (isNaN(customModelIndex)){customModelIndex = 0}
+      
+      if(customModelIndex >= 4){
+        customModelIndex = 1;//Skip over the initial placeholder 'custom'
+      }else{
+        customModelIndex += 1;
+      }
+      
+      if(customModelIndex >= len){
+        customModelIndex = 0;
+      }
+      setCookie("modelType", "Custom", 30);
+      setCookie('customModelIndex', customModelIndex, 30);
+      command += ','+ customModel[customModelIndex];
+      document.getElementById('switchCustomLabel').innerText = customModel[customModelIndex];
+      document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
+      document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_selected_001.png'; 
+      
+      console.log('Switch Custom Model: '+ customModel[customModelIndex])
+      timeRefresh(3);//Reload broswer
+
+   }
+   function timeRefresh(time) {
+        setTimeout("location.reload(true);", time);
+      }
+   if(command == 'model'){//PRE LOADED MODEL
+      //switchModelImage();
+      var len = preLoadedModel.length;
+      var preLoadedModelIndex = parseInt(getCookie('modelIndex'));
+      customModelIndex = 0;
+      if (isNaN(preLoadedModelIndex)){preLoadedModelIndex = 0}
+      
+      preLoadedModelIndex += 1;
+      if(preLoadedModelIndex >= len){
+        preLoadedModelIndex = 0;
+      }
+      setCookie("modelType", "preLoaded", 30);
+      setCookie('modelIndex', preLoadedModelIndex, 30);
+      command += ','+ preLoadedModel[preLoadedModelIndex];
+      document.getElementById('switchModelLabel').innerText = preLoadedModel[preLoadedModelIndex];
+      
+      document.getElementById('switchCustomLabel').innerText = customModel[customModelIndex];
+      document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_selected_001.png'; 
+      document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
+     
+      console.log('Switch PreLoaded Model'+ preLoadedModel[preLoadedModelIndex])
+      timeRefresh(3);//Reload broswer
+
+   }   
    if(command == 'quit'){
       console.log('quitting')
     }
@@ -172,13 +252,6 @@ function postAPI(command) {
           var link = "/home/pi/SensorFusion/Pictures/"+ annotateName
           
           status1.innerText = "Your files are saving to: "+link;
-         
-          //aLink = 'file:///'+link;
-          
-          //#document.getElementById('annoLink').href = aLink;
-          //document.getElementById('annoLink').innerHTML = link;
-          
-          //modal2.innerHTML = "<p>Next, select Main Menu item 3 Run Image Labeler to annotate them!</p>";
           modal.style.display = "none";
         }
       
@@ -192,6 +265,31 @@ function postAPI(command) {
  modalOpen = false;
     
 }
+function switchModelImage(){
+  if(document.getElementById('switchModelImg').src == 'http://localhost:5000/static/assets/models_icon_001.png')
+  {
+    document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_selected_001.png'; 
+  }else{
+    document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
+  }
+}
+function switchCustomImage(){
+  if(document.getElementById('switchCustomImg').src == 'http://localhost:5000/static/assets/models_icon_001.png')
+  {
+    document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_selected_001.png'; 
+  }else{
+    document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
+  }
+}
+function switchTrainImageOn(){
+    document.getElementById('switchTrainImg').src = 'http://localhost:5000/static/assets/train_model_selected_001.png'; 
+    setTimeout(function(){switchTrainImageOff(); }, 3000);
+  }
+function switchTrainImageOff(){ 
+   document.getElementById('switchTrainImg').src = 'http://localhost:5000/static/assets/train_model_001.png'; 
+ 
+}
+
 function display_info(){
   var infoPic = document.getElementById("infoPic");
   
@@ -204,6 +302,31 @@ function display_info(){
       infoPic.style.display = "none";
     }
 }
+function setCookie(cname,cvalue,exdays){
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = 'expires'+ d.toGMTString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  
+}
+
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
 function close_info(){
    toggleCameraBtnFlag = false;
    toggleInfoCanvasFlag = false;
@@ -238,7 +361,7 @@ function modal1_click(event){
     //Annotation Form - values to pass to Flask/Python
     var row0 = '<table border="1">';
     var row1 = '<tr><td id="ic1">Name</td><td id="ic2"><input id="aName" type="text" style="width:150px" onchange="checkDirectoryExists(this)"></input><br/>';
-    var row2 = '<strong style="color:red">Files are saved in /home/pi/SensorFusion/<name></strong></td></tr>';
+    var row2 = '<strong style="color:red">Files are saved in /home/pi/SensorFusion/name</strong></td></tr>';
     var row3 = '<tr><td id="ic3">Images to Capture</td><td id="ic4"><input id="aImages" type="text" style="width:50px">&nbsp;2,000 MAX!</input></td></tr>';
     var row4 = '<tr><td id="ic5">Description</td><td id="ic6"><input id="aDescription" type="text" style="width:300px"></input></td></tr>';
     var row5 = '</table>'
@@ -259,6 +382,7 @@ function modal1_click(event){
   
 }
 function selectFile(){
+  switchTrainImageOn();
   var input = document.createElement('input')
   input.type = 'file';
   input.click();
@@ -273,7 +397,9 @@ function selectFile(){
    fType = file.type;
    fSize = file.size;    
 
-   document.getElementById('fileSelected').innerHTML = fName +":"+ fSize +":"+ fType ||'no file selected';
+   //document.getElementById('fileSelected').innerHTML = fName +":"+ fSize +":"+ fType ||'no file selected';
+   
+  switchTrainImageOff();
 
   if (fSize > 90000000){alert("File Size too large, please try again")}
   
@@ -281,3 +407,7 @@ function selectFile(){
   }
  }
 }
+
+
+
+

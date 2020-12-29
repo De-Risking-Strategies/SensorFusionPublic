@@ -62,7 +62,7 @@
    
     <div id='video-canvas'> 
       
-      <img class='' id='cameraStream' src="{{ url_for('video_feed') }}" width="100%" style='display:block'>
+       <img class='' id='cameraStream' src="{{ url_for('video_feed') }}" width="100%" style='display:block'>
        <span id='annotateFileStatus' style='position:absolute; top:9%;height: 4%; font-size: 0.5em;color:red'></span>
        <a id='annoLink' style ='color: red;position: absolute;top: 13%;font-size: .5em;'></a>
     </div>
@@ -76,14 +76,14 @@
           <table><tr>
               <td id="controlCellScore" style='position:absolute;text-align: center'> <a id="toggleScoresLink" onclick="postAPI('scores')"><img id="toggleScoresBtn" class='large_button'src='/static/assets/toggle_switch_on_001.png'/><br><span class="controlBtnLabel">%</span></a></td>
               <td id="controlCellLabel" style='position:absolute;text-align: center'> <a id="toggleLabelsLink" onclick="postAPI('labels')"><img id="toggleLabelsBtn" class='large_button'src='/static/assets/toggle_switch_on_001.png'/><br><span class="controlBtnLabel">Labels</span></a></td>
-              <td id="controlCellModel" style='position:absolute;text-align: center'> <a id="switchModelLink" class="myBtn" onclick="postAPI('model');"><img class='standard_button'  src='/static/assets/models_icon_001.png'/><br><span class="controlBtnLabel">Demo.90</span></a></td>
+              <td id="controlCellModel" style='position:absolute;text-align: center'> <a id="switchModelLink" class="myBtn" onclick="postAPI('model');" ><img id='switchModelImg' class='standard_button'  src='/static/assets/models_icon_selected_001.png'/><br><span id='switchModelLabel' class="controlBtnLabel">Demo.90</span></a></td>
               
               <td id="controlCellSpaceBar" style='position:absolute;'> 
               <a id="annotate_btn" onclick="modal1_click('annotate');"><img class='checkid_button' src='/static/assets/annotate_button_001.png'/></a></td>
              
-              <td id="controlCellTrain" style='position:absolute;text-align: center'> <a id="trainBtn" class="myBtn"  onclick="postAPI('custom');"><img class='standard_button'  src='/static/assets/models_icon_001.png'/><br><span class="controlBtnLabel">Custom Models</span></a></td>
-              <td id="controlCellSensor" style='position:absolute;text-align: center'> <a id="sensorBtn" class="myBtn" onclick="selectFile('train');"><img class='standard_button' src='/static/assets/train_model_001.png'/><br><span class="controlBtnLabel">Train</span></a></td>
-              <td id="controlCellThermal" style='position:absolute;text-align: center'> <a id="thermalBtn" class="myBtn" onclick="modal1_click('thermal');"><img class='large_button' src='/static/assets/toggle_switch_off_001.png'/><br><span class="controlBtnLabel">Thermal</span></a></td>
+              <td id="controlCellTrain" style='position:absolute;text-align: center'> <a id="trainBtn" class="myBtn"  onclick="postAPI('custom');"><img id='switchCustomImg' class='standard_button'  src='/static/assets/models_icon_001.png'/><br><span id='switchCustomLabel' class="controlBtnLabel">Custom  </span></a></td>
+              <td id="controlCellSensor" style='position:absolute;text-align: center'> <a id="sensorBtn" class="myBtn" onclick="selectFile('train');"><img id='switchTrainImg' class='standard_button' src='/static/assets/train_model_001.png'/><br><span id='trainModelLabel'class="controlBtnLabel">Train</span></a></td>
+              <td id="controlCellThermal" style='position:absolute;text-align: center'> <a id="thermalBtn" class="myBtn" onclick="modal1_click('thermal');"><img class='large_button' src='/static/assets/toggle_switch_off_001.png'/><br><span id='thermalModelLabel' class="controlBtnLabel">Thermal</span></a></td>
           </tr></table>
         </div>
       </div>

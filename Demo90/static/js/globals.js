@@ -4,3 +4,4 @@
  var label
  var name
 
+const annotateRootDirectory = '../Pictures/';
