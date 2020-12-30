@@ -83,6 +83,8 @@ From the /home/pi directory:
 Type:
 cd SensorFusion
 
+Then you will use the following 'git' commands:
+
 EX: git pull <remote> <branch>
  
 Type: 
