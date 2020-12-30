@@ -7,7 +7,7 @@ var span;
 var modal;
 var modalOpen = false;
 var preLoadedModel = ['Demo90','Model01.Deer', 'Model02.Head', 'Model03.Eyes', 'Model04.Tree'];
-var customModel = ['Custom','Check.ID','Custom.01','Custom.02', 'Custom.03', 'Custom.04'];
+var customModel = ['Custom', 'Custom.04','Check.ID','Custom.01','Custom.02', 'Custom.03'];
 var customModelIndex = 0;
 
 var preLoadedModelSelected = 'Demo90';//Default Model
