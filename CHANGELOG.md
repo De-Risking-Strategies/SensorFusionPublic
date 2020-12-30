@@ -5,9 +5,10 @@
 ## SENSOR FUSION CHANGELOG                     
 ----
 
-## December 30 - RedMe/Train - Upload
+## December 30 - ReadMe/Train - Upload
 - Fixed Readme - cd /Sensor Fusion
-- Chaiged Train label to Upload
+- Chaiged Train label to Upload Images
+- Made heck.ID first custom item
 
 ## December 30 - Added CheckID support
 - Added CheckID Support to Custom Model switcher
