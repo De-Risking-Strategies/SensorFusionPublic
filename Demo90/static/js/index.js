@@ -7,7 +7,7 @@ var span;
 var modal;
 var modalOpen = false;
 var preLoadedModel = ['Demo90','Model01.Deer', 'Model02.Head', 'Model03.Eyes', 'Model04.Tree'];
-var customModel = ['Custom','Custom.01','Custom.02', 'Custom.03', 'Custom.04'];
+var customModel = ['Custom','Check.ID','Custom.01','Custom.02', 'Custom.03', 'Custom.04'];
 var customModelIndex = 0;
 
 var preLoadedModelSelected = 'Demo90';//Default Model
@@ -73,24 +73,29 @@ modelType = getCookie('modelType');
 
 if (modelType == 'preLoaded'|| modelType ==""){
   preLoadedModelIndex = getCookie('modelIndex');
+   
   if(preLoadedModelIndex == ""){
     setCookie("modelIndex", "0", 30);
     setCookie("modelType", "preLoaded", 30);
+    setCookie("customModelIndex", "0", 30);//Reset CustomModel Index
+    
     preLoadedModelIndex = 0;
     document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_selected_001.png'; 
     document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
   }
 }else{
     customModelIndex = getCookie('customModelIndex');
-    if (isNaN(customModelIndex)){customModelIndex = 0};
+    //if (isNaN(customModelIndex)){customModelIndex = 0};
    
+   if(customModelIndex == ""){
+    setCookie("modelIndex", "0", 30); //Reset PreLoaded Model Index
+    preLoadedModelIndex = 0;
     //setCookie("customModelIndex", customModelIndex, 30);
     setCookie("modelType", "Custom", 30);
     
-     
     document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
     document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_selected_001.png'; 
-
+  }
 }
 
 document.getElementById('switchModelLabel').innerText = preLoadedModel[preLoadedModelIndex];
@@ -180,7 +185,7 @@ function postAPI(command) {
       
       if (customModelIndex == 0){customModelIndex = 1};//Skip 0th
       
-      if(customModelIndex >= 4){
+      if(customModelIndex >= 5){
         customModelIndex = 1;//Skip over the initial placeholder 'custom'
       }else{
         customModelIndex += 1;
@@ -229,6 +234,7 @@ function postAPI(command) {
    }   
    if(command == 'quit'){
       console.log('quitting')
+      timeRefresh(6);//Reload broswer
     }
    if(command == 'kill_tesnorFlow'){
       console.log('kill_tesnorFlow')

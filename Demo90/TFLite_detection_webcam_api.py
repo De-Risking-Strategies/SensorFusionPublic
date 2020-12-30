@@ -340,7 +340,8 @@ def gen_frames():
     
     if newModel == "Demo90":
         CWD_PATH = "/home/pi/SensorFusion/"+ newModel 
-        
+    elif newModel == 'Check.ID':
+        CWD_PATH = "/home/pi/SensorFusion/checkid" 
     else:
         CWD_PATH = "/home/pi/SensorFusion/PreLoadedModels/"+ newModel 
             

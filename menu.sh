@@ -40,13 +40,13 @@ while [ $opt != '' ]
         1) clear;
             option_picked "Run Sensor Fusion ";
             printf "Running Full System using: 'bash launch.sh'";
-	    x-terminal-emulator -e "bash 'launch.sh'";
+	    x-terminal-emulator --geometry=80x30 --title='Sensor Fusion TPU' -e "bash 'launch.sh'";
             show_menu;
         ;;
 	2) clear;
             option_picked "Run Sensor Fusion no TPU ";
             printf "Running Full System using: 'bash launch_noTPU.sh'";
-	    x-terminal-emulator -e "bash 'launch_noTPU.sh'";
+	    x-terminal-emulator --geometry=80x30 --title='Sensor Fusion no TPU' -e "bash 'launch_noTPU.sh'";
             show_menu;
         ;;
         3) clear;
