@@ -5,11 +5,17 @@
 ## SENSOR FUSION CHANGELOG                     
 ----
 
+## December 30 - RedMe/Train - Upload
+- Fixed Readme - cd /Sensor Fusion
+- Chaiged Train label to Upload
+
 ## December 30 - Added CheckID support
 - Added CheckID Support to Custom Model switcher
 - Changed out Annotate image to 'Capture Images'
 - Tweaked the Switching logic for Custom to PreLoaded
 - Added Title and RowsxCols to Menu.sh to better place the spawned terminals
+
+
 
 ## December 28-29 - Added Multi Modal support for PreLoaded and Custom Models 
 - Python pickle obj store for inter instance setting

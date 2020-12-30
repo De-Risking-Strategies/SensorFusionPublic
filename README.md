@@ -77,7 +77,12 @@ NOTE: You may grab latest code from GitHub Remote Repo, which is located here:
 https://github.com/De-Risking-Strategies/SensorFusion.git
 
 ### 2. Checkout Master branch from Git Hub
-To Pull a copy of the release branch, at a command line (with GitHub installed and credentials handy):
+To Pull a copy of the release branch, at a command line (with GitHub installed and credentials handy).  
+
+From the /home/pi directory:
+Type:
+cd SensorFusion
+
 EX: git pull <remote> <branch>
  
 Type: 
