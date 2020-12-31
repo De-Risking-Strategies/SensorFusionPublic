@@ -4,6 +4,7 @@
 
 ## SENSOR FUSION CHANGELOG                     
 ----
+## December 31 - Removed static label from Custom to fix switching issue
 
 ## December 30 - ReadMe/Train - Upload
 - Fixed Readme - cd /Sensor Fusion
@@ -15,8 +16,6 @@
 - Changed out Annotate image to 'Capture Images'
 - Tweaked the Switching logic for Custom to PreLoaded
 - Added Title and RowsxCols to Menu.sh to better place the spawned terminals
-
-
 
 ## December 28-29 - Added Multi Modal support for PreLoaded and Custom Models 
 - Python pickle obj store for inter instance setting
