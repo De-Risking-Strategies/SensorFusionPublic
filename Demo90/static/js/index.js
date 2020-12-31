@@ -80,9 +80,10 @@ if (modelType == 'preLoaded'|| modelType ==""){
     setCookie("customModelIndex", "0", 30);//Reset CustomModel Index
     
     preLoadedModelIndex = 0;
+  }
     document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_selected_001.png'; 
     document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
-  }
+  
 }else{
    customModelIndex = getCookie('customModelIndex');
    
@@ -92,9 +93,10 @@ if (modelType == 'preLoaded'|| modelType ==""){
     setCookie("customModelIndex", customModelIndex, 30);
     setCookie("modelType", "Custom", 30);
     
+   }
     document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
     document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_selected_001.png'; 
-  }
+  
 }
 
 document.getElementById('switchModelLabel').innerText = preLoadedModel[preLoadedModelIndex];
@@ -276,22 +278,7 @@ function postAPI(command) {
  function timeRefresh(time) {
       setTimeout("location.reload(true);", time);
     }
-function switchModelImage(){
-  if(document.getElementById('switchModelImg').src == 'http://localhost:5000/static/assets/models_icon_001.png')
-  {
-    document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_selected_001.png'; 
-  }else{
-    document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
-  }
-}
-function switchCustomImage(){
-  if(document.getElementById('switchCustomImg').src == 'http://localhost:5000/static/assets/models_icon_001.png')
-  {
-    document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_selected_001.png'; 
-  }else{
-    document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
-  }
-}
+
 function switchTrainImageOn(){
     document.getElementById('switchTrainImg').src = 'http://localhost:5000/static/assets/train_model_selected_001.png'; 
     setTimeout(function(){switchTrainImageOff(); }, 3000);
