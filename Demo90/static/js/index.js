@@ -7,7 +7,7 @@ var span;
 var modal;
 var modalOpen = false;
 var preLoadedModel = ['Demo90','Model01.Deer', 'Model02.Head', 'Model03.Eyes', 'Model04.Tree'];
-var customModel = ['Custom', 'Custom.04','Check.ID','Custom.01','Custom.02', 'Custom.03'];
+var customModel = ['Custom.04','Check.ID','Custom.01','Custom.02', 'Custom.03'];
 var customModelIndex = 0;
 
 var preLoadedModelSelected = 'Demo90';//Default Model
@@ -84,13 +84,12 @@ if (modelType == 'preLoaded'|| modelType ==""){
     document.getElementById('switchCustomImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
   }
 }else{
-    customModelIndex = getCookie('customModelIndex');
-    //if (isNaN(customModelIndex)){customModelIndex = 0};
+   customModelIndex = getCookie('customModelIndex');
    
    if(customModelIndex == ""){
     setCookie("modelIndex", "0", 30); //Reset PreLoaded Model Index
     preLoadedModelIndex = 0;
-    //setCookie("customModelIndex", customModelIndex, 30);
+    setCookie("customModelIndex", customModelIndex, 30);
     setCookie("modelType", "Custom", 30);
     
     document.getElementById('switchModelImg').src = 'http://localhost:5000/static/assets/models_icon_001.png'; 
@@ -183,10 +182,10 @@ function postAPI(command) {
       
       if (isNaN(customModelIndex)){customModelIndex = 0};
       
-      if (customModelIndex == 0){customModelIndex = 1};//Skip 0th
+      //if (customModelIndex == 0){customModelIndex = 1};//Skip 0th
       
       if(customModelIndex >= 5){
-        customModelIndex = 1;//Skip over the initial placeholder 'custom'
+        customModelIndex = 0;//Skip over the initial placeholder 'custom'
       }else{
         customModelIndex += 1;
       }
@@ -205,9 +204,7 @@ function postAPI(command) {
       timeRefresh(3);//Reload broswer
 
    }
-   function timeRefresh(time) {
-        setTimeout("location.reload(true);", time);
-      }
+
    if(command == 'model'){//PRE LOADED MODEL
       //switchModelImage();
       var len = preLoadedModel.length;
@@ -276,6 +273,9 @@ function postAPI(command) {
  modalOpen = false;
     
 }
+ function timeRefresh(time) {
+      setTimeout("location.reload(true);", time);
+    }
 function switchModelImage(){
   if(document.getElementById('switchModelImg').src == 'http://localhost:5000/static/assets/models_icon_001.png')
   {

@@ -450,7 +450,10 @@ def gen_frames():
                     
                     #print("Kill TF Flag: "+ str(kill_tensorFlow))
                     if kill_tensorFlow != 'True':
-                        cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 3)
+                        try:
+                            cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 3)
+                        except:
+                            pass
 
                     # Draw label (object_name) and score (%)    
                     
