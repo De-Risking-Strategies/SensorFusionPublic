@@ -5,6 +5,7 @@
 ## SENSOR FUSION CHANGELOG                     
 ----
 ## December 31 - Removed static label from Custom to fix switching issue
+- Moved Custom/Preloaded image switching logic to match
 
 ## December 30 - ReadMe/Train - Upload
 - Fixed Readme - cd /Sensor Fusion
