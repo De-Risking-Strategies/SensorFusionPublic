@@ -16,7 +16,9 @@ show_menu(){
     printf "${menu}**${number} 4)${menu} Run Image Labeler${normal}\n"
     printf "${menu}**${number} 5)${menu} Run CheckID ${normal}\n"
     printf "${menu}**${number} 6)${menu} Run CheckID no TPU ${normal}\n"
-    printf "${menu}**${number} 7)${menu} Run PoseEstimate ${normal}\n"  
+    printf "${menu}**${number} 7)${menu} Run PoseEstimate ${normal}\n" 
+    printf "${menu}**${number} 8)${menu} Zip Annotated Directory ${normal}\n"   
+    printf "${menu}**${number} 9)${menu} Upload Zip File ${normal}\n" 
     printf "${menu}**===================================================${normal}\n"
     printf "Please enter a menu option and enter or ${fgred}x to exit. ${normal}"
     read opt
@@ -77,6 +79,18 @@ while [ $opt != '' ]
             option_picked "Run PoseEstimate";
 	    printf "SensorFusion/project-posenet-master";
 	    x-terminal-emulator -e "bash 'PoseEstimation.C.sh'";
+	    show_menu;
+        ;;
+	8) clear;
+            option_picked "Zip Annotated Directory";
+	    printf "SensorFusion/zipdir.sh";
+	    . zipdir.sh;
+	    show_menu;
+        ;;
+	9) clear;
+            option_picked "Upload Zip File";
+	    printf "SensorFusion/upload.sh";
+	    . upload.sh;
 	    show_menu;
         ;;
         x)exit;

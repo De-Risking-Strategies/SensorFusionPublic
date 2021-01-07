@@ -33,6 +33,8 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Disable Flask Cache as it interfere
 
 capture_image_limit = 2000
 
+
+
 #Model Switcher
 with open('/home/pi/SensorFusion/model.obj', 'rb' ) as input:
     run_model = pickle.load(input)
@@ -51,6 +53,9 @@ os.environ['kill_tensorFlow'] = 'False'
 #local var
 fps_flag = False #showing frames per second is false by default - controlled by 'F' keyboard command
 
+
+
+
 @app.route('/',methods=['GET'])
 def index():
    video_camera_flag = True
@@ -65,6 +70,21 @@ def index():
        except:
            pass
    return render_template('index.html' )
+   
+@app.route('/refresh_data')
+def refresh_data():
+
+   #sfCallBack method that sends data to the javascript poller in data.js
+   sfCommand = request.args.get('command')
+   print("sfCallBack: ", sfCommand)
+   if sfCommand == "s": #save file
+        os.environ['fileIndex_flag'] = 0
+        print('Setting FileIndex_Flag')
+        #Get the File index from the save command
+   
+   file_save_id = 1   
+   return str(file_save_id)
+   
 
 @app.route('/api', methods = ['GET','POST'])
 def api():
@@ -86,7 +106,6 @@ def api():
             global anno_images
             anno_images = str(chunks[2])
             
-            os.environ['annotate_description'] = str(chunks[3])
         #kill TensorFlow
         if first_char == 'k':
             os.environ['kill_tensorFlow'] = 'True'
@@ -95,7 +114,7 @@ def api():
             os.environ['kill_tensorFlow'] = 'False'
             #print('Restore Tensor Flow')
        
-        #Custom model changed - TO DO
+        #Custom model changed - 
         if first_char == 'c':
             chunks = sfCommand.split(",")
             model_changed_to = str(chunks[1])
@@ -176,7 +195,7 @@ def api():
 
     # GET request
     else:
-        print('GET Request from Client');
+        print('GET Request from Client')
         #session['cap_flag'] = True
         #print(session.get('capt_flag'))
         os.environ['cap_flag'] = 'True'
@@ -185,10 +204,6 @@ def api():
         message = {'Capture':'Capturing Images!'}
         return jsonify(message)  # serialize and use JSON headers
 
-@app.route('/quit_camera/') 
-def quit_camera():
-   return "Not Implemented yet", 200
-   
 @app.route('/login') 
 def login():
    embedVar='Login'
@@ -215,7 +230,10 @@ def gen_frames():
         def __init__(self,resolution=(640,480),framerate=30,target=None,args=()):
             global capture_image_limit
             capture_image_limit = 2000
-           
+            
+            global file_save_id
+            file_save_id =0
+            
             # Initialize the PiCamera and the camera image stream
             self.stream = cv2.VideoCapture(0)
  
@@ -396,7 +414,8 @@ def gen_frames():
     # Initialize video stream
     videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
     time.sleep(1)
-
+    
+    global img_counter
     img_counter = 0
   
     #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
@@ -411,6 +430,7 @@ def gen_frames():
             frame1 = videostream.read()
 
             # Acquire frame and resize to expected shape [1xHxWx3]
+            global frame
             frame = frame1.copy()
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame_resized = cv2.resize(frame_rgb, (width, height))
@@ -506,6 +526,18 @@ def gen_frames():
                     pass
             except:
                 pass
+            
+            #If Capture Image Draw status text
+            capture_flag = os.environ.get('cap_flag')    
+            try:
+                if capture_flag == "True":    
+                    cv2.putText(frame,'Saving File: '+str(img_counter),(520,50),cv2.FONT_HERSHEY_SIMPLEX,0.6,(0,0,255),2)
+                else:
+                    pass
+                
+            except:
+                pass
+                
             # All the results have been drawn on the frame, so it's time to display it.
             #cv2.imshow('Object detector', frame) ## Commented for the FLASK API 
  
@@ -518,7 +550,6 @@ def gen_frames():
                      widgets.meter(frame,top)#module
             #End Module
 
-             
             # Displaying the image - DO NOT USE!
             #cv2.imshow(window_name, image)  
           
@@ -527,21 +558,19 @@ def gen_frames():
             #so we must encode it into JPEG in order to correctly display the
             #video stream - NOTE need to work on this cv2.imencode tobytes slows the apparent frame rate by about 50%, plus the UI takes some
             #See: https://www.pyimagesearch.com/2017/02/06/faster-video-file-fps-with-cv2-videocapture-and-opencv/
+            
             ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()            
+            frame2 = buffer.tobytes() #the image that is saved           
            
             #Capture Images and save to Annotate Named subdirectory under ~/Pictures
-            capture_flag = os.environ.get('cap_flag')
+            #capture_flag = os.environ.get('cap_flag')
             annotate_name = os.environ.get('annotate_name')           
-            annotate_description = os.environ.get('annotate_description')# this is for future use - we'll write our own metadata file
-            
-            apture_image_limit = 20;
+                        
             
             if capture_flag == 'True':
                 #Check limit
                 try:
-                    print("image limit: " + anno_images)
-                    
+                    print("image limit: " + anno_images)                    
                     capture_image_limit = int(anno_images)
                 except:
                     pass
@@ -555,13 +584,15 @@ def gen_frames():
                 except FileExistsError:
                     #dir already exists, so overwrite existing (unless we datestamp)!
                     pass
-                
+                img_name="../Pictures/"+annotate_name+"/"+annotate_name+"sf-frame_{}.jpg".format(img_counter)
+            
                 cv2.namedWindow("Capture Window")
                 cv2.moveWindow("Capture Window", -500, -500)# push it off screen :)
                 
-                img_name="../Pictures/"+annotate_name+"/"+annotate_name+"sf-frame_{}.jpg".format(img_counter)
                 cv2.imwrite(img_name, frame1)
                 print('Wrote Image-'+ img_name)
+                
+                
                 img_counter +=1
                 
             #Clear Capture Flag when done grabbing images
@@ -570,7 +601,7 @@ def gen_frames():
                    img_counter = 0
                    
             yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame2 + b'\r\n')  # concat frame one by one and show result
             ## End Video Stream API ###
 
             # Calculate framerate

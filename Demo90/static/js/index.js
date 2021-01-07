@@ -1,4 +1,4 @@
-//Index page functions
+//Sensor Fusion Index page functions
 var toggleCameraBtnFlag = true;
 var toggleInfoCanvasFlag = false;
 var toggleLabels = true;//On by default
@@ -9,12 +9,15 @@ var modalOpen = false;
 var preLoadedModel = ['Demo90','Model01.Deer', 'Model02.Head', 'Model03.Eyes', 'Model04.Tree'];
 var customModel = ['Custom.04','Check.ID','Custom.01','Custom.02', 'Custom.03'];
 var customModelIndex = 0;
-
 var preLoadedModelSelected = 'Demo90';//Default Model
 var preLoadedModelIndex = 0;
-
 var modelType = 'preLoaded';
-
+var fileSavedIndex = 0;//progress basrin data.js sfCallBack
+var sfCommandAnnotate;
+var annotateImages;//Number of images to capture for annotation
+var annotateName;
+var annotateDescription;//Annotation description
+var upLoadFolder;
 
 function init(){
 var toggleLabelsBtn = document.getElementById("toggleLabelsBtn");
@@ -37,7 +40,7 @@ span = document.getElementsByClassName("close")[0];
 span.onclick = function() {
    postAPI('restore_tesnorFlow');
    modal.style.display = "none";
-    modalOpen = false;
+   modalOpen = false;
     
     
 }
@@ -57,14 +60,14 @@ window.onclick = function(event) {
 document.body.onkeydown = function(e){
  // console.log(String.fromCharCode(e.keyCode)+"-->"+e.keyCode);
 
-if (modalOpen == false){
-  if(e.keyCode =='32'){//SPACEBAR
-      modal1_click('annotate');
-    }else if(e.keyCode == '81'){//Q
-      postAPI('quit');
-    }else if(e.keyCode == '70'){
-      postAPI('fps')
-    } 
+  if (modalOpen == false){
+    if(e.keyCode =='32'){//SPACEBAR
+        modal1_click('annotate');
+      }else if(e.keyCode == '81'){//Q
+        postAPI('quit');
+      }else if(e.keyCode == '70'){
+        postAPI('fps')
+      } 
   }
  }
 
@@ -134,21 +137,26 @@ function postAPI(command) {
 // POST commands to Flask/Python API route
   console.log('Posting: '+ command);
   sfCommandAnnotate = false;
-  var annotateName
   
   if(command == 'annotate'){
+    modalOpen = true;
     sfCommandAnnotate = true;
-        annotateName = document.getElementById('aName').value;
-        console.log(annotateName);
-    var annotateImages = document.getElementById('aImages').value;
+    
+    annotateName = document.getElementById('aName').value;
+      console.log(annotateName);
+    annotateImages = document.getElementById('aImages').value;//number of images to capture
         console.log(annotateImages);    
-    var annotateDescription = document.getElementById('aDescription').value;
-        console.log(annotateDescription);
+    
+    //Moved description to Upload
+    //annotateDescription = document.getElementById('aDescription').value;
+    //    console.log(annotateDescription);
         
-    if (annotateName == "" || annotateImages == "" || annotateDescription ==""){
+    if (annotateName == "" || annotateImages == "" ){
       alert("No Blank Fields Allowed! Try Again.");
     }else{    
-      command = command+','+annotateName+','+annotateImages+','+ annotateDescription
+      command = command+','+annotateName+','+annotateImages;
+      
+    
    }
   }             
   if(command == 'labels'){
@@ -261,7 +269,7 @@ function postAPI(command) {
           var status1 = document.getElementById("annotateFileStatus");
           var link = "/home/pi/SensorFusion/Pictures/"+ annotateName
           
-          status1.innerText = "Your files are saving to: "+link;
+          status1.innerText = "Your files are saved to: "+link + ".  Click to continue";
           modal.style.display = "none";
         }
       
@@ -272,7 +280,7 @@ function postAPI(command) {
          
        }
     })
- modalOpen = false;
+ //modalOpen = false;
     
 }
  function timeRefresh(time) {
@@ -339,7 +347,7 @@ function checkDirectoryExists(dir){
     
 }
 function modal1_click(event){
-
+  modalOpen = true;
   var hdr = document.getElementById("modal_header");
   var modal1 = document.getElementById("modal_body1");
   var modal2 = document.getElementById("modal_body2");
@@ -348,7 +356,7 @@ function modal1_click(event){
   var mTitle= 'Not Implemented Yet'; 
   var mHtml1='<br><strong>Please come back soon!</strong>'; 
   var mHtml2= '<br>';
-  var mFooter='Click out or X to Exit';
+  var mFooter='Click X to Exit';
 
   if(event =='annotate'){
     
@@ -358,31 +366,116 @@ function modal1_click(event){
     
     //Annotation Form - values to pass to Flask/Python
     var row0 = '<table border="1">';
-    var row1 = '<tr><td id="ic1">Name</td><td id="ic2"><input id="aName" type="text" style="width:150px" onchange="checkDirectoryExists(this)"></input><br/>';
+    var row1 = '<tr><td id="ic1">Name</td><td id="ic2"><input id="aName" type="text" style="width:150px" onchange="checkDirectoryExists(this)" autofocus></input><br/>';
     var row2 = '<strong style="color:red">Files are saved in /home/pi/SensorFusion/name</strong></td></tr>';
     var row3 = '<tr><td id="ic3">Images to Capture</td><td id="ic4"><input id="aImages" type="text" style="width:50px">&nbsp;2,000 MAX!</input></td></tr>';
-    var row4 = '<tr><td id="ic5">Description</td><td id="ic6"><input id="aDescription" type="text" style="width:300px"></input></td></tr>';
+    //moved to Upload
+    //var row4 = '<tr><td id="ic5">Description</td><td id="ic6"><input id="aDescription" type="text" style="width:300px"></input></td></tr>';
     var row5 = '</table>'
     var row6 = "<br><input type='button' value='Submit' onclick=postAPI('annotate')>";
+    mHtml2 = row0+row1+row2+row3+row5+row6;
+    
+  }
+  
+  if(event == 'upload'){
+    //Upload Form - values to pass to Server
+    postAPI('kill_tesnorFlow');
+    mTitle = 'Upload Annotated Images <br/>UNDER CONSTRUCTION!<br/>Use Main Menu 8 and 9 now!';
+    mHtml1 ='<br><strong>Compress and Upload Annotated Directory</strong><br>';
+       
+    var row0 = '<table border="1">';
+    var row1 = '<tr><td id="ic3">Email Address</td><td id="ic4"><input id="emailAddress" type="text" style="width:250px" autofocus onchange="validateEmail();"></input></td></tr>';
+    var row2 = '<tr><td id="ic5">Description</td><td id="ic6"><input id="uDescription" type="text" style="width:300px" onchange=""></input></td></tr>';
+    var row3 = '<tr><td colspan=2>&nbsp;</td></tr>';
+    var row4 = '<tr><td id="ic1">Pick A Directory</td><td id="ic2"><input id="picker" type="file" style="width:350px" onchange="" webkitdirectory></input><br/><span id="dirPicked"></span><br/></td></tr>';
+    var row5 = '</table>'
+    var row6 = "<br><button type='button' value='Upload' onclick=validateUpload();>Upload</a>";
     mHtml2 = row0+row1+row2+row3+row4+row5+row6;
     
   }
- 
+
   
   //Draw the Modal
-  modalOpen = true;
   hdr.innerHTML  = mTitle
   modal1.innerHTML = mHtml1;
   modal2.innerHTML = mHtml2;
   ftr.innerHTML = mFooter;
   modal.style.display = "block";
-  document.getElementById("aName").focus;
+  
+
+  if(event == 'annotate'){
+    document.getElementById("aName").focus;
+  }
+  //Directory Picker!
+  if(event == 'upload'){
+    let picker = document.getElementById('picker');
+    picker.addEventListener('change', (event) =>{
+      //let directory = event.target;
+      var theFiles = event.target.files;
+      var relativePath = theFiles[0].webkitRelativePath;
+      
+      upLoadFolder = relativePath.split("/");
+      console.log("You Picked "+upLoadFolder[0]);   
+      document.getElementById("dirPicked").innerHTML = ""+upLoadFolder[0];
+    })
+  }
   
 }
-function selectFile(){
+function uploadImages(){
   switchTrainImageOn();
-  var input = document.createElement('input')
+  modal1_click('upload');
+
+}
+function validateUpload(){
+   var email = document.getElementById("emailAddress").value;
+   var desc =  document.getElementById("uDescription").value;
+   var zFolder = document.getElementById("dirPicked").innerHTML;
+   var vE = false;
+  if (email == "" || desc ==""|| zFolder == ""){
+     alert("Please fill out the form");
+  } else {
+    var vE = validateEmail(email);
+  }
+  
+  if(vE == false){
+    alert('Invalid Email Address. Please try again');
+  }else{
+    //zip it!
+    //var zip = new JSZip();
+    //var photoZip = zip.folder('/home/pi/SensorFusion/Pictures/'+zFolder)
+    //photoZip.file(zFolder, desc)// Created a zipped folder with readme
+    /* TO DO
+    zip.file("Description.txt", desc);
+
+    const folder = zip.folder('/home/pi/SensorFusion/Pictures/'+zFolder);
+    folder.file("smile.gif", folder, {base64: true});
+
+    zip.generateAsync({type:"blob"})
+      .then(function(content) {
+      // see FileSaver.js
+        saveAs(content, zFolder +".zip");
+        alert(zFolder+' File is Zipped !');
+    
+      }); 
+    */
+    
+    alert('This is still under construction, please use the Main Menu for now!');
+  }
+  
+}
+function validateEmail(email) {
+        var re = /\S+@\S+\.\S+/;
+        return re.test(email);
+}
+
+
+function putUpload(){
+  alert('hey');//to do
+}
+ /*to do
+  var input = document.createElement('input');
   input.type = 'file';
+  
   input.click();
   var file;
   var fName
@@ -404,7 +497,8 @@ function selectFile(){
   if (fType != 'application/zip'){alert("File must be a ZIP archive, please try again")
   }
  }
-}
+ */
+ 
 
 
 

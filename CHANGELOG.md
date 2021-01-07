@@ -4,6 +4,15 @@
 
 ## SENSOR FUSION CHANGELOG                     
 ----
+
+## January 7, 2021 - Main Menu Zip Files and Upload Files to Back End added 
+NOTE - For details on Upload Download to DRS back-end, pleasee see 'DRS-AWS-Administrator-Access-Upload-Download.doc'
+- Menu 8 - Zip Annotated directory - zipdir.sh added
+- Menu 9 - Upload Zip File: Email Address, Zipped File and Description with spaces and validation
+- Capture Imags - Added a visible file count when saving images, and MOVED Description to Upload Images 
+- Fixed spacebar and 'f' key bugs in forms (you can now include spaces in fields)
+- Upload Images - Added capabilities to begin Upload from SF (not finished yet)
+
 ## December 31 - Removed static label from Custom to fix switching issue
 - Moved Custom/Preloaded image switching logic to match
 

@@ -265,6 +265,17 @@ bottom:-46%;
 left:89%;
 }
 
+#fileSaveProgress{
+   width:100%;
+   background-color:blue;
+   position: fixed;
+   top: 8%;
+}
+#fileSaveBar{
+   width:1%;
+   height:6px;
+   background-color: #212121;
+}
 
 @media only screen and (max-width: 800px) {
 .logo {
